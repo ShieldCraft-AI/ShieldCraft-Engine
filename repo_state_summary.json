@@ -1,0 +1,37 @@
+{
+  "authoritative_paths": {
+    "canonical_dsl": {
+      "schema": "spec/schemas/se_dsl_v1.schema.json",
+      "loader": "src/shieldcraft/dsl/loader.py",
+      "canonical_loader": "src/shieldcraft/dsl/canonical_loader.py",
+      "validator": "src/shieldcraft/services/spec/schema_validator.py"
+    },
+    "engine_entrypoints": [
+      "src/shieldcraft/engine.py",
+      "src/shieldcraft/main.py"
+    ],
+    "checklist_pipeline_root": [
+      "src/shieldcraft/services/checklist/generator.py"
+    ],
+    "canonical_writers": [
+      "src/shieldcraft/util/json_canonicalizer.py",
+      "src/shieldcraft/services/io/canonical_writer.py"
+    ],
+    "evidence_and_governance": [
+      "src/shieldcraft/services/governance/"
+    ],
+    "tests_authoritative": [
+      "tests/spec/",
+      "tests/engine/",
+      "tests/selfhost/"
+    ]
+  },
+  "ambiguity_count": 0,
+  "placeholder_count": 4,
+  "dsl_version": "canonical_v1_frozen",
+  "engine_ready_for_self_build": false,
+  "next_allowed_work": [
+    "cleanup",
+    "gap-filling via checklist"
+  ]
+}

@@ -7,6 +7,21 @@ class ASTBuilder:
         self.line_map = {}  # Store source line numbers during build
         self.pointer_map = {}  # Deterministic pointer→node map
     
+    @classmethod
+    def from_spec(cls, spec_raw):
+        """
+        Build AST from raw spec dict.
+        Canonical entrypoint for loader integration.
+        
+        Args:
+            spec_raw: Raw spec dictionary
+            
+        Returns:
+            AST root node with pointer annotations
+        """
+        builder = cls()
+        return builder.build(spec_raw)
+    
     def build(self, spec):
         """Build normalized AST with sorted keys, pointers, and parent refs."""
         root = Node("root", ptr="/")

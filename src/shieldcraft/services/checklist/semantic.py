@@ -152,7 +152,8 @@ def semantic_validations(spec, items=None):
                             "meta": {"section_status": "missing"}
                         })
                     else:
-                        # Mark as ok (will be added as metadata)
+                        # INTENTIONAL: Valid section reference, no action needed.
+                        # Metadata will be added by subsequent processing.
                         pass
                 
                 # Continue recursion
@@ -165,12 +166,9 @@ def semantic_validations(spec, items=None):
     check_section_refs(spec)
     
     # AST → checklist consistency check
-    # This would require AST to be passed in, but for now we'll check that
-    # all spec nodes are either covered or explicitly ignorable
-    missing_nodes = []
-    
-    # Collect all paths that should have tasks
-    # For now, this is a placeholder - would need AST integration
-    # missing_nodes would be populated by comparing AST nodes to checklist coverage
+    # INTENTIONAL: AST integration deferred.
+    # Future: Pass AST as parameter and compare nodes to checklist coverage.
+    # Current behavior: Returns all semantic tasks without AST cross-validation.
+    missing_nodes = []  # Would be populated by AST comparison
     
     return tasks

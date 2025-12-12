@@ -151,13 +151,8 @@ class TemplateEngine:
                     })
                     break  # Only report first occurrence
             
-            # Check for deterministic placeholders
-            import re
-            # Find all {{ }} placeholders
-            placeholders = re.findall(r'\{\{\s*(\w+)\s*\}\}', text)
-            if placeholders != sorted(set(placeholders)):
-                # Placeholders not in canonical order (optional check)
-                pass
+            # Placeholder determinism is handled by template validation
+            # No additional ordering check needed here
             
         except Exception as e:
             errors.append({

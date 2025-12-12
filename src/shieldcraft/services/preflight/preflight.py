@@ -41,14 +41,27 @@ def run_preflight(spec, schema, checklist_items):
     ok_contract, violations = verify_generation_contract(spec, checklist_items, uncovered)
     
     # Build SpecModel for governance evaluation
-    ast_builder = ASTBuilder()
-    ast = ast_builder.build(spec)
-    spec_fingerprint = compute_spec_fingerprint(spec)
-    spec_model = SpecModel(spec, ast, spec_fingerprint)
+    # Check if spec is already a SpecModel (from canonical loader)
+    if isinstance(spec, SpecModel):
+        spec_model = spec
+        ast = spec_model.ast
+        spec_fingerprint = spec_model.fingerprint
+        spec_raw = spec_model.raw
+    else:
+        ast_builder = ASTBuilder()
+        ast = ast_builder.build(spec)
+        spec_fingerprint = compute_spec_fingerprint(spec)
+        spec_model = SpecModel(spec, ast, spec_fingerprint)
+        spec_raw = spec
     
-    # Run pointer coverage enforcement
-    pointer_coverage = ensure_full_pointer_coverage(ast, spec)
-    contract_ok_final = ok_contract and (len(pointer_coverage["missing"]) == 0)
+    # Run pointer coverage enforcement with canonical support
+    from shieldcraft.services.spec.pointer_auditor import check_unreachable_pointers
+    pointer_coverage = ensure_full_pointer_coverage(ast, spec_raw)
+    unreachable_pointers = check_unreachable_pointers(ast, spec_raw)
+    
+    # Record missing pointers in preflight output format
+    missing_pointers = pointer_coverage.get("missing", [])
+    contract_ok_final = ok_contract and (len(missing_pointers) == 0) and (len(unreachable_pointers) == 0)
     
     # Run governance evaluation
     governance_result = evaluate_governance(spec_model, checklist_items)

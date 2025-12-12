@@ -34,4 +34,8 @@ To validate the generated preview:
 python -c "from src.shieldcraft.services.selfhost.preview_validator import validate_preview; import json; preview = json.load(open('artifacts/selfhost_preview.json')); print(validate_preview(preview))"
 ```
 
+## Canonical JSON Support
+
+Canonical JSON is now supported via `src/shieldcraft/dsl/loader.py`. Specs with `canonical: true` or `canonical_spec_hash` in metadata will be loaded using the canonical loader which enforces deterministic JSON rules.
+
 See `ci/selfhost_dryrun.yml` for CI integration.

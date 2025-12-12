@@ -1,7 +1,7 @@
 import json
 import os
 from shieldcraft.util.json_canonicalizer import canonicalize
-from shieldcraft.dsl.loader import DSLLoader
+from shieldcraft.dsl.loader import load_spec
 from shieldcraft.services.ast.builder import ASTBuilder
 from shieldcraft.services.planner.planner import Planner
 from shieldcraft.services.checklist.generator import ChecklistGenerator
@@ -11,8 +11,9 @@ from shieldcraft.services.governance.determinism import DeterminismEngine
 from shieldcraft.services.governance.provenance import ProvenanceEngine
 from shieldcraft.services.governance.evidence import EvidenceBundle
 from shieldcraft.services.governance.verifier import ChecklistVerifier
-from shieldcraft.services.dsl.loader import SpecLoader
-from shieldcraft.services.dsl.validator import SpecValidator
+from shieldcraft.services.spec.schema_validator import validate_spec_against_schema
+from shieldcraft.services.spec.model import SpecModel
+from shieldcraft.services.spec.fingerprint import compute_spec_fingerprint
 from shieldcraft.services.plan.execution_plan import from_ast
 from shieldcraft.services.io.canonical_writer import write_canonical_json
 from shieldcraft.services.artifacts.lineage import bundle
@@ -23,9 +24,7 @@ from shieldcraft.services.stability.stability import compare
 
 class Engine:
     def __init__(self, schema_path):
-        self.dsl_loader = DSLLoader(schema_path)
-        self.loader = SpecLoader()
-        self.validator = SpecValidator(schema_path)
+        self.schema_path = schema_path
         self.ast = ASTBuilder()
         self.planner = Planner()
         self.checklist_gen = ChecklistGenerator()
@@ -37,16 +36,40 @@ class Engine:
         self.verifier = ChecklistVerifier()
 
     def run(self, spec_path):
-        # Load spec
-        spec = self.loader.load(spec_path)
+        # AUTHORITATIVE DSL: se_dsl_v1.schema.json via dsl.loader. Do not introduce parallel DSLs.
         
-        # DSL validation with structured errors
-        validation_result = self.validator.validate(spec)
-        if not validation_result["valid"]:
-            return {"type": "schema_error", "details": validation_result["errors"]}
+        # Verify DSL version before loading
+        import pathlib
+        file_path = pathlib.Path(spec_path)
+        data = json.loads(file_path.read_text())
+        dsl_version = data.get('dsl_version')
+        if dsl_version != 'canonical_v1_frozen':
+            raise ValueError(
+                f"DSL version check failed: expected 'canonical_v1_frozen', got '{dsl_version}'. "
+                f"Spec must use frozen canonical DSL. No fallback or compatibility mode."
+            )
         
-        # Build AST
-        ast = self.ast.build(spec)
+        # Load spec using canonical DSL
+        raw = load_spec(spec_path)
+        
+        # Handle SpecModel or raw dict
+        if isinstance(raw, SpecModel):
+            spec_model = raw
+            normalized = spec_model.raw
+            ast = spec_model.ast
+            fingerprint = spec_model.fingerprint
+        else:
+            # Legacy: normalize and validate
+            normalized = canonicalize(raw) if not isinstance(raw, dict) else raw
+            valid, errors = validate_spec_against_schema(normalized, self.schema_path)
+            if not valid:
+                return {"type": "schema_error", "details": errors}
+            ast = self.ast.build(normalized)
+            fingerprint = compute_spec_fingerprint(normalized)
+            spec_model = SpecModel(normalized, ast, fingerprint)
+        
+        # AST already built in spec_model
+        spec = normalized
         
         # Create execution plan
         plan = from_ast(ast)
@@ -187,13 +210,21 @@ class Engine:
         )
 
     def execute(self, spec_path):
-        # Load and validate
-        spec = self.loader.load(spec_path)
-        validation_result = self.validator.validate(spec)
+        # Load and validate using canonical DSL
+        raw = load_spec(spec_path)
         
-        # Stop if invalid
-        if not validation_result["valid"]:
-            return {"type": "schema_error", "details": validation_result["errors"]}
+        # Handle SpecModel or raw dict
+        if isinstance(raw, SpecModel):
+            spec_model = raw
+            spec = spec_model.raw
+            ast = spec_model.ast
+        else:
+            # Legacy: normalize and validate
+            spec = canonicalize(raw) if not isinstance(raw, dict) else raw
+            valid, errors = validate_spec_against_schema(spec, self.schema_path)
+            if not valid:
+                return {"type": "schema_error", "details": errors}
+            ast = self.ast.build(spec)
         
         # Check for spec evolution
         product_id = spec.get("metadata", {}).get("product_id", "unknown")
@@ -206,9 +237,7 @@ class Engine:
                 previous_spec = json.load(f)
             spec_evolution = compute_evolution(previous_spec, spec)
         
-        # Build AST
-        ast = self.ast.build(spec)
-        
+        # AST already built above
         # Create execution plan with spec for self-host detection
         plan = from_ast(ast, spec)
         product_id = spec.get("metadata", {}).get("product_id", "unknown")
@@ -261,6 +290,8 @@ class BootstrapModule:
         self.id = "{item_id}"
     
     def execute(self):
+        # INTENTIONAL: Empty execute method in generated template.
+        # User implementations will override this method.
         pass
 """
                     with open(module_path, "w") as f:

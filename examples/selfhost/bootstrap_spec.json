@@ -1,10 +1,13 @@
 {
+  "canonical": true,
   "metadata": {
-    "product_id": "shieldcraft_engine_bootstrap",
-    "version": "0.1.0",
+    "canonical_spec_hash": "placeholder",
+    "float_precision": 2,
     "generator_version": "0.1.0",
     "id_namespace": "bootstrap",
-    "self_host": true
+    "product_id": "shieldcraft_engine_bootstrap",
+    "self_host": true,
+    "version": "0.1.0"
   },
   "sections": [
     {

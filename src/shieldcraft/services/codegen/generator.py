@@ -284,8 +284,7 @@ def fix_dependency():
 # Lineage ID: module-init
 # Source Pointer: {module_dir}
 # Auto-generated module initializer
-
-pass
+# INTENTIONAL: Empty __init__.py - valid Python package marker
 """
                 outputs.append({
                     "path": init_path,

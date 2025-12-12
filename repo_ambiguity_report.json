@@ -1,0 +1,37 @@
+{
+  "scanned_at": "2025-12-12",
+  "methodology": "Static analysis of file size, content patterns (PLACEHOLDER/STUB/pass), and reference graph",
+  "placeholder_files": [
+    {
+      "path": "src/shieldcraft/services/codegen/generator.py",
+      "reason": "placeholder",
+      "line": 165,
+      "context": "Placeholder for fixing missing dependency",
+      "referenced_by": ["src/shieldcraft/engine.py", "tests/codegen/"]
+    },
+    {
+      "path": "src/shieldcraft/services/governance/evidence.py",
+      "reason": "placeholder",
+      "line": 70,
+      "context": "hash-based placeholder",
+      "referenced_by": ["src/shieldcraft/engine.py"]
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/generator.py",
+      "reason": "placeholder",
+      "line": 470,
+      "context": "Simple invariant validation placeholder",
+      "referenced_by": ["src/shieldcraft/engine.py", "tests/checklist/"]
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/semantic.py",
+      "reason": "placeholder",
+      "line": 173,
+      "context": "placeholder - would need AST integration",
+      "referenced_by": ["src/shieldcraft/services/checklist/generator.py"]
+    }
+  ],
+  "legacy_candidates": [],
+  "unused_files": [],
+  "notes": "Most files are actively referenced. Placeholders indicate incomplete implementations rather than dead code. No legacy DSL files remain (migration complete)."
+}

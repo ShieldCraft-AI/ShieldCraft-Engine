@@ -173,6 +173,38 @@ class SpecModel:
         
         return len(missing) == 0, sorted(missing)
     
+    def pointer_index(self):
+        """
+        Return mapping of pointer → location metadata.
+        Deterministic ordering for canonical support.
+        """
+        pointer_index = {}
+        
+        def walk(obj, path="", parent_type=None):
+            if isinstance(obj, dict):
+                for key in sorted(obj.keys()):
+                    new_path = f"{path}/{key}"
+                    pointer_index[new_path] = {
+                        "type": "dict_key",
+                        "parent": path,
+                        "key": key,
+                        "value_type": type(obj[key]).__name__
+                    }
+                    walk(obj[key], new_path, "dict")
+            elif isinstance(obj, list):
+                for idx, item in enumerate(obj):
+                    new_path = f"{path}/{idx}"
+                    pointer_index[new_path] = {
+                        "type": "array_item",
+                        "parent": path,
+                        "index": idx,
+                        "value_type": type(item).__name__
+                    }
+                    walk(item, new_path, "array")
+        
+        walk(self.raw)
+        return dict(sorted(pointer_index.items()))
+    
     def get_pointer_map(self):
         """
         Return mapping of pointer → value from raw spec.

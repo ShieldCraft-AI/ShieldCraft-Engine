@@ -2,26 +2,10 @@ def extract_json_pointers(spec, base=""):
     """
     Recursively extract JSON Pointer paths from spec.
     Output: set of pointer strings.
+    Uses canonical DSL pointer extraction.
     """
-    out = set()
-
-    if isinstance(spec, dict):
-        for k,v in spec.items():
-            new_ptr = f"{base}/{k}"
-            out.add(new_ptr)
-            out |= extract_json_pointers(v, new_ptr)
-        return out
-
-    if isinstance(spec, list):
-        for idx,v in enumerate(spec):
-            new_ptr = f"{base}/{idx}"
-            out.add(new_ptr)
-            out |= extract_json_pointers(v, new_ptr)
-        return out
-
-    # scalar
-    out.add(base)
-    return out
+    from shieldcraft.dsl.loader import extract_json_pointers as canonical_extract
+    return canonical_extract(spec, base)
 
 
 def ensure_full_pointer_coverage(ast, raw):
@@ -81,6 +65,7 @@ def compute_coverage(pointers, checklist_items):
 def check_unreachable_pointers(ast, raw):
     """
     Check for raw pointers not found in AST.
+    Supports canonical and legacy spec formats.
     Returns list of unreachable pointer paths.
     """
     # Extract all pointers from raw spec
@@ -88,9 +73,19 @@ def check_unreachable_pointers(ast, raw):
     
     # Extract all pointers from AST
     ast_pointers = set()
-    for node in ast.walk():
-        if node.ptr:
-            ast_pointers.add(node.ptr)
+    if hasattr(ast, 'walk'):
+        for node in ast.walk():
+            if hasattr(node, 'ptr') and node.ptr:
+                ast_pointers.add(node.ptr)
+    
+    # Canonical specs may have additional metadata keys - filter them out
+    if isinstance(raw, dict):
+        canonical_metadata_keys = {'canonical', 'canonical_spec_hash', 'float_precision'}
+        metadata = raw.get('metadata', {})
+        for key in canonical_metadata_keys:
+            ptr = f"/metadata/{key}"
+            if ptr in raw_pointers and ptr not in ast_pointers:
+                raw_pointers.discard(ptr)
     
     # Find pointers in raw but not in AST
     unreachable = raw_pointers - ast_pointers

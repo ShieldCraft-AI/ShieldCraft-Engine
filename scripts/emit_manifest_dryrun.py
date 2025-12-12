@@ -9,8 +9,8 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from shieldcraft.services.dsl.loader import SpecLoader
-from shieldcraft.services.dsl.validator import SpecValidator
+from shieldcraft.dsl.loader import load_spec
+from shieldcraft.services.spec.schema_validator import validate_spec_against_schema
 from shieldcraft.services.io.manifest_writer import write_manifest_v2
 
 
@@ -18,25 +18,29 @@ def main():
     spec_path = "spec/se_dsl_v1.spec.json"
     schema_path = "spec/schemas/se_dsl_v1.schema.json"
     
-    # Load spec
-    loader = SpecLoader()
-    spec = loader.load(spec_path)
+    # Load spec using canonical DSL
+    spec = load_spec(spec_path)
+    
+    # Extract raw dict from SpecModel if needed
+    if hasattr(spec, 'raw'):
+        spec_raw = spec.raw
+    else:
+        spec_raw = spec
     
     # Validate
-    validator = SpecValidator(schema_path)
-    result = validator.validate(spec)
+    valid, errors = validate_spec_against_schema(spec_raw, schema_path)
     
-    if not result["valid"]:
+    if not valid:
         print("ERROR: Schema validation failed")
-        for error in result["errors"]:
+        for error in errors:
             print(f"  - {error}")
         sys.exit(1)
     
     # Create dry-run manifest preview
     manifest_data = {
         "spec_path": spec_path,
-        "product_id": spec.get("metadata", {}).get("product_id", "unknown"),
-        "version": spec.get("metadata", {}).get("version", "unknown"),
+        "product_id": spec_raw.get("metadata", {}).get("product_id", "unknown"),
+        "version": spec_raw.get("metadata", {}).get("version", "unknown"),
         "validation": "passed",
         "dry_run": True
     }

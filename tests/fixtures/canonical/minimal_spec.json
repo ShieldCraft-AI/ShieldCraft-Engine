@@ -1,0 +1,23 @@
+{
+  "canonical": true,
+  "metadata": {
+    "canonical_spec_hash": "placeholder",
+    "float_precision": 2,
+    "generator_version": "1.0.0",
+    "product_id": "shieldcraft-engine",
+    "self_host": true,
+    "version": "0.1.0"
+  },
+  "sections": [
+    {
+      "description": "Bootstrap specification ingestion",
+      "id": "bootstrap_ingestion",
+      "tasks": [
+        {
+          "description": "Load and validate spec file",
+          "id": "load_spec"
+        }
+      ]
+    }
+  ]
+}

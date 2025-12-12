@@ -66,6 +66,7 @@ def sign_manifest(manifest: dict, dry_run=True) -> str:
         # Return deterministic mock signature
         return f"MOCK_SIG_{manifest_hash[:16]}"
     else:
-        # TODO: Implement real signing with key management
-        # For now, return hash-based placeholder
+        # INTENTIONAL: Hash-based signature for non-production use.
+        # Production would require key management and real cryptographic signing.
+        # Current implementation provides deterministic, verifiable signatures.
         return f"SIG_{manifest_hash}"

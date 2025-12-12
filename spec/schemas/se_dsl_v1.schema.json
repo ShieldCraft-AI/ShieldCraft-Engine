@@ -1,9 +1,12 @@
 {
   "$id": "https://shieldcraft.ai/schemas/se_dsl_v1.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "dsl_status": "frozen",
+  "change_policy": "breaking changes require new schema version",
 
   "type": "object",
   "required": [
+    "dsl_version",
     "metadata",
     "build_contract",
     "error_contract",
@@ -21,6 +24,11 @@
   ],
 
   "properties": {
+    "dsl_version": {
+      "type": "string",
+      "enum": ["canonical_v1_frozen"],
+      "description": "DSL version - must be exactly canonical_v1_frozen"
+    },
     "metadata": {
       "type": "object",
       "required": [

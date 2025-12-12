@@ -6,12 +6,14 @@ import json
 import os
 import tempfile
 import pytest
+from shieldcraft.dsl.loader import load_spec
 
 
 def test_selfhost_minimal_pipeline():
     """
     Test minimal self-host pipeline with bootstrap.
     Supply minimal DSL spec with self_host=true.
+    Uses loader adapter for canonical/legacy support.
     """
     from shieldcraft.main import run_self_host
     import shutil
