@@ -1,0 +1,182 @@
+{
+  "$id": "https://shieldcraft.ai/schemas/se_dsl_v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+
+  "type": "object",
+  "required": [
+    "metadata",
+    "build_contract",
+    "error_contract",
+    "evidence_bundle",
+    "domain_model",
+    "capabilities",
+    "state_machine",
+    "determinism",
+    "schema_contract",
+    "artifact_contract",
+    "ci_contract",
+    "generation_mappings",
+    "observability",
+    "security"
+  ],
+
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": [
+        "product_id",
+        "product_name",
+        "spec_version",
+        "created_at_utc",
+        "owner",
+        "generator_version"
+      ],
+      "properties": {
+        "product_id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "product_name": { "type": "string" },
+        "spec_version": { "type": "string" },
+        "created_at_utc": { "type": "string", "format": "date-time" },
+        "owner": { "type": "string" },
+        "canonical_spec_hash": { "type": "string" },
+        "generator_version": { "type": "string" },
+        "language": { "type": "string" }
+      }
+    },
+
+    "build_contract": {
+      "type": "object",
+      "required": ["entrypoints", "output_formats"],
+      "properties": {
+        "entrypoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "path"],
+            "properties": {
+              "id": { "type": "string" },
+              "path": { "type": "string" }
+            }
+          }
+        },
+        "output_formats": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "error_contract": {
+      "type": "object",
+      "required": ["schema", "canonical_error_fields"],
+      "properties": {
+        "schema": { "type": "string" },
+        "canonical_error_fields": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "evidence_bundle": {
+      "type": "object",
+      "required": ["schema", "signing_required"],
+      "properties": {
+        "schema": { "type": "string" },
+        "signing_required": { "type": "boolean" },
+        "signature_algorithm": { "type": "string" }
+      }
+    },
+
+    "domain_model": {
+      "type": "object",
+      "properties": {
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+              "id": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "capabilities": {
+      "type": "object"
+    },
+
+    "state_machine": {
+      "type": "object",
+      "properties": {
+        "states": { "type": "array", "items": { "type": "string" } },
+        "transitions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "from", "to"],
+            "properties": {
+              "id": { "type": "string" },
+              "from": { "type": "string" },
+              "to": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "determinism": {
+      "type": "object",
+      "required": ["canonical_json", "float_precision", "snapshot_runs"],
+      "properties": {
+        "canonical_json": { "type": "boolean" },
+        "float_precision": { "type": "number" },
+        "timestamp_format": { "type": "string" },
+        "snapshot_runs": { "type": "integer" }
+      }
+    },
+
+    "schema_contract": {
+      "type": "object",
+      "required": ["validation_required"],
+      "properties": {
+        "input_schemas": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "output_schemas": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "validation_required": { "type": "boolean" }
+      }
+    },
+
+    "artifact_contract": {
+      "type": "object",
+      "required": ["canonical_hash_algorithm"],
+      "properties": {
+        "artifacts": { "type": "array" },
+        "canonical_hash_algorithm": { "type": "string" }
+      }
+    },
+
+    "ci_contract": {
+      "type": "object",
+      "properties": {
+        "required_jobs": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "generation_mappings": {
+      "type": "object",
+      "properties": {
+        "trace": { "type": "boolean" }
+      }
+    }
+  }
+}

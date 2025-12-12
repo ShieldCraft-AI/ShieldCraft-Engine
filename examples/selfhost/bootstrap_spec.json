@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "product_id": "shieldcraft_engine_bootstrap",
+    "version": "0.1.0",
+    "generator_version": "0.1.0",
+    "id_namespace": "bootstrap",
+    "self_host": true
+  },
+  "sections": [
+    {
+      "id": "metadata",
+      "title": "Metadata",
+      "description": "Core metadata for ShieldCraft Engine bootstrap"
+    },
+    {
+      "id": "architecture",
+      "title": "Architecture",
+      "description": "System architecture components"
+    }
+  ],
+  "items": [
+    {
+      "id": "meta::version",
+      "ptr": "/metadata/version",
+      "text": "Define engine version",
+      "type": "task",
+      "severity": "high",
+      "category": "bootstrap"
+    },
+    {
+      "id": "meta::product_id",
+      "ptr": "/metadata/product_id",
+      "text": "Define product identifier",
+      "type": "task",
+      "severity": "high",
+      "category": "bootstrap"
+    },
+    {
+      "id": "arch::ast_builder",
+      "ptr": "/architecture/ast/builder",
+      "text": "Implement AST builder",
+      "type": "task",
+      "severity": "medium",
+      "category": "core",
+      "depends_on": ["meta::version"]
+    },
+    {
+      "id": "arch::checklist_generator",
+      "ptr": "/architecture/checklist/generator",
+      "text": "Implement checklist generator",
+      "type": "task",
+      "severity": "high",
+      "category": "core",
+      "depends_on": ["arch::ast_builder"]
+    }
+  ],
+  "invariants": [
+    {
+      "id": "inv_metadata_required",
+      "spec_ptr": "/metadata",
+      "expr": "exists(/metadata/version)",
+      "severity": "critical"
+    },
+    {
+      "id": "inv_min_items",
+      "spec_ptr": "/",
+      "expr": "count(/metadata) > 0",
+      "severity": "high"
+    }
+  ],
+  "constraints": {
+    "ordering": [
+      {
+        "before": "meta::*",
+        "after": "arch::*"
+      }
+    ]
+  }
+}

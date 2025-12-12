@@ -1,0 +1,21 @@
+{# Bootstrap template: engine_stage.j2 #}
+{# Minimal code skeleton for SE engine stage #}
+# Source: {{source_pointer}}
+# Section: {{source_section}}
+
+class EngineStage:
+    """
+    Bootstrap: Engine stage component.
+    Generated from: {{source_pointer}}
+    """
+    
+    def __init__(self, config):
+        self.config = config
+    
+    def execute(self, input_data):
+        """Execute this stage."""
+        raise NotImplementedError("Stage execution not implemented")
+    
+    def validate(self):
+        """Validate stage configuration."""
+        return True

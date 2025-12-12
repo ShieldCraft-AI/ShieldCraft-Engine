@@ -1,0 +1,51 @@
+# Bootstrap Engine Core
+# Source: {{source_pointer}}
+# Section: {{source_section}}
+# Item: {{item_id}}
+
+{{block:metadata}}
+"""
+Engine Core for ShieldCraft Engine
+Generated from: {{source_pointer}}
+"""
+{{endblock}}
+
+
+class EngineCore:
+    """Core engine orchestrator."""
+    
+    def __init__(self):
+        self.spec = None
+        self.ast = None
+        self.checklist = None
+    
+    def run(self, spec_path):
+        """{{text}}"""
+        # Load spec
+        from .spec_loader import SpecLoader
+        loader = SpecLoader()
+        self.spec = loader.load(spec_path)
+        
+        # Build AST
+        from .ast_builder import ASTBuilder
+        builder = ASTBuilder()
+        self.ast = builder.build(self.spec)
+        
+        # Generate checklist
+        from .checklist_driver import ChecklistDriver
+        driver = ChecklistDriver()
+        self.checklist = driver.generate(self.spec)
+        
+        return {
+            "spec": self.spec,
+            "ast": self.ast,
+            "checklist": self.checklist
+        }
+    
+    def get_status(self):
+        """Get engine status."""
+        return {
+            "spec_loaded": self.spec is not None,
+            "ast_built": self.ast is not None,
+            "checklist_generated": self.checklist is not None
+        }

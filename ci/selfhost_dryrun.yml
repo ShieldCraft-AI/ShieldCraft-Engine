@@ -1,0 +1,47 @@
+name: Self-Host Dry-Run
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  selfhost-preview:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          pip install pytest jinja2
+      
+      - name: Create artifacts directory
+        run: mkdir -p artifacts
+      
+      - name: Run self-host dry-run
+        run: |
+          python -m src.shieldcraft.engine \
+            --self-host \
+            --spec examples/selfhost/bootstrap_spec.json \
+            --dry-run \
+            --emit-preview artifacts/selfhost_preview.json
+      
+      - name: Validate preview output
+        run: |
+          test -f artifacts/selfhost_preview.json
+          python -c "import json; json.load(open('artifacts/selfhost_preview.json'))"
+      
+      - name: Upload preview artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: selfhost-preview
+          path: artifacts/selfhost_preview.json
+          retention-days: 7

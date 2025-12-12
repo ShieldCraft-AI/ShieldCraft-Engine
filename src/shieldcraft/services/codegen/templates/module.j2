@@ -1,0 +1,11 @@
+{# Module template for SE codegen #}
+# generated: {{ checklist_id }}
+class {{ name }}:
+    """
+    Generated module: {{ name }}
+    Dependencies: {{ dependencies | join(', ') if dependencies else 'none' }}
+    Invariants: {{ invariants | length if invariants else 0 }}
+    """
+    
+    def __init__(self):
+        pass

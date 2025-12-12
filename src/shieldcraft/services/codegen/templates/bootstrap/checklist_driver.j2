@@ -1,0 +1,43 @@
+# Bootstrap Checklist Driver
+# Source: {{source_pointer}}
+# Section: {{source_section}}
+# Item: {{item_id}}
+
+{{block:metadata}}
+"""
+Checklist Driver for ShieldCraft Engine
+Generated from: {{source_pointer}}
+"""
+{{endblock}}
+
+
+class ChecklistDriver:
+    """Drive checklist generation pipeline."""
+    
+    def __init__(self):
+        self.items = []
+    
+    def generate(self, spec):
+        """{{text}}"""
+        # Extract items from spec
+        self.items = self._extract(spec)
+        return self.items
+    
+    def _extract(self, node, ptr="/"):
+        """Recursively extract checklist items."""
+        items = []
+        if isinstance(node, dict):
+            for key in sorted(node.keys()):
+                child_ptr = f"{ptr}/{key}"
+                items.append({
+                    "ptr": child_ptr,
+                    "key": key,
+                    "value": node[key]
+                })
+                items.extend(self._extract(node[key], child_ptr))
+        return items
+    
+    def sort_items(self):
+        """Sort items deterministically."""
+        self.items.sort(key=lambda x: x["ptr"])
+        return self.items

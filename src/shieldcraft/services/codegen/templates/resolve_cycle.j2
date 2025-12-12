@@ -1,0 +1,43 @@
+# Lineage: {{ lineage_id | default("UNKNOWN") }}
+# Cycle Items: {{ cycle_items | join(", ") }}
+# Generated: resolve-cycle task
+
+"""
+Resolve circular dependency in checklist.
+
+Cycle detected: {{ cycle_items | join(" -> ") }}
+Length: {{ cycle_length }}
+
+TODO: Break the cycle by:
+1. Identifying the weakest dependency link
+2. Reordering tasks to eliminate circular reference
+3. Introducing intermediate task to break the chain
+4. Updating spec to remove circular constraint
+"""
+
+
+def resolve_cycle():
+    """
+    Resolve the circular dependency.
+    
+    Returns:
+        Dict with resolution strategy and updated dependencies
+    """
+    # TODO: Implement cycle resolution logic
+    cycle = {{ cycle_items }}
+    
+    # Strategy options:
+    # 1. Remove one dependency edge
+    # 2. Introduce intermediate task
+    # 3. Reorder execution
+    
+    return {
+        "status": "pending",
+        "cycle": cycle,
+        "resolution": "manual_review_required"
+    }
+
+
+if __name__ == "__main__":
+    result = resolve_cycle()
+    print(f"Cycle resolution: {result}")

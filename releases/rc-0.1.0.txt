@@ -1,0 +1,4 @@
+spec_hash: 401245945d57d7576769888e2d691f2941880e483461e696c56391d6a6830e16
+lockfile_version: 1.0.0
+date: 2025-12-12
+notes: minimal self-host preview produced

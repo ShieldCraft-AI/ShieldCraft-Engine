@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ShieldCraft Manifest Schema",
+  "type": "object",
+  "properties": {
+    "manifest_version": {
+      "type": "string",
+      "description": "Version of the manifest format"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp of manifest generation"
+    },
+    "spec_fingerprint": {
+      "type": "string",
+      "description": "SHA256 fingerprint of the spec"
+    },
+    "namespace": {
+      "type": "string",
+      "description": "Namespace derived from spec fingerprint"
+    },
+    "codegen_bundle_hash": {
+      "type": "string",
+      "description": "Hash of all generated code artifacts"
+    },
+    "pointer_coverage_summary": {
+      "type": "object",
+      "properties": {
+        "total_pointers": {"type": "number"},
+        "missing_count": {"type": "number"},
+        "ok_count": {"type": "number"},
+        "coverage_percentage": {"type": "number"}
+      },
+      "required": ["total_pointers", "missing_count", "ok_count", "coverage_percentage"]
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "section_count": {"type": "number"},
+        "pointer_count": {"type": "number"},
+        "invariant_count": {"type": "number"},
+        "coverage_percentage": {"type": "number"},
+        "invariant_density": {"type": "number"},
+        "dependency_fragility": {"type": "number"}
+      }
+    },
+    "evidence_hash": {
+      "type": "string"
+    },
+    "lineage": {
+      "type": "object"
+    },
+    "rollup": {
+      "type": "object"
+    },
+    "invariants_ok": {
+      "type": "boolean"
+    },
+    "provenance": {
+      "type": "object"
+    },
+    "spec_stats": {
+      "type": "object"
+    },
+    "lifecycle": {
+      "type": "object"
+    },
+    "spec_evolution": {
+      "type": "object"
+    },
+    "evolution_impact": {
+      "type": "object"
+    },
+    "ast_reconciliation": {
+      "type": "object"
+    }
+  },
+  "required": ["manifest_version", "spec_fingerprint"]
+}

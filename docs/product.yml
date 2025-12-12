@@ -1,0 +1,897 @@
+ShieldCraft Engine — Canonical Manufacturing Specification (Monolithic)
+
+version: 1.0.0
+spec_name: shieldcraft_engine.spec.yml
+generated_at: "2025-12-12T00:00:00+02:00"
+timezone: "Africa/Johannesburg"
+language: "yaml"
+spec_type: "machine-first_product_specification"
+spec_state: "draft"
+owner: "Deon Prinsloo / ShieldCraft"
+summary: >
+ShieldCraft Engine (SE) is a deterministic AI software manufacturing platform that
+converts a plain-text specification into governed, verifiable, production-ready
+artifacts (specs, contracts, tests, code, evidence bundles). This file is the single
+canonical machine-consumable spec: Copilot (inside VS Code) is the primary consumer.
+
+-------------------------
+0. GLOBAL METADATA & INVARIANTS
+-------------------------
+
+metadata:
+product_id: "shieldcraft_engine"
+product_name: "ShieldCraft Engine"
+spec_version: "2025.12.1"
+canonical_spec_hash: "<autofill_by_generator>"
+created_at: "2025-12-12"
+owner_contact: "deon@shieldcraft-ai.com
+"
+language_primary: "python"
+release_channel: "founder"
+single_file_contract: true # MUST be single-file for generator pipeline
+machine_first: true
+human_reading_notes: "Humans should not edit generated artifacts downstream."
+
+invariants:
+
+deterministic_outputs_required: true
+
+evidence_bundle_signed: true
+
+no_unbounded_network_by_default: true
+
+zero_iam_default: true
+
+wasm_sandbox_compatibility: true
+
+enforce_code_style_and_SOLID: true
+
+enforce_ci_gate_for_merge: true
+
+-------------------------
+1. WHY NOW & MARKET CONTEXT
+-------------------------
+
+why_now:
+summary: >
+Generative models commoditized code completion; enterprises now require trust,
+auditability, and repeatability. ShieldCraft delivers determinism + governance
+to safely scale AI production across regulated and mission-critical teams.
+drivers:
+- AI_assist_commoditization: "Developer-facing code generation is mature; trust is next."
+- compliance_pressure: "SOC2/ISO/PCI demand audit trails and reproducible outputs."
+- LLM_variability: "Non-deterministic LLMs create audit risk; deterministic wrappers are needed."
+- platform_economics: "Per-run automation reduces human labor and shortens delivery cycles."
+
+-------------------------
+2. IDEAL CUSTOMER PROFILE (ICP) & BUY TRIGGERS
+-------------------------
+
+icp:
+tiers:
+- name: tier_1_enterprise
+verticals: [fintech, healthtech, insurance, government]
+buyer_personas: [CTO, Head_of_Platform, Compliance_Lead]
+buy_triggers:
+- upcoming_compliance_audit: true
+- reproducibility_requirement: true
+- high_engineering_costs: true
+- name: tier_2_scale
+verticals: [midmarket_saas, platform_orgs]
+buyer_personas: [Engineering_Manager, Platform_Lead]
+buy_triggers: [internal_idp_standardization, release_variability]
+- name: tier_3_indie
+verticals: [indie_devs, consultancies]
+buyer_personas: [Founder, Solo_dev]
+buy_triggers: [speed_to-market, repeatable_template_execution]
+
+-------------------------
+3. HIGH-LEVEL PRODUCT INTENT
+-------------------------
+
+product_intent:
+purpose: "Turn plain-text product specs into auditable, deterministic software artifacts."
+primary_function: "manufacture"
+non_goals:
+- "not a real-time chat interface"
+- "not human-in-the-loop by default (humans review by policy)"
+- "not a hosted model training service"
+boundaries:
+- runs_offline_by_default: true
+- no_external_apis_without_explicit_override: true
+- outputs_may_contain_non-audit_best_effort_artifacts (flagged)
+
+-------------------------
+4. DETERMINISM CONTRACT (MUST)
+-------------------------
+
+determinism_contract:
+definition: >
+Determinism = identical outputs for identical inputs across seeds, time, environments,
+and model-vendor substitutions when using the same spec + generator lockfile + seed.
+guarantees:
+- seeds_locked: true
+- canonical_serialization: true
+- canonical_json: {algorithm: "sha256", ordering: "canonical", float_precision: 6}
+- cross_env_consistency: true
+- vendor_substitution_policy: "model_adapter + deterministic_wrapper"
+validation:
+- runs_required_for_success: 3
+- success_criteria: "hash(outputs) identical across N runs"
+- ci_job: "ci/verify_determinism.yml"
+failure_modes:
+BROKEN_DETERMINISM:
+detection: "snapshot_hash_mismatch OR non-deterministic_test_failure"
+behavior:
+- halt_pipeline: true
+- emit_evidence_bundle: true
+- create_review_ticket: true
+- optionally_emit_partial_artifacts: false
+remediation_options:
+- retry_with_cached_model_state
+- reconcile_via_rule_based_reconciliation
+- escalate_to_human_review
+fallback_modes:
+degraded_deterministic_output:
+description: >
+When full determinism cannot be guaranteed due to vendor outage, produce
+deterministic_degraded artifacts annotated with provenance and fallbacks.
+allowed: true
+constraints:
+- must_mark_as_degraded: true
+- must_emit_evidence_bundle: true
+
+-------------------------
+5. TECHNICAL DIFFERENTIATORS
+-------------------------
+
+technical_differentiators:
+table: |
+capability,shieldcraft_engine,github_copilot,codewhisperer,replit
+deterministic_output,yes,no,no,no
+governance_contracts,yes,partial,no,no
+evidence_bundles,yes,no,no,no
+traceability,yes,no,no,partial
+multi_agent_pipeline,yes,limited,limited,no
+
+-------------------------
+6. CORE ARCHITECTURE
+-------------------------
+
+architecture:
+overview: >
+Orchestrator (Step Functions) controls agent pipeline. Agents run in isolated containers
+or lambdas. Artifacts → S3 (signed). State → DynamoDB. Evidence bundles → S3 + KMS-signed.
+components:
+orchestrator:
+type: "AWS Step Functions (state machine)"
+responsibilities:
+- schedule_agents
+- manage_retries_policy
+- persist_run_state
+- enforce_cost_and_timeout_budget
+state_store:
+type: "DynamoDB"
+keys:
+- run_id (PK)
+- spec_hash (GSI)
+- status
+artifact_store:
+type: "S3 (versioned)"
+object_metadata: [artifact_type, canonical_hash, signer, timestamp_utc]
+model_layer:
+type: "Model Abstraction Layer"
+description: >
+Wraps vendor APIs (OpenAI, Anthropic, local LLM) with deterministic wrapper:
+- seed locking
+- prompt normalization
+- temperature enforcement
+- tokenization control
+execution_sandbox:
+type: "Container/Lambda + WASM runtime"
+requirements:
+- disable_external_network_by_default
+- cpu_limit: "configurable"
+- memory_limit: "configurable"
+evidence_service:
+responsibilities:
+- bundle_evidence
+- sign_with_KMS
+- persist_bundle
+telemetry:
+metrics: [run_count, determinism_failures, agent_latency_ms, cost_per_run_cents]
+logs: structured_json
+opt_in_default: false
+
+-------------------------
+7. AGENT LAYER (MANIFEST & CONTRACT)
+-------------------------
+
+agent_manifest_template:
+fields:
+- id
+- version
+- description
+- input_schema
+- output_schema
+- invariants
+- resource_limits
+- timeout_seconds
+- deterministic: true
+required_for_v1: true
+
+agents:
+documentation_agent:
+id: "documentation_agent.v1"
+description: "Generates product + code documentation from spec and code artifacts."
+input_schema: "schemas/spec_yaml.json"
+output_schema: "schemas/docs_manifest.json"
+invariants:
+- validate_provenance: true
+- must_reference_governance_contracts: true
+resource_limits: {cpu: 1000, memory_mb: 1024}
+timeout_seconds: 300
+verification_agent:
+id: "verification_agent.v1"
+description: "Runs deterministic checks against governance contracts and tests."
+input_schema: "schemas/artifacts_manifest.json"
+output_schema: "schemas/verification_report.json"
+invariants:
+- fail_on_critical_noncompliance: true
+- run_snapshot_hash: true
+resource_limits: {cpu: 2000, memory_mb: 2048}
+timeout_seconds: 600
+patch_pr_agent:
+id: "patch_pr_agent.v1"
+description: "Generates patch files or PRs with diffs, impact analysis, risk annotation."
+output_schema: "schemas/patch_manifest.json"
+invariants:
+- patch_id: required
+- rollback_patch_produced: required
+resource_limits: {cpu: 1500, memory_mb: 1536}
+timeout_seconds: 300
+test_synthesis_agent:
+id: "test_synthesis_agent.v1"
+description: "Synthesizes unit, integration, and snapshot tests for generated code."
+output_schema: "schemas/test_suite_manifest.json"
+invariants:
+- tests_must_run_in_CI: true
+- snapshot_coverage_pct: 100
+resource_limits: {cpu: 2000, memory_mb: 2048}
+timeout_seconds: 900
+architecture_agent:
+id: "architecture_agent.v1"
+description: "Produces diagrams, dependency graphs, and architecture contracts."
+output_schema: "schemas/arch_manifest.json"
+invariants:
+- contracts_must_be_machine_readable: true
+resource_limits: {cpu: 1000, memory_mb: 1024}
+timeout_seconds: 300
+
+-------------------------
+8. OUTPUT LAYER — ARTIFACTS & CONTRACTS
+-------------------------
+
+outputs:
+artifact_types:
+- product_spec.yaml (contractual)
+- architecture_contract.json (contractual)
+- governance_contracts.json (contractual)
+- execution_plan.json
+- tests/: (near-contractual; required)
+- src/: (high_confidence; not legally binding)
+- evidence_bundle.zip (signed, contractual)
+artifact_rules:
+- all_contractual_artifacts_must_include_provenance: true
+- all_artifacts_must_include_canonical_hash: true
+- artifacts_must_be_signed_when_marked_contractual: true
+
+evidence_bundle:
+schema: "schemas/evidence_bundle.json"
+contents:
+- manifest.json
+- artifacts/*.zip
+- logs/
+- provenance_chain.json
+- signatures/
+signing:
+algorithm: "rsa-pss-sha256"
+key_management: "AWS KMS (HSM-backed) recommended"
+retention_policy:
+default_days: 365
+enterprise_override: true
+download_flow:
+- authenticated_request → policy_check → pre-signed_url (timeboxed) → audit_log
+
+-------------------------
+9. API CONTRACT (MACHINE-FIRST)
+-------------------------
+
+api:
+base_path: "/api/v1"
+auth:
+api_keys: true
+roles: [developer, platform_admin, enterprise_admin]
+api_key_rotation_days: 90
+endpoints:
+- id: manufacture
+path: "/manufacture"
+method: POST
+summary: "Submit spec to manufacture artifacts."
+request_schema: "schemas/manufacture_request.json"
+response_schema_success: "schemas/manufacture_response.json"
+response_schema_async: "schemas/job_enqueued.json"
+cost_model: "per_run"
+side_effects: [persist_spec, enqueue_run]
+- id: job_status
+path: "/runs/{run_id}/status"
+method: GET
+response_schema: "schemas/run_status.json"
+- id: get_artifact
+path: "/runs/{run_id}/artifacts/{artifact_id}"
+method: GET
+response_schema: "binary_signed_artifact"
+- id: evidence_bundle
+path: "/runs/{run_id}/evidence"
+method: GET
+response_schema: "binary_signed_evidence"
+webhooks:
+- id: run_complete
+hmac_secret_rotation_days: 90
+payload_schema: "schemas/run_complete_event.json"
+security: "HMAC_SHA256"
+
+api_error_contract:
+canonical_fields: [code, message, context, trace_id, links]
+determinism_violation_code: "DETERMINISM_VIOLATION"
+example_response:
+code: "RUN_ACCEPTED"
+message: "Run queued"
+trace_id: "<uuid>"
+
+-------------------------
+10. STATE MACHINE (STEP FUNCTIONS)
+-------------------------
+
+state_machine:
+name: "shieldcraft_manufacture_v1"
+states:
+- id: ingest_spec
+type: task
+next: validate_spec
+- id: validate_spec
+type: task
+next: orchestrate_agents
+- id: orchestrate_agents
+type: map
+next: aggregate_results
+retry_policy:
+max_attempts: 2
+backoff_rate: 2
+- id: aggregate_results
+type: task
+next: verification
+- id: verification
+type: task
+next: finalize
+- id: finalize
+type: task
+next: done
+- id: done
+type: succeed
+failure_handling:
+on_any_failure:
+- produce_evidence_bundle: true
+- mark_run_state: FAILED
+- create_ticket: true
+timeouts:
+overall_timeout_seconds: 3600
+per_agent_default_timeout_seconds: 600
+
+-------------------------
+11. IMPLEMENTATION STANDARDS (SOLID, PATTERNS, NAMING)
+-------------------------
+
+implementation_standards:
+enforce: true
+style_guide:
+python: "pyproject.toml + black + ruff + pylint"
+ts: "eslint + prettier"
+rust: "rustfmt + clippy"
+naming:
+module: "snake_case"
+class: "PascalCase"
+function: "lower_snake_case"
+constant: "UPPER_SNAKE_CASE"
+solid_principles:
+enforce_single_responsibility: true
+enforce_open_closed: true
+enforce_liskov: true
+enforce_interface_segregation: true
+enforce_dependency_inversion: true
+violations:
+fail_build: true
+design_patterns:
+allowed:
+- factory
+- adapter
+- strategy
+- template_method
+- observer
+conditional_use:
+adapter: "when wrapping model vendors or external APIs"
+factory: "when creating pluggable agent instances"
+strategy: "for alternative verification strategies"
+code_constraints:
+max_function_lines: 60
+max_file_lines: 600
+require_docstrings: true
+type_annotations_required: true
+repo_layout:
+core: "src/core"
+services: "src/services"
+adapters: "src/adapters"
+infra: "src/infra"
+contracts: "src/contracts"
+tests: "tests"
+generation_seed: 42
+
+-------------------------
+12. CI / VERIFY / SNAPSHOT CONTRACTS
+-------------------------
+
+ci_contract:
+required_workflows:
+- validate_schema
+- unit
+- integration
+- snapshot_verify
+- wasm (where applicable)
+- self_test
+- verify
+invariants:
+- snapshot_verify_must_pass_before_merge: true
+- deterministic_runs_must_pass: true
+- evidence_bundle_generation_must_be_tested: true
+snapshot_verify:
+runs: 3
+acceptance: "identical_hashes_across_runs"
+job_name: "ci/snapshot_verify.yml"
+golden_artifacts:
+path: "ci/golden_snapshots/"
+required_for_demo: true
+
+-------------------------
+13. TEST CONTRACT (AUTOMATICALLY GENERATED)
+-------------------------
+
+test_contract:
+required:
+- unit_tests: true
+- integration_tests: true
+- e2e_tests: true
+- fuzz_tests: true
+- snapshot_tests: true
+generation:
+generator: "test_synthesis_agent.v1"
+minimum_tests_generated: 2500
+coverage:
+snapshot_coverage_percent: 100
+pass_criteria:
+- all_must_pass_for_contractual_artifacts
+fail_fast:
+- determinism_violation
+- snapshot_mismatch
+perf_gates:
+p95_latency_ms: 1500
+memory_mb: 2048
+
+-------------------------
+14. SECURITY & COMPLIANCE
+-------------------------
+
+security:
+principles:
+- least_privilege
+- zero_iam_by_default
+- defense_in_depth
+auth:
+api_key_rotation_days: 90
+oauth_enabled: false
+kms:
+key_rotation_days: 90
+hsm_backed: recommended
+network:
+egress_policy: "blocked_by_default"
+allowlist_per_runtime: true
+data_handling:
+no_secrets_in_repo: enforced
+redact_patterns: [".secret.", ".token."]
+enterprise_controls:
+- evidence_bundle_map_to_SOC2: true
+- DPA_template_present: true
+- data_residency_options: [EU, US, ZA, custom]
+supply_chain:
+generator_lockfile_required: true
+lockfile_signature_required: true
+
+-------------------------
+15. FINOPS & COST MODEL (ASSUMPTIONS)
+-------------------------
+
+finops:
+assumptions:
+average_tokens_per_run: 20000
+average_token_cost_usd_per_1k: 0.03 # example; vendor dependent
+model_invocation_cost_usd_per_run: 0.60
+compute_cost_usd_per_run: 0.10
+storage_cost_usd_per_run: 0.005
+signing_and_kms_overhead_per_run_usd: 0.01
+expected_total_cost_per_run_usd: 0.725
+margin_target:
+gross_margin_pct: 70
+pricing_guidance:
+per_run_price_min: 2.50
+per_run_price_target: 5.00
+caching_and_reuse:
+model_cache_hit_rate_target: 30% # reduces model_invocation_cost
+notes: >
+These are example assumptions. Replace with live vendor pricing per deployment.
+
+-------------------------
+16. PRICING & PACKS (FOUNDATIONAL)
+-------------------------
+
+pricing:
+tiers:
+- name: startup
+monthly_fee_usd: 99
+included_runs: 100
+per_run_overage_usd: 2.50
+agents_included: [documentation_agent, test_synthesis_agent]
+- name: growth
+monthly_fee_usd: 499
+included_runs: 1000
+per_run_overage_usd: 1.25
+agents_included: [documentation_agent, test_synthesis_agent, verification_agent, patch_pr_agent]
+- name: enterprise
+monthly_fee_usd: "custom"
+included_runs: "custom"
+features: [private_deployments, dedicated_model_gateway, compliance_agent, SLA]
+billing:
+- method: invoice / card via Stripe or LemonSqueezy integration
+- overage_billing_period: monthly
+pilot_offer:
+- duration_days: 30
+- runs_included: 50
+- acceptance_criteria: see pilot_acceptance (below)
+
+-------------------------
+17. PILOT READINESS & ACCEPTANCE
+-------------------------
+
+pilot_readiness:
+pilot_success_criteria:
+- deterministic_runs: 3
+- contract_coverage_pct: 80
+- no_critical_security_gaps: true
+- run_availability_sla: 99% during pilot
+pilot_pack_includes:
+- NDA_template
+- DPA_template
+- pilot_playbook.md
+- acceptance_checklist
+go_no_go:
+- pass_all_pilot_success_criteria → proceed_to_onboarding
+- fail_any_critical_criteria → abort_and_remediate
+
+-------------------------
+18. FAILURE, ROLLBACK & INCIDENT MANAGEMENT
+-------------------------
+
+failure_and_rollback:
+categories:
+- determinism_drift
+- verification_failure
+- vendor_outage
+- signing_key_compromise
+- data_breach
+run_failure_behaviour:
+- on_determinism_drift:
+- halt_pipeline: true
+- emit_evidence_bundle: true
+- open_incident_ticket: true
+- notify_customer: true
+- quarantine_artifacts: true
+- on_verification_failure:
+- mark_artifacts_non_contractual: true
+- produce_verification_report: true
+- optionally_provide_patch: true
+rollback:
+- every_patch_must_include_rollback_patch: true
+- rollback_artifacts_must_be_tested_in_sandbox: true
+key_compromise:
+- immediate_key_rotation: true
+- invalidate_evidence_bundles_signed_by_key: false # preserve audit trail; mark compromised
+- notify_stakeholders: true
+
+-------------------------
+19. OBSERVABILITY, SLOs & KPIs
+-------------------------
+
+observability:
+metrics:
+- runs_total
+- runs_success
+- determinism_failures
+- mean_run_latency_ms
+- cost_per_run_usd
+- evidence_bundle_success_rate
+slos:
+- availability_slo_pct: 99.9
+- determinism_failure_threshold_pct: 0.5
+- latency_p95_ms: 3000
+dashboards_customer:
+- artifact_lineage_view: true
+- determinism_drift_chart: true
+- run_history: true
+alerts:
+- determinism_failure_alert: threshold 0.2% per hour
+- vendor_outage_alert: immediate
+
+-------------------------
+20. DEPLOYMENT TOPOLOGIES (REFERENCE)
+-------------------------
+
+deployment:
+cloud_default:
+provider: "AWS"
+components:
+- StepFunctions
+- Lambda / Fargate
+- DynamoDB
+- S3 (versioned)
+- KMS (HSM)
+- API Gateway
+enterprise_onprem_reference:
+storage: "S3-compatible"
+key_management: "HSM / customer_kms"
+network: "air_gapped_allowed_true (with pre-seeded models)"
+dev_profile:
+base_image: "python:3.11-slim"
+secrets_backend: "env"
+prod_profile:
+base_image: "distroless"
+secrets_backend: "kms"
+signing_required: true
+
+-------------------------
+21. ROADMAP (PHASED — NO DATES)
+-------------------------
+
+roadmap:
+phase_1_mvp:
+- deterministic_pipeline
+- spec_ingestion
+- documentation_agent
+- test_synthesis_agent
+- basic_verification_agent
+- evidence_bundle_generation
+- demo_with_golden_snapshot
+phase_2_enterprise:
+- compliance_agent
+- private_deployments
+- advanced_verification_rules
+- WASM_sandboxing
+- SLA_portfolio
+phase_3_platform:
+- agent_marketplace
+- partner_rulepacks
+- third_party_agents
+- advanced_finops
+note: "Roadmap phases are modular. Implementation sprint plans will be derived externally."
+
+-------------------------
+22. OPERATIONAL & ORG (RACI)
+-------------------------
+
+raci:
+product: owner: "Deon" accountable: "Deon"
+engineering: responsible: "Engineering Team (TBD)" consult: ["Security"] inform: ["Sales"]
+security: responsible: "Security Lead" consult: ["Engineering"]
+devops: responsible: "Platform Ops"
+compliance: responsible: "Legal / Compliance Advisor"
+
+-------------------------
+23. ACCEPTANCE & CHECKPOINTS (FOR GENERATOR)
+-------------------------
+
+acceptance_criteria:
+must:
+- snapshot_verify_job_present: true
+- evidence_bundle_schema_valid: true
+- agent_manifests_present_and_valid: true
+- documentation_generated: true
+- tests_generated_and_passing: true
+should:
+- demo_run_with_golden_snapshot: true
+- pilot_pack_ready: true
+
+-------------------------
+24. SCHEMAS (REFERENCE NAMES)
+-------------------------
+
+schemas_reference:
+
+schemas/manufacture_request.json
+
+schemas/manufacture_response.json
+
+schemas/run_status.json
+
+schemas/evidence_bundle.json
+
+schemas/spec_yaml.json
+
+schemas/artifacts_manifest.json
+
+schemas/verification_report.json
+
+schemas/patch_manifest.json
+
+schemas/test_suite_manifest.json
+
+-------------------------
+25. NOTES FOR GENERATOR (COPILOT BINDING)
+-------------------------
+
+generator_instructions:
+strict_mode: true
+obey_zero_cost_policy: true
+forbid_patterns:
+- "terraform apply"
+- "requests.post("
+- "boto3.client("
+generation_seed: 42
+copilot_bundle_includes:
+- metadata
+- determinism_contract
+- agent_manifests
+- implementation_standards
+- ci_contract
+checklist_targets:
+- create_files_for_each_required_artifact
+- generate_ci_jobs
+- generate_agent_manifests
+- run_snapshot_verify_locally (simulate)
+drift_management:
+- nightly_regen: false # controlled externally
+- regen_threshold_lines: 5
+
+-------------------------
+26. PILOT & SALES KIT (ARTIFACTS TO GENERATE)
+-------------------------
+
+sales_and_pilot_artifacts:
+
+pilot_playbook.md
+
+NDA_template.docx
+
+DPA_template.docx
+
+demo_script.md
+
+pricing_onepager.pdf
+
+golden_demo_repo.zip
+
+12_minute_demo_video (produce)
+
+-------------------------
+27. RISKS & MITIGATIONS (CONCISE)
+-------------------------
+
+risks:
+
+name: LLM_non_determinism
+risk: "Model output variance causing broken determinism"
+mitigation: "Model adapter + seed locking + golden snapshot tests"
+
+name: buyer_education
+risk: "Customer confused about difference v. Copilot"
+mitigation: "Clear GTM messaging + demos + pilot kit"
+
+name: pilot_procurement_time
+risk: "Slow enterprise procurement"
+mitigation: "Startup_shelf_offers + targeted pilot list"
+
+-------------------------
+28. APPENDICES (BRIEF)
+-------------------------
+
+appendices:
+glossary:
+- artifact: "Any generated product deliverable."
+- evidence_bundle: "Signed ZIP containing provenance and artifacts."
+- determinism: "See determinism_contract."
+developer_notes:
+- "This spec is single-file canonical source. Do not split unless generator updated."
+- "Replace finops assumptions with live vendor prices during deployment planning."
+
+-------------------------
+29. PILOT ACCEPTANCE (CONCISE TEMPLATE)
+-------------------------
+
+pilot_acceptance_template:
+deterministic_runs_required: 3
+contract_coverage_required_pct: 80
+security_gap_critical_count: 0
+availability_sla_pct: 99
+
+-------------------------
+30. HUMAN-FACING SUMMARY (auto-generated by generator)
+-------------------------
+
+human_summary:
+short: "ShieldCraft Engine: deterministic AI manufacturing from spec → code, auditable and governed."
+long: >
+ShieldCraft Engine ingests a plain-text spec and produces production-grade,
+verifiable artifacts under strict determinism and governance rules. Intended for
+enterprises and platform teams requiring auditability and repeatability.
+
+-------------------------
+31. OPERATIONAL CHECKLIST (Generator targets — minimal)
+-------------------------
+
+generator_checklist_targets:
+
+ensure_schemas_exist
+
+generate_agent_manifests
+
+generate_ci_jobs
+
+generate_initial_demo_golden_snapshot
+
+generate_pilot_playbook
+
+generate_api_contract_examples
+
+generate_evidence_bundle_example
+
+-------------------------
+32. CHANGE CONTROL
+-------------------------
+
+change_control:
+edit_policy: "Only update product spec via PR; generator stamp required"
+approval_required: ["owner", "platform_team_lead"]
+audit_log: true
+
+-------------------------
+33. USAGE / EXAMPLE (TINY)
+-------------------------
+
+example_manufacture_request:
+spec_source: "plain_text"
+spec_payload: "<--- user provided spec YAML / plain text --->"
+preferred_language: "python"
+run_options:
+- deterministic_seed: 42
+- include_tests: true
+- include_docs: true
+
+-------------------------
+34. TELEMETRY EVENT SCHEMA (MINIMAL)
+-------------------------
+
+telemetry_event:
+common:
+- event_type: string
+- timestamp_utc: string
+- run_id: string
+- trace_id: string
+sample_events:
+run_started: {fields: [run_id, spec_hash]}
+determinism_violation: {fields: [run_id, mismatch_summary]}

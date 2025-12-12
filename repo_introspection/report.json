@@ -1,0 +1,3050 @@
+{
+  "repo_inventory": [
+    {
+      "path": ".github/workflows",
+      "type": "dir"
+    },
+    {
+      "path": ".github/workflows/spec-pipeline.yml",
+      "type": "file",
+      "size_bytes": 1648,
+      "line_count": 60
+    },
+    {
+      "path": ".gitignore",
+      "type": "file",
+      "size_bytes": 402,
+      "line_count": 48
+    },
+    {
+      "path": ".selfhost_outputs/errors.json",
+      "type": "file",
+      "size_bytes": 274,
+      "line_count": 15
+    },
+    {
+      "path": "README.md",
+      "type": "file",
+      "size_bytes": 1312,
+      "line_count": 62
+    },
+    {
+      "path": "artifacts/determinism",
+      "type": "dir"
+    },
+    {
+      "path": "artifacts/determinism/check.txt",
+      "type": "file",
+      "size_bytes": 198,
+      "line_count": 4
+    },
+    {
+      "path": "artifacts/determinism/run1.json",
+      "type": "file",
+      "size_bytes": 7249,
+      "line_count": 1
+    },
+    {
+      "path": "artifacts/determinism/run2.json",
+      "type": "file",
+      "size_bytes": 7249,
+      "line_count": 1
+    },
+    {
+      "path": "artifacts/stubs_list.txt",
+      "type": "file",
+      "size_bytes": 1658,
+      "line_count": 49
+    },
+    {
+      "path": "artifacts/test_failures",
+      "type": "dir"
+    },
+    {
+      "path": "artifacts/test_failures/.gitkeep",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "artifacts/test_failures/batch47.txt",
+      "type": "file",
+      "size_bytes": 342,
+      "line_count": 8
+    },
+    {
+      "path": "artifacts/test_failures/batch47_final.txt",
+      "type": "file",
+      "size_bytes": 3593,
+      "line_count": 44
+    },
+    {
+      "path": "artifacts/test_failures/full_summary.txt",
+      "type": "file",
+      "size_bytes": 2788,
+      "line_count": 73
+    },
+    {
+      "path": "artifacts/test_failures/summary.txt",
+      "type": "file",
+      "size_bytes": 8486,
+      "line_count": 122
+    },
+    {
+      "path": "ci/selfhost_dryrun.yml",
+      "type": "file",
+      "size_bytes": 1221,
+      "line_count": 47
+    },
+    {
+      "path": "docs/Fiona.txt",
+      "type": "file",
+      "size_bytes": 9668,
+      "line_count": 198
+    },
+    {
+      "path": "docs/product.txt",
+      "type": "file",
+      "size_bytes": 7835,
+      "line_count": 482
+    },
+    {
+      "path": "docs/product.yml",
+      "type": "file",
+      "size_bytes": 23330,
+      "line_count": 897
+    },
+    {
+      "path": "docs/se_rules",
+      "type": "dir"
+    },
+    {
+      "path": "docs/se_rules/core",
+      "type": "dir"
+    },
+    {
+      "path": "docs/se_rules/core/rules-architecture.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/core/rules-checklist.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/core/rules-core.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/core/rules-governance.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/core/rules-output.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/core/rules-safety.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/frameworks",
+      "type": "dir"
+    },
+    {
+      "path": "docs/se_rules/frameworks/express.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/frameworks/fastapi.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/frameworks/flask.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/frameworks/nextjs.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/languages",
+      "type": "dir"
+    },
+    {
+      "path": "docs/se_rules/languages/docker.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/languages/go.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/languages/node.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/languages/python.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/languages/react.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/languages/rust.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/patterns",
+      "type": "dir"
+    },
+    {
+      "path": "docs/se_rules/patterns/design-patterns.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/patterns/naming-conventions.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/patterns/solid.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "docs/se_rules/patterns/testing-standards.md",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "evidence/bundle.json",
+      "type": "file",
+      "size_bytes": 590,
+      "line_count": 11
+    },
+    {
+      "path": "examples/selfhost",
+      "type": "dir"
+    },
+    {
+      "path": "examples/selfhost/bootstrap_spec.json",
+      "type": "file",
+      "size_bytes": 1811,
+      "line_count": 79
+    },
+    {
+      "path": "generators/lockfile.json",
+      "type": "file",
+      "size_bytes": 99,
+      "line_count": 6
+    },
+    {
+      "path": "list_tree.sh",
+      "type": "file",
+      "size_bytes": 1997,
+      "line_count": 66
+    },
+    {
+      "path": "poetry.lock",
+      "type": "file",
+      "size_bytes": 38043,
+      "line_count": 398
+    },
+    {
+      "path": "products/shieldcraft_engine",
+      "type": "dir"
+    },
+    {
+      "path": "products/shieldcraft_engine/checklist",
+      "type": "dir"
+    },
+    {
+      "path": "products/shieldcraft_engine/checklist/preflight.json",
+      "type": "file",
+      "size_bytes": 43864,
+      "line_count": 1
+    },
+    {
+      "path": "products/shieldcraft_engine/checklist/warnings.json",
+      "type": "file",
+      "size_bytes": 20,
+      "line_count": 3
+    },
+    {
+      "path": "products/test",
+      "type": "dir"
+    },
+    {
+      "path": "products/test/checklist",
+      "type": "dir"
+    },
+    {
+      "path": "products/test/checklist/warnings.json",
+      "type": "file",
+      "size_bytes": 71,
+      "line_count": 5
+    },
+    {
+      "path": "products/unknown",
+      "type": "dir"
+    },
+    {
+      "path": "products/unknown/checklist",
+      "type": "dir"
+    },
+    {
+      "path": "products/unknown/checklist/warnings.json",
+      "type": "file",
+      "size_bytes": 20,
+      "line_count": 3
+    },
+    {
+      "path": "pyproject.toml",
+      "type": "file",
+      "size_bytes": 393,
+      "line_count": 17
+    },
+    {
+      "path": "releases/rc-0.1.0.txt",
+      "type": "file",
+      "size_bytes": 159,
+      "line_count": 4
+    },
+    {
+      "path": "scripts/check_determinism.sh",
+      "type": "file",
+      "size_bytes": 1102,
+      "line_count": 44
+    },
+    {
+      "path": "scripts/emit_manifest_dryrun.py",
+      "type": "file",
+      "size_bytes": 1487,
+      "line_count": 54
+    },
+    {
+      "path": "scripts/package_generated.sh",
+      "type": "file",
+      "size_bytes": 1085,
+      "line_count": 46
+    },
+    {
+      "path": "scripts/run_tests.sh",
+      "type": "file",
+      "size_bytes": 174,
+      "line_count": 11
+    },
+    {
+      "path": "spec/README.md",
+      "type": "file",
+      "size_bytes": 972,
+      "line_count": 37
+    },
+    {
+      "path": "spec/pointer_map.json",
+      "type": "file",
+      "size_bytes": 836,
+      "line_count": 17
+    },
+    {
+      "path": "spec/products",
+      "type": "dir"
+    },
+    {
+      "path": "spec/products/shieldcraft_engine",
+      "type": "dir"
+    },
+    {
+      "path": "spec/products/shieldcraft_engine/se_spec_v1.json",
+      "type": "file",
+      "size_bytes": 5634,
+      "line_count": 210
+    },
+    {
+      "path": "spec/schemas",
+      "type": "dir"
+    },
+    {
+      "path": "spec/schemas/se_dsl_v1.schema.json",
+      "type": "file",
+      "size_bytes": 4434,
+      "line_count": 182
+    },
+    {
+      "path": "spec/se_dsl_v1.spec.json",
+      "type": "file",
+      "size_bytes": 9395,
+      "line_count": 371
+    },
+    {
+      "path": "spec/se_dsl_v1.template.json",
+      "type": "file",
+      "size_bytes": 5104,
+      "line_count": 168
+    },
+    {
+      "path": "src/generated",
+      "type": "dir"
+    },
+    {
+      "path": "src/generated/0b1af486c1ee6b81.py",
+      "type": "file",
+      "size_bytes": 279,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/27696da06222c9fb.py",
+      "type": "file",
+      "size_bytes": 350,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/7ae6ba180155c08c.py",
+      "type": "file",
+      "size_bytes": 314,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/84c7c21a7cfc0262.py",
+      "type": "file",
+      "size_bytes": 299,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/851cc16ac33098af.py",
+      "type": "file",
+      "size_bytes": 290,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/8d7960f1a801cc90.py",
+      "type": "file",
+      "size_bytes": 285,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/aa71ff6a19f8825b.py",
+      "type": "file",
+      "size_bytes": 270,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/b27471410d645e46.py",
+      "type": "file",
+      "size_bytes": 266,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/b7f43f0e7c77b09d.py",
+      "type": "file",
+      "size_bytes": 263,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/bf4107508b811751.py",
+      "type": "file",
+      "size_bytes": 261,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/c0cf80335ad385c4.py",
+      "type": "file",
+      "size_bytes": 329,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/d85383f3abc84672.py",
+      "type": "file",
+      "size_bytes": 276,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/da9431fab6074cda.py",
+      "type": "file",
+      "size_bytes": 299,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/e202b7929f44e1a0.py",
+      "type": "file",
+      "size_bytes": 273,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/e96768d7c7d1f189.py",
+      "type": "file",
+      "size_bytes": 260,
+      "line_count": 13
+    },
+    {
+      "path": "src/generated/f69bb2b3f45eca5b.py",
+      "type": "file",
+      "size_bytes": 350,
+      "line_count": 13
+    },
+    {
+      "path": "src/shieldcraft",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/__init__.py",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "src/shieldcraft/dsl",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/dsl/__init__.py",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "src/shieldcraft/dsl/loader.py",
+      "type": "file",
+      "size_bytes": 372,
+      "line_count": 14
+    },
+    {
+      "path": "src/shieldcraft/dsl/schema",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/dsl/schema/manifest.schema.json",
+      "type": "file",
+      "size_bytes": 2047,
+      "line_count": 80
+    },
+    {
+      "path": "src/shieldcraft/dsl/schema/se_dsl.schema.json",
+      "type": "file",
+      "size_bytes": 4221,
+      "line_count": 146
+    },
+    {
+      "path": "src/shieldcraft/dsl/templates",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/engine.py",
+      "type": "file",
+      "size_bytes": 13165,
+      "line_count": 337
+    },
+    {
+      "path": "src/shieldcraft/engine_batch.py",
+      "type": "file",
+      "size_bytes": 1636,
+      "line_count": 58
+    },
+    {
+      "path": "src/shieldcraft/main.py",
+      "type": "file",
+      "size_bytes": 8344,
+      "line_count": 236
+    },
+    {
+      "path": "src/shieldcraft/services",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/__init__.py",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "src/shieldcraft/services/artifacts",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/artifacts/lineage.py",
+      "type": "file",
+      "size_bytes": 1515,
+      "line_count": 57
+    },
+    {
+      "path": "src/shieldcraft/services/ast",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/ast/__init__.py",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "src/shieldcraft/services/ast/builder.py",
+      "type": "file",
+      "size_bytes": 3210,
+      "line_count": 88
+    },
+    {
+      "path": "src/shieldcraft/services/ast/consistency.py",
+      "type": "file",
+      "size_bytes": 3131,
+      "line_count": 108
+    },
+    {
+      "path": "src/shieldcraft/services/ast/lineage.py",
+      "type": "file",
+      "size_bytes": 1870,
+      "line_count": 77
+    },
+    {
+      "path": "src/shieldcraft/services/ast/node.py",
+      "type": "file",
+      "size_bytes": 3688,
+      "line_count": 115
+    },
+    {
+      "path": "src/shieldcraft/services/ast/reconcile.py",
+      "type": "file",
+      "size_bytes": 1079,
+      "line_count": 41
+    },
+    {
+      "path": "src/shieldcraft/services/ast/shape_validator.py",
+      "type": "file",
+      "size_bytes": 1652,
+      "line_count": 57
+    },
+    {
+      "path": "src/shieldcraft/services/canonicalizer",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/canonicalizer/__init__.py",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "src/shieldcraft/services/checklist",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/__init__.py",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/ancestry.py",
+      "type": "file",
+      "size_bytes": 3500,
+      "line_count": 117
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/canonical.py",
+      "type": "file",
+      "size_bytes": 360,
+      "line_count": 17
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/classifier.py",
+      "type": "file",
+      "size_bytes": 1836,
+      "line_count": 73
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/classify.py",
+      "type": "file",
+      "size_bytes": 3413,
+      "line_count": 130
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/collapse.py",
+      "type": "file",
+      "size_bytes": 657,
+      "line_count": 23
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/constraints.py",
+      "type": "file",
+      "size_bytes": 1253,
+      "line_count": 42
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/cross.py",
+      "type": "file",
+      "size_bytes": 2263,
+      "line_count": 63
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/dedupe.py",
+      "type": "file",
+      "size_bytes": 349,
+      "line_count": 13
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/deps.py",
+      "type": "file",
+      "size_bytes": 3826,
+      "line_count": 117
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/deps_tasks.py",
+      "type": "file",
+      "size_bytes": 235,
+      "line_count": 9
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/derived.py",
+      "type": "file",
+      "size_bytes": 7011,
+      "line_count": 162
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/evidence.py",
+      "type": "file",
+      "size_bytes": 597,
+      "line_count": 27
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/extractor.py",
+      "type": "file",
+      "size_bytes": 3527,
+      "line_count": 90
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/flow.py",
+      "type": "file",
+      "size_bytes": 758,
+      "line_count": 29
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/generator.py",
+      "type": "file",
+      "size_bytes": 21063,
+      "line_count": 545
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/graph.py",
+      "type": "file",
+      "size_bytes": 2870,
+      "line_count": 110
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/grouping.py",
+      "type": "file",
+      "size_bytes": 1572,
+      "line_count": 62
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/id_registry.py",
+      "type": "file",
+      "size_bytes": 1623,
+      "line_count": 65
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/idgen.py",
+      "type": "file",
+      "size_bytes": 501,
+      "line_count": 19
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/implicit_deps.py",
+      "type": "file",
+      "size_bytes": 3078,
+      "line_count": 94
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/invariants.py",
+      "type": "file",
+      "size_bytes": 4121,
+      "line_count": 121
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/meta.py",
+      "type": "file",
+      "size_bytes": 345,
+      "line_count": 11
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/model.py",
+      "type": "file",
+      "size_bytes": 3118,
+      "line_count": 89
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/normalization_audit.py",
+      "type": "file",
+      "size_bytes": 2515,
+      "line_count": 76
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/order.py",
+      "type": "file",
+      "size_bytes": 2944,
+      "line_count": 106
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/plan.py",
+      "type": "file",
+      "size_bytes": 833,
+      "line_count": 31
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/resolution_chain.py",
+      "type": "file",
+      "size_bytes": 2624,
+      "line_count": 107
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/rollup.py",
+      "type": "file",
+      "size_bytes": 2594,
+      "line_count": 85
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/sanity.py",
+      "type": "file",
+      "size_bytes": 614,
+      "line_count": 24
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/sections.py",
+      "type": "file",
+      "size_bytes": 1181,
+      "line_count": 51
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/semantic.py",
+      "type": "file",
+      "size_bytes": 5865,
+      "line_count": 176
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/severity.py",
+      "type": "file",
+      "size_bytes": 1308,
+      "line_count": 43
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/validator.py",
+      "type": "file",
+      "size_bytes": 2093,
+      "line_count": 67
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/warnings.py",
+      "type": "file",
+      "size_bytes": 284,
+      "line_count": 9
+    },
+    {
+      "path": "src/shieldcraft/services/checklist/writer.py",
+      "type": "file",
+      "size_bytes": 751,
+      "line_count": 26
+    },
+    {
+      "path": "src/shieldcraft/services/codegen",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/__init__.py",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/emitter",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/emitter/__init__.py",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/emitter/writer.py",
+      "type": "file",
+      "size_bytes": 239,
+      "line_count": 9
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/file_plan.py",
+      "type": "file",
+      "size_bytes": 669,
+      "line_count": 23
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/generator.py",
+      "type": "file",
+      "size_bytes": 17695,
+      "line_count": 423
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/mapping_inspector.py",
+      "type": "file",
+      "size_bytes": 1682,
+      "line_count": 56
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/template_engine.py",
+      "type": "file",
+      "size_bytes": 6530,
+      "line_count": 192
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/__init__.j2",
+      "type": "file",
+      "size_bytes": 21,
+      "line_count": 1
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/__init__.py",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/api_handler.j2",
+      "type": "file",
+      "size_bytes": 173,
+      "line_count": 8
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/basic_python.txt",
+      "type": "file",
+      "size_bytes": 118,
+      "line_count": 8
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap/ast_builder.j2",
+      "type": "file",
+      "size_bytes": 1144,
+      "line_count": 45
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap/checklist_driver.j2",
+      "type": "file",
+      "size_bytes": 1139,
+      "line_count": 43
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap/engine_core.j2",
+      "type": "file",
+      "size_bytes": 1286,
+      "line_count": 51
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap/engine_stage.j2",
+      "type": "file",
+      "size_bytes": 565,
+      "line_count": 21
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap/loader_stage.j2",
+      "type": "file",
+      "size_bytes": 597,
+      "line_count": 23
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap/module_bootstrap.j2",
+      "type": "file",
+      "size_bytes": 391,
+      "line_count": 15
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap/spec_loader.j2",
+      "type": "file",
+      "size_bytes": 734,
+      "line_count": 31
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/default.j2",
+      "type": "file",
+      "size_bytes": 134,
+      "line_count": 8
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/fix_invariant.j2",
+      "type": "file",
+      "size_bytes": 311,
+      "line_count": 14
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/integration.j2",
+      "type": "file",
+      "size_bytes": 619,
+      "line_count": 29
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/model.j2",
+      "type": "file",
+      "size_bytes": 183,
+      "line_count": 10
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/module.j2",
+      "type": "file",
+      "size_bytes": 319,
+      "line_count": 11
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/resolve_cycle.j2",
+      "type": "file",
+      "size_bytes": 1060,
+      "line_count": 43
+    },
+    {
+      "path": "src/shieldcraft/services/codegen/templates/rule.j2",
+      "type": "file",
+      "size_bytes": 127,
+      "line_count": 9
+    },
+    {
+      "path": "src/shieldcraft/services/diff",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/diff/canonical_diff.py",
+      "type": "file",
+      "size_bytes": 1546,
+      "line_count": 51
+    },
+    {
+      "path": "src/shieldcraft/services/diff/impact.py",
+      "type": "file",
+      "size_bytes": 2723,
+      "line_count": 104
+    },
+    {
+      "path": "src/shieldcraft/services/dsl",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/dsl/__init__.py",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "src/shieldcraft/services/dsl/loader.py",
+      "type": "file",
+      "size_bytes": 145,
+      "line_count": 8
+    },
+    {
+      "path": "src/shieldcraft/services/dsl/validator.py",
+      "type": "file",
+      "size_bytes": 6788,
+      "line_count": 190
+    },
+    {
+      "path": "src/shieldcraft/services/generator",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/generator/contract_verifier.py",
+      "type": "file",
+      "size_bytes": 1744,
+      "line_count": 50
+    },
+    {
+      "path": "src/shieldcraft/services/generator/invariants.py",
+      "type": "file",
+      "size_bytes": 1283,
+      "line_count": 40
+    },
+    {
+      "path": "src/shieldcraft/services/governance",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/governance/__init__.py",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "src/shieldcraft/services/governance/determinism.py",
+      "type": "file",
+      "size_bytes": 550,
+      "line_count": 17
+    },
+    {
+      "path": "src/shieldcraft/services/governance/evidence.py",
+      "type": "file",
+      "size_bytes": 2613,
+      "line_count": 71
+    },
+    {
+      "path": "src/shieldcraft/services/governance/provenance.py",
+      "type": "file",
+      "size_bytes": 680,
+      "line_count": 22
+    },
+    {
+      "path": "src/shieldcraft/services/governance/rules_engine.py",
+      "type": "file",
+      "size_bytes": 3747,
+      "line_count": 104
+    },
+    {
+      "path": "src/shieldcraft/services/governance/verifier.py",
+      "type": "file",
+      "size_bytes": 2065,
+      "line_count": 48
+    },
+    {
+      "path": "src/shieldcraft/services/io",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/io/canonical_writer.py",
+      "type": "file",
+      "size_bytes": 312,
+      "line_count": 14
+    },
+    {
+      "path": "src/shieldcraft/services/io/manifest_writer.py",
+      "type": "file",
+      "size_bytes": 6062,
+      "line_count": 162
+    },
+    {
+      "path": "src/shieldcraft/services/mapping",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/mapping/pointer_map.py",
+      "type": "file",
+      "size_bytes": 1415,
+      "line_count": 53
+    },
+    {
+      "path": "src/shieldcraft/services/plan",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/plan/execution_plan.py",
+      "type": "file",
+      "size_bytes": 5723,
+      "line_count": 188
+    },
+    {
+      "path": "src/shieldcraft/services/planner",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/planner/__init__.py",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "src/shieldcraft/services/planner/planner.py",
+      "type": "file",
+      "size_bytes": 442,
+      "line_count": 16
+    },
+    {
+      "path": "src/shieldcraft/services/preflight",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/preflight/preflight.py",
+      "type": "file",
+      "size_bytes": 4482,
+      "line_count": 115
+    },
+    {
+      "path": "src/shieldcraft/services/rules",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/rules/graph.py",
+      "type": "file",
+      "size_bytes": 1530,
+      "line_count": 70
+    },
+    {
+      "path": "src/shieldcraft/services/selfhost",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/selfhost/preview_validator.py",
+      "type": "file",
+      "size_bytes": 2190,
+      "line_count": 69
+    },
+    {
+      "path": "src/shieldcraft/services/spec",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/spec/coverage.py",
+      "type": "file",
+      "size_bytes": 1003,
+      "line_count": 39
+    },
+    {
+      "path": "src/shieldcraft/services/spec/dependency_contract.py",
+      "type": "file",
+      "size_bytes": 849,
+      "line_count": 22
+    },
+    {
+      "path": "src/shieldcraft/services/spec/evolution.py",
+      "type": "file",
+      "size_bytes": 2027,
+      "line_count": 75
+    },
+    {
+      "path": "src/shieldcraft/services/spec/fingerprint.py",
+      "type": "file",
+      "size_bytes": 1845,
+      "line_count": 60
+    },
+    {
+      "path": "src/shieldcraft/services/spec/invariants.py",
+      "type": "file",
+      "size_bytes": 1543,
+      "line_count": 48
+    },
+    {
+      "path": "src/shieldcraft/services/spec/lifecycle.py",
+      "type": "file",
+      "size_bytes": 1581,
+      "line_count": 58
+    },
+    {
+      "path": "src/shieldcraft/services/spec/metrics.py",
+      "type": "file",
+      "size_bytes": 2402,
+      "line_count": 67
+    },
+    {
+      "path": "src/shieldcraft/services/spec/model.py",
+      "type": "file",
+      "size_bytes": 7583,
+      "line_count": 208
+    },
+    {
+      "path": "src/shieldcraft/services/spec/pointer_auditor.py",
+      "type": "file",
+      "size_bytes": 10534,
+      "line_count": 300
+    },
+    {
+      "path": "src/shieldcraft/services/spec/schema_validator.py",
+      "type": "file",
+      "size_bytes": 1470,
+      "line_count": 49
+    },
+    {
+      "path": "src/shieldcraft/services/spec/stats.py",
+      "type": "file",
+      "size_bytes": 1883,
+      "line_count": 67
+    },
+    {
+      "path": "src/shieldcraft/services/stability",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/stability/stability.py",
+      "type": "file",
+      "size_bytes": 7562,
+      "line_count": 238
+    },
+    {
+      "path": "src/shieldcraft/services/validator",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/services/validator/__init__.py",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "src/shieldcraft/util",
+      "type": "dir"
+    },
+    {
+      "path": "src/shieldcraft/util/__init__.py",
+      "type": "file",
+      "size_bytes": 0,
+      "line_count": 0
+    },
+    {
+      "path": "src/shieldcraft/util/canonical_digest.py",
+      "type": "file",
+      "size_bytes": 706,
+      "line_count": 30
+    },
+    {
+      "path": "src/shieldcraft/util/json_canonicalizer.py",
+      "type": "file",
+      "size_bytes": 162,
+      "line_count": 10
+    },
+    {
+      "path": "tests/artifacts",
+      "type": "dir"
+    },
+    {
+      "path": "tests/artifacts/test_manifest_bundle.py",
+      "type": "file",
+      "size_bytes": 2205,
+      "line_count": 72
+    },
+    {
+      "path": "tests/ast",
+      "type": "dir"
+    },
+    {
+      "path": "tests/ast/test_ast_builder.py",
+      "type": "file",
+      "size_bytes": 1906,
+      "line_count": 87
+    },
+    {
+      "path": "tests/ast/test_ast_queries.py",
+      "type": "file",
+      "size_bytes": 1969,
+      "line_count": 86
+    },
+    {
+      "path": "tests/ast/test_completeness.py",
+      "type": "file",
+      "size_bytes": 2723,
+      "line_count": 102
+    },
+    {
+      "path": "tests/ast/test_consistency.py",
+      "type": "file",
+      "size_bytes": 2066,
+      "line_count": 88
+    },
+    {
+      "path": "tests/ast/test_lineage_consistency.py",
+      "type": "file",
+      "size_bytes": 6080,
+      "line_count": 204
+    },
+    {
+      "path": "tests/bootstrap",
+      "type": "dir"
+    },
+    {
+      "path": "tests/bootstrap/test_derived_tasks.py",
+      "type": "file",
+      "size_bytes": 3142,
+      "line_count": 112
+    },
+    {
+      "path": "tests/checklist",
+      "type": "dir"
+    },
+    {
+      "path": "tests/checklist/test_ancestry.py",
+      "type": "file",
+      "size_bytes": 2375,
+      "line_count": 89
+    },
+    {
+      "path": "tests/checklist/test_ast_integration.py",
+      "type": "file",
+      "size_bytes": 2676,
+      "line_count": 115
+    },
+    {
+      "path": "tests/checklist/test_classification_types.py",
+      "type": "file",
+      "size_bytes": 1682,
+      "line_count": 59
+    },
+    {
+      "path": "tests/checklist/test_cross_section_order.py",
+      "type": "file",
+      "size_bytes": 2233,
+      "line_count": 71
+    },
+    {
+      "path": "tests/checklist/test_cycles.py",
+      "type": "file",
+      "size_bytes": 3686,
+      "line_count": 123
+    },
+    {
+      "path": "tests/checklist/test_derived.py",
+      "type": "file",
+      "size_bytes": 865,
+      "line_count": 31
+    },
+    {
+      "path": "tests/checklist/test_derived_determinism.py",
+      "type": "file",
+      "size_bytes": 4288,
+      "line_count": 154
+    },
+    {
+      "path": "tests/checklist/test_id_collision.py",
+      "type": "file",
+      "size_bytes": 1532,
+      "line_count": 56
+    },
+    {
+      "path": "tests/checklist/test_implicit_deps.py",
+      "type": "file",
+      "size_bytes": 1512,
+      "line_count": 64
+    },
+    {
+      "path": "tests/checklist/test_integration_items.py",
+      "type": "file",
+      "size_bytes": 964,
+      "line_count": 37
+    },
+    {
+      "path": "tests/checklist/test_invariants.py",
+      "type": "file",
+      "size_bytes": 910,
+      "line_count": 34
+    },
+    {
+      "path": "tests/checklist/test_ordering_stability.py",
+      "type": "file",
+      "size_bytes": 2927,
+      "line_count": 75
+    },
+    {
+      "path": "tests/checklist/test_resolution_chain.py",
+      "type": "file",
+      "size_bytes": 1311,
+      "line_count": 54
+    },
+    {
+      "path": "tests/checklist/test_timings.py",
+      "type": "file",
+      "size_bytes": 1311,
+      "line_count": 45
+    },
+    {
+      "path": "tests/ci",
+      "type": "dir"
+    },
+    {
+      "path": "tests/ci/test_spec_pipeline_smoke.py",
+      "type": "file",
+      "size_bytes": 3132,
+      "line_count": 96
+    },
+    {
+      "path": "tests/cli",
+      "type": "dir"
+    },
+    {
+      "path": "tests/cli/test_validate_spec.py",
+      "type": "file",
+      "size_bytes": 4038,
+      "line_count": 122
+    },
+    {
+      "path": "tests/codegen",
+      "type": "dir"
+    },
+    {
+      "path": "tests/codegen/test_codegen_roundtrip.py",
+      "type": "file",
+      "size_bytes": 1766,
+      "line_count": 65
+    },
+    {
+      "path": "tests/codegen/test_dry_run.py",
+      "type": "file",
+      "size_bytes": 1365,
+      "line_count": 54
+    },
+    {
+      "path": "tests/codegen/test_provenance_headers.py",
+      "type": "file",
+      "size_bytes": 5364,
+      "line_count": 174
+    },
+    {
+      "path": "tests/codegen/test_template_engine.py",
+      "type": "file",
+      "size_bytes": 924,
+      "line_count": 30
+    },
+    {
+      "path": "tests/codegen/test_template_validation.py",
+      "type": "file",
+      "size_bytes": 2018,
+      "line_count": 63
+    },
+    {
+      "path": "tests/codegen/test_templates_render.py",
+      "type": "file",
+      "size_bytes": 6618,
+      "line_count": 233
+    },
+    {
+      "path": "tests/diff",
+      "type": "dir"
+    },
+    {
+      "path": "tests/diff/test_impact_classification.py",
+      "type": "file",
+      "size_bytes": 2058,
+      "line_count": 83
+    },
+    {
+      "path": "tests/dsl",
+      "type": "dir"
+    },
+    {
+      "path": "tests/dsl/test_dsl_validator.py",
+      "type": "file",
+      "size_bytes": 2188,
+      "line_count": 84
+    },
+    {
+      "path": "tests/engine",
+      "type": "dir"
+    },
+    {
+      "path": "tests/engine/test_batch.py",
+      "type": "file",
+      "size_bytes": 2184,
+      "line_count": 69
+    },
+    {
+      "path": "tests/engine/test_engine_end_to_end.py",
+      "type": "file",
+      "size_bytes": 3160,
+      "line_count": 108
+    },
+    {
+      "path": "tests/governance",
+      "type": "dir"
+    },
+    {
+      "path": "tests/governance/test_evidence_expanded.py",
+      "type": "file",
+      "size_bytes": 2974,
+      "line_count": 91
+    },
+    {
+      "path": "tests/io",
+      "type": "dir"
+    },
+    {
+      "path": "tests/io/test_manifest_structure.py",
+      "type": "file",
+      "size_bytes": 8026,
+      "line_count": 264
+    },
+    {
+      "path": "tests/plan",
+      "type": "dir"
+    },
+    {
+      "path": "tests/plan/test_execution_plan.py",
+      "type": "file",
+      "size_bytes": 1990,
+      "line_count": 81
+    },
+    {
+      "path": "tests/plan/test_ordering.py",
+      "type": "file",
+      "size_bytes": 4450,
+      "line_count": 163
+    },
+    {
+      "path": "tests/selfhost",
+      "type": "dir"
+    },
+    {
+      "path": "tests/selfhost/test_basic_selfhost_pipeline.py",
+      "type": "file",
+      "size_bytes": 3236,
+      "line_count": 106
+    },
+    {
+      "path": "tests/selfhost/test_bootstrap_codegen.py",
+      "type": "file",
+      "size_bytes": 5462,
+      "line_count": 177
+    },
+    {
+      "path": "tests/selfhost/test_governance_and_pointers.py",
+      "type": "file",
+      "size_bytes": 4743,
+      "line_count": 162
+    },
+    {
+      "path": "tests/selfhost/test_selfhost_dryrun.py",
+      "type": "file",
+      "size_bytes": 2397,
+      "line_count": 82
+    },
+    {
+      "path": "tests/selfhost/test_selfhost_minimal.py",
+      "type": "file",
+      "size_bytes": 5378,
+      "line_count": 161
+    },
+    {
+      "path": "tests/spec",
+      "type": "dir"
+    },
+    {
+      "path": "tests/spec/test_canonical_json.py",
+      "type": "file",
+      "size_bytes": 3009,
+      "line_count": 84
+    },
+    {
+      "path": "tests/spec/test_format_check.py",
+      "type": "file",
+      "size_bytes": 3629,
+      "line_count": 102
+    },
+    {
+      "path": "tests/spec/test_pointer_locality.py",
+      "type": "file",
+      "size_bytes": 5053,
+      "line_count": 175
+    },
+    {
+      "path": "tests/spec/test_pointer_map.py",
+      "type": "file",
+      "size_bytes": 3997,
+      "line_count": 115
+    },
+    {
+      "path": "tests/spec/test_pointer_missing.py",
+      "type": "file",
+      "size_bytes": 2911,
+      "line_count": 101
+    },
+    {
+      "path": "tests/spec/test_pointer_range.py",
+      "type": "file",
+      "size_bytes": 3598,
+      "line_count": 149
+    },
+    {
+      "path": "tests/spec/test_pointer_shape.py",
+      "type": "file",
+      "size_bytes": 1488,
+      "line_count": 69
+    },
+    {
+      "path": "tests/spec/test_pointer_strict_mode.py",
+      "type": "file",
+      "size_bytes": 5819,
+      "line_count": 203
+    },
+    {
+      "path": "tests/spec/test_schema_compliance.py",
+      "type": "file",
+      "size_bytes": 3456,
+      "line_count": 97
+    },
+    {
+      "path": "tests/stability",
+      "type": "dir"
+    },
+    {
+      "path": "tests/stability/test_extended_hashset.py",
+      "type": "file",
+      "size_bytes": 3430,
+      "line_count": 139
+    },
+    {
+      "path": "tests/stability/test_stability_compare.py",
+      "type": "file",
+      "size_bytes": 1576,
+      "line_count": 74
+    },
+    {
+      "path": "tests/test_ast.py",
+      "type": "file",
+      "size_bytes": 355,
+      "line_count": 10
+    },
+    {
+      "path": "tests/test_bootstrap.py",
+      "type": "file",
+      "size_bytes": 2644,
+      "line_count": 80
+    },
+    {
+      "path": "tests/test_checklist.py",
+      "type": "file",
+      "size_bytes": 304,
+      "line_count": 9
+    },
+    {
+      "path": "tests/test_checklist_generator.py",
+      "type": "file",
+      "size_bytes": 356,
+      "line_count": 12
+    },
+    {
+      "path": "tests/test_checklist_generator_expanded.py",
+      "type": "file",
+      "size_bytes": 430,
+      "line_count": 13
+    },
+    {
+      "path": "tests/test_checklist_model.py",
+      "type": "file",
+      "size_bytes": 362,
+      "line_count": 12
+    },
+    {
+      "path": "tests/test_classification_severity_order.py",
+      "type": "file",
+      "size_bytes": 779,
+      "line_count": 21
+    },
+    {
+      "path": "tests/test_codegen_engine.py",
+      "type": "file",
+      "size_bytes": 616,
+      "line_count": 22
+    },
+    {
+      "path": "tests/test_constraints_and_semantic.py",
+      "type": "file",
+      "size_bytes": 691,
+      "line_count": 21
+    },
+    {
+      "path": "tests/test_dedupe_collapse_canonical.py",
+      "type": "file",
+      "size_bytes": 760,
+      "line_count": 27
+    },
+    {
+      "path": "tests/test_deps_and_cross.py",
+      "type": "file",
+      "size_bytes": 574,
+      "line_count": 18
+    },
+    {
+      "path": "tests/test_dsl_loader.py",
+      "type": "file",
+      "size_bytes": 779,
+      "line_count": 25
+    },
+    {
+      "path": "tests/test_engine.py",
+      "type": "file",
+      "size_bytes": 660,
+      "line_count": 20
+    },
+    {
+      "path": "tests/test_extractor.py",
+      "type": "file",
+      "size_bytes": 335,
+      "line_count": 12
+    },
+    {
+      "path": "tests/test_flow_and_order.py",
+      "type": "file",
+      "size_bytes": 544,
+      "line_count": 15
+    },
+    {
+      "path": "tests/test_governance_determinism.py",
+      "type": "file",
+      "size_bytes": 212,
+      "line_count": 7
+    },
+    {
+      "path": "tests/test_governance_evidence.py",
+      "type": "file",
+      "size_bytes": 507,
+      "line_count": 12
+    },
+    {
+      "path": "tests/test_group_rollup_evidence.py",
+      "type": "file",
+      "size_bytes": 957,
+      "line_count": 25
+    },
+    {
+      "path": "tests/test_lineage_manifest_stability.py",
+      "type": "file",
+      "size_bytes": 515,
+      "line_count": 17
+    },
+    {
+      "path": "tests/test_plan_and_diff.py",
+      "type": "file",
+      "size_bytes": 322,
+      "line_count": 13
+    },
+    {
+      "path": "tests/test_planner.py",
+      "type": "file",
+      "size_bytes": 246,
+      "line_count": 9
+    },
+    {
+      "path": "tests/test_preflight_contract.py",
+      "type": "file",
+      "size_bytes": 345,
+      "line_count": 10
+    },
+    {
+      "path": "tests/test_sections.py",
+      "type": "file",
+      "size_bytes": 163,
+      "line_count": 5
+    },
+    {
+      "path": "tests/test_task_id_and_category.py",
+      "type": "file",
+      "size_bytes": 628,
+      "line_count": 20
+    },
+    {
+      "path": "tests/test_writer.py",
+      "type": "file",
+      "size_bytes": 276,
+      "line_count": 9
+    },
+    {
+      "path": "tests/traceability",
+      "type": "dir"
+    },
+    {
+      "path": "tests/traceability/test_codegen_traceability.py",
+      "type": "file",
+      "size_bytes": 3574,
+      "line_count": 129
+    },
+    {
+      "path": "tests/traceability/test_pointer_propagation.py",
+      "type": "file",
+      "size_bytes": 2673,
+      "line_count": 103
+    },
+    {
+      "path": "tree.txt",
+      "type": "file",
+      "size_bytes": 59,
+      "line_count": 5
+    }
+  ],
+  "test_suite": [
+    {
+      "file": "tests/artifacts/test_manifest_bundle.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/ast/test_ast_builder.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/ast/test_ast_queries.py",
+      "number_of_tests": 6,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/ast/test_completeness.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/ast/test_consistency.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/ast/test_lineage_consistency.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/bootstrap/test_derived_tasks.py",
+      "number_of_tests": 6,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/checklist/test_ancestry.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/checklist/test_ast_integration.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/checklist/test_classification_types.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/checklist/test_cross_section_order.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/checklist/test_cycles.py",
+      "number_of_tests": 6,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/checklist/test_derived.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/checklist/test_derived_determinism.py",
+      "number_of_tests": 6,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/checklist/test_id_collision.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/checklist/test_implicit_deps.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/checklist/test_integration_items.py",
+      "number_of_tests": 2,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/checklist/test_invariants.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/checklist/test_ordering_stability.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/checklist/test_resolution_chain.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/checklist/test_timings.py",
+      "number_of_tests": 2,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/ci/test_spec_pipeline_smoke.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/cli/test_validate_spec.py",
+      "number_of_tests": 2,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/codegen/test_codegen_roundtrip.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/codegen/test_dry_run.py",
+      "number_of_tests": 2,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/codegen/test_provenance_headers.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/codegen/test_template_engine.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/codegen/test_template_validation.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/codegen/test_templates_render.py",
+      "number_of_tests": 10,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/diff/test_impact_classification.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/dsl/test_dsl_validator.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/engine/test_batch.py",
+      "number_of_tests": 2,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/engine/test_engine_end_to_end.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/governance/test_evidence_expanded.py",
+      "number_of_tests": 2,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/io/test_manifest_structure.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/plan/test_execution_plan.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/plan/test_ordering.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/selfhost/test_basic_selfhost_pipeline.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/selfhost/test_bootstrap_codegen.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/selfhost/test_governance_and_pointers.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/selfhost/test_selfhost_dryrun.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": [
+        "engine",
+        "spec_path"
+      ]
+    },
+    {
+      "file": "tests/selfhost/test_selfhost_minimal.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/spec/test_canonical_json.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/spec/test_format_check.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/spec/test_pointer_locality.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/spec/test_pointer_map.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/spec/test_pointer_missing.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/spec/test_pointer_range.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/spec/test_pointer_shape.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/spec/test_pointer_strict_mode.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/spec/test_schema_compliance.py",
+      "number_of_tests": 7,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/stability/test_extended_hashset.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/stability/test_stability_compare.py",
+      "number_of_tests": 6,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_ast.py",
+      "number_of_tests": 1,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_bootstrap.py",
+      "number_of_tests": 7,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_checklist.py",
+      "number_of_tests": 1,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_checklist_generator.py",
+      "number_of_tests": 1,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_checklist_generator_expanded.py",
+      "number_of_tests": 1,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_checklist_model.py",
+      "number_of_tests": 1,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_classification_severity_order.py",
+      "number_of_tests": 4,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_codegen_engine.py",
+      "number_of_tests": 2,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_constraints_and_semantic.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_dedupe_collapse_canonical.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_deps_and_cross.py",
+      "number_of_tests": 2,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_dsl_loader.py",
+      "number_of_tests": 2,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_engine.py",
+      "number_of_tests": 1,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_extractor.py",
+      "number_of_tests": 1,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_flow_and_order.py",
+      "number_of_tests": 2,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_governance_determinism.py",
+      "number_of_tests": 1,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_governance_evidence.py",
+      "number_of_tests": 1,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_group_rollup_evidence.py",
+      "number_of_tests": 3,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_lineage_manifest_stability.py",
+      "number_of_tests": 2,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_plan_and_diff.py",
+      "number_of_tests": 2,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_planner.py",
+      "number_of_tests": 1,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_preflight_contract.py",
+      "number_of_tests": 1,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_sections.py",
+      "number_of_tests": 1,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_task_id_and_category.py",
+      "number_of_tests": 2,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/test_writer.py",
+      "number_of_tests": 1,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/traceability/test_codegen_traceability.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    },
+    {
+      "file": "tests/traceability/test_pointer_propagation.py",
+      "number_of_tests": 5,
+      "list_of_fixture_names": []
+    }
+  ],
+  "service_capabilities": [
+    {
+      "service_name": "artifacts",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/artifacts/lineage.py",
+          "public_classes": [],
+          "public_functions": [
+            "build_lineage",
+            "bundle"
+          ],
+          "purpose": "No description"
+        }
+      ]
+    },
+    {
+      "service_name": "ast",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/ast/builder.py",
+          "public_classes": [
+            "ASTBuilder"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/ast/consistency.py",
+          "public_classes": [],
+          "public_functions": [
+            "verify"
+          ],
+          "purpose": "AST consistency checker - verifies alignment between raw spec and AST"
+        },
+        {
+          "file": "src/shieldcraft/services/ast/lineage.py",
+          "public_classes": [],
+          "public_functions": [
+            "build_lineage",
+            "get_lineage_map",
+            "verify_lineage_chain"
+          ],
+          "purpose": "AST lineage integration"
+        },
+        {
+          "file": "src/shieldcraft/services/ast/node.py",
+          "public_classes": [
+            "Node"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/ast/reconcile.py",
+          "public_classes": [],
+          "public_functions": [
+            "reconcile"
+          ],
+          "purpose": "AST to spec reconciliation report"
+        },
+        {
+          "file": "src/shieldcraft/services/ast/shape_validator.py",
+          "public_classes": [],
+          "public_functions": [
+            "validate_shape"
+          ],
+          "purpose": "AST shape validator - validates AST structure and required fields"
+        }
+      ]
+    },
+    {
+      "service_name": "checklist",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/checklist/ancestry.py",
+          "public_classes": [],
+          "public_functions": [
+            "build_ancestry",
+            "verify_ancestry"
+          ],
+          "purpose": "Task ancestry model - tracks transformation chain for each item"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/canonical.py",
+          "public_classes": [],
+          "public_functions": [
+            "canonical_sort"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/classifier.py",
+          "public_classes": [],
+          "public_functions": [
+            "classify_item",
+            "classify_items"
+          ],
+          "purpose": "Classification engine for checklist items"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/classify.py",
+          "public_classes": [],
+          "public_functions": [
+            "classify_item",
+            "classify_type",
+            "classify_items"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/collapse.py",
+          "public_classes": [],
+          "public_functions": [
+            "collapse_items"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/constraints.py",
+          "public_classes": [],
+          "public_functions": [
+            "propagate_constraints"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/cross.py",
+          "public_classes": [],
+          "public_functions": [
+            "cross_section_checks"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/dedupe.py",
+          "public_classes": [],
+          "public_functions": [
+            "dedupe_items"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/deps.py",
+          "public_classes": [],
+          "public_functions": [
+            "extract_dependencies",
+            "align_with_spec"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/deps_tasks.py",
+          "public_classes": [],
+          "public_functions": [
+            "dependency_tasks"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/derived.py",
+          "public_classes": [],
+          "public_functions": [
+            "infer_tasks"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/evidence.py",
+          "public_classes": [],
+          "public_functions": [
+            "compute_bundle_hash",
+            "build_evidence_bundle"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/extractor.py",
+          "public_classes": [
+            "SpecExtractor"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/flow.py",
+          "public_classes": [],
+          "public_functions": [
+            "compute_flow",
+            "flow_tasks"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/generator.py",
+          "public_classes": [
+            "ChecklistGenerator"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/graph.py",
+          "public_classes": [],
+          "public_functions": [
+            "build_graph",
+            "get_cycle_members"
+          ],
+          "purpose": "Dependency graph extraction and cycle detection for checklist tasks"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/grouping.py",
+          "public_classes": [],
+          "public_functions": [
+            "group_items"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/id_registry.py",
+          "public_classes": [
+            "IDRegistry"
+          ],
+          "public_functions": [
+            "create_registry"
+          ],
+          "purpose": "Global ID registry for checklist items"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/idgen.py",
+          "public_classes": [],
+          "public_functions": [
+            "stable_id",
+            "synthesize_id"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/implicit_deps.py",
+          "public_classes": [],
+          "public_functions": [
+            "extract_implicit_deps"
+          ],
+          "purpose": "Implicit dependency extractor"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/invariants.py",
+          "public_classes": [],
+          "public_functions": [
+            "extract_invariants",
+            "evaluate_invariant"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/meta.py",
+          "public_classes": [],
+          "public_functions": [
+            "attach_metadata"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/model.py",
+          "public_classes": [
+            "ChecklistModel"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/normalization_audit.py",
+          "public_classes": [],
+          "public_functions": [
+            "audit"
+          ],
+          "purpose": "Checklist item normalization audit"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/order.py",
+          "public_classes": [],
+          "public_functions": [
+            "ordering_constraints",
+            "assign_order_rank",
+            "ensure_stable_order"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/plan.py",
+          "public_classes": [
+            "ExecutionPlan"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/resolution_chain.py",
+          "public_classes": [],
+          "public_functions": [
+            "build_chain",
+            "verify_chains"
+          ],
+          "purpose": "Resolution chain builder for derived tasks"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/rollup.py",
+          "public_classes": [],
+          "public_functions": [
+            "build_rollups"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/sanity.py",
+          "public_classes": [],
+          "public_functions": [
+            "sanity_check"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/sections.py",
+          "public_classes": [],
+          "public_functions": [
+            "ordered_sections",
+            "group_by_section"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/semantic.py",
+          "public_classes": [],
+          "public_functions": [
+            "compute_context_radius",
+            "semantic_validations"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/severity.py",
+          "public_classes": [],
+          "public_functions": [
+            "compute_severity"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/validator.py",
+          "public_classes": [],
+          "public_functions": [
+            "validate_cross_item_constraints",
+            "validate_no_empty_sections"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/warnings.py",
+          "public_classes": [],
+          "public_functions": [
+            "write_warnings"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/checklist/writer.py",
+          "public_classes": [
+            "ChecklistWriter"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        }
+      ]
+    },
+    {
+      "service_name": "codegen",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/codegen/file_plan.py",
+          "public_classes": [
+            "FilePlan"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/codegen/generator.py",
+          "public_classes": [
+            "CodeGenerator"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/codegen/mapping_inspector.py",
+          "public_classes": [],
+          "public_functions": [
+            "inspect"
+          ],
+          "purpose": "Codegen mapping inspector - determines codegen targets for checklist items"
+        },
+        {
+          "file": "src/shieldcraft/services/codegen/template_engine.py",
+          "public_classes": [
+            "TemplateEngine"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        }
+      ]
+    },
+    {
+      "service_name": "diff",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/diff/canonical_diff.py",
+          "public_classes": [],
+          "public_functions": [
+            "canonical_dump",
+            "diff"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/diff/impact.py",
+          "public_classes": [],
+          "public_functions": [
+            "score_change",
+            "impact_summary",
+            "compute_evolution_impact",
+            "classify_impact"
+          ],
+          "purpose": "No description"
+        }
+      ]
+    },
+    {
+      "service_name": "dsl",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/dsl/loader.py",
+          "public_classes": [
+            "SpecLoader"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/dsl/validator.py",
+          "public_classes": [
+            "JsonPointerException",
+            "SpecValidator"
+          ],
+          "public_functions": [
+            "resolve_pointer"
+          ],
+          "purpose": "No description"
+        }
+      ]
+    },
+    {
+      "service_name": "generator",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/generator/contract_verifier.py",
+          "public_classes": [],
+          "public_functions": [
+            "verify_generation_contract"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/generator/invariants.py",
+          "public_classes": [],
+          "public_functions": [
+            "check_invariants"
+          ],
+          "purpose": "No description"
+        }
+      ]
+    },
+    {
+      "service_name": "governance",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/governance/determinism.py",
+          "public_classes": [
+            "DeterminismEngine"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/governance/evidence.py",
+          "public_classes": [
+            "EvidenceBundle"
+          ],
+          "public_functions": [
+            "sign_manifest"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/governance/provenance.py",
+          "public_classes": [
+            "ProvenanceEngine"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/governance/rules_engine.py",
+          "public_classes": [],
+          "public_functions": [
+            "evaluate_governance"
+          ],
+          "purpose": "Governance rules evaluation engine"
+        },
+        {
+          "file": "src/shieldcraft/services/governance/verifier.py",
+          "public_classes": [
+            "ChecklistVerifier"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        }
+      ]
+    },
+    {
+      "service_name": "io",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/io/canonical_writer.py",
+          "public_classes": [],
+          "public_functions": [
+            "write_canonical_json"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/io/manifest_writer.py",
+          "public_classes": [],
+          "public_functions": [
+            "write_manifest",
+            "write_manifest_v2"
+          ],
+          "purpose": "No description"
+        }
+      ]
+    },
+    {
+      "service_name": "mapping",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/mapping/pointer_map.py",
+          "public_classes": [],
+          "public_functions": [
+            "resolve",
+            "map_pointer"
+          ],
+          "purpose": "Maps JSON Pointer prefixes to expected file paths"
+        }
+      ]
+    },
+    {
+      "service_name": "plan",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/plan/execution_plan.py",
+          "public_classes": [],
+          "public_functions": [
+            "build_execution_plan",
+            "from_ast",
+            "validate_bootstrap_stage",
+            "execute_plan_with_reporting"
+          ],
+          "purpose": "No description"
+        }
+      ]
+    },
+    {
+      "service_name": "planner",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/planner/planner.py",
+          "public_classes": [
+            "Planner"
+          ],
+          "public_functions": [],
+          "purpose": "No description"
+        }
+      ]
+    },
+    {
+      "service_name": "preflight",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/preflight/preflight.py",
+          "public_classes": [],
+          "public_functions": [
+            "run_preflight"
+          ],
+          "purpose": "No description"
+        }
+      ]
+    },
+    {
+      "service_name": "rules",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/rules/graph.py",
+          "public_classes": [],
+          "public_functions": [
+            "build_graph",
+            "detect_cycles",
+            "compute_hash"
+          ],
+          "purpose": "Builds dependency graph from rules_contract"
+        }
+      ]
+    },
+    {
+      "service_name": "selfhost",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/selfhost/preview_validator.py",
+          "public_classes": [],
+          "public_functions": [
+            "validate_preview"
+          ],
+          "purpose": "Self-host preview validator"
+        }
+      ]
+    },
+    {
+      "service_name": "spec",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/spec/coverage.py",
+          "public_classes": [],
+          "public_functions": [
+            "compute_coverage"
+          ],
+          "purpose": "Pointer coverage reporting"
+        },
+        {
+          "file": "src/shieldcraft/services/spec/dependency_contract.py",
+          "public_classes": [],
+          "public_functions": [
+            "validate_dependencies"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/spec/evolution.py",
+          "public_classes": [],
+          "public_functions": [
+            "compute_evolution"
+          ],
+          "purpose": "Spec evolution tracker - compares old and new spec versions"
+        },
+        {
+          "file": "src/shieldcraft/services/spec/fingerprint.py",
+          "public_classes": [],
+          "public_functions": [
+            "compute_spec_fingerprint",
+            "compute_fingerprint_v2"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/spec/invariants.py",
+          "public_classes": [],
+          "public_functions": [
+            "extract_spec_invariants"
+          ],
+          "purpose": "Spec-level invariants extraction"
+        },
+        {
+          "file": "src/shieldcraft/services/spec/lifecycle.py",
+          "public_classes": [],
+          "public_functions": [
+            "compute_lifecycle"
+          ],
+          "purpose": "Spec lifecycle model - tracks spec transformation states"
+        },
+        {
+          "file": "src/shieldcraft/services/spec/metrics.py",
+          "public_classes": [],
+          "public_functions": [
+            "compute_metrics"
+          ],
+          "purpose": "Global spec metrics aggregator"
+        },
+        {
+          "file": "src/shieldcraft/services/spec/model.py",
+          "public_classes": [
+            "SpecModel"
+          ],
+          "public_functions": [],
+          "purpose": "Internal spec model for SE"
+        },
+        {
+          "file": "src/shieldcraft/services/spec/pointer_auditor.py",
+          "public_classes": [],
+          "public_functions": [
+            "extract_json_pointers",
+            "ensure_full_pointer_coverage",
+            "compute_coverage",
+            "check_unreachable_pointers",
+            "ensure_full_pointer_coverage_old",
+            "pointer_audit"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/spec/schema_validator.py",
+          "public_classes": [],
+          "public_functions": [
+            "normalize_spec",
+            "validate_spec_against_schema"
+          ],
+          "purpose": "No description"
+        },
+        {
+          "file": "src/shieldcraft/services/spec/stats.py",
+          "public_classes": [],
+          "public_functions": [
+            "compute_stats"
+          ],
+          "purpose": "Spec statistics computation"
+        }
+      ]
+    },
+    {
+      "service_name": "stability",
+      "modules": [
+        {
+          "file": "src/shieldcraft/services/stability/stability.py",
+          "public_classes": [],
+          "public_functions": [
+            "compute_run_signature",
+            "compare_to_previous",
+            "compare",
+            "check_selfhost_stability",
+            "stability_selfhost_ok",
+            "compare_deep_hashes",
+            "extract_cycle_set"
+          ],
+          "purpose": "No description"
+        }
+      ]
+    }
+  ]
+}

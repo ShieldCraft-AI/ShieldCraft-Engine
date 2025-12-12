@@ -1,0 +1,15 @@
+{# Bootstrap module template #}
+# bootstrap-generated: {{ checklist_id }}
+class {{ name }}Bootstrap:
+    """
+    Bootstrap module for self-host.
+    Generated checklist_id: {{ checklist_id }}
+    """
+    
+    def __init__(self):
+        self.checklist_id = "{{ checklist_id }}"
+        self.name = "{{ name }}"
+    
+    def execute(self):
+        """Execute bootstrap logic."""
+        pass

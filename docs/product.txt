@@ -1,0 +1,482 @@
+SHIELDCRAFT ENGINE — PRODUCT SPECIFICATION (MASTER DRAFT v1)
+0. Purpose of This Document
+
+This is the single source of truth describing what ShieldCraft Engine (SE) is, does, and must guarantee.
+This document governs:
+
+architecture
+
+determinism model
+
+agent model
+
+API surface
+
+evidence and audit model
+
+constraints
+
+expected artifacts
+
+boundaries of the MVP and beyond
+
+When complete, this spec will be fed into SE itself to generate:
+
+implementation checklists
+
+CI + determinism verification workflows
+
+code stubs
+
+documentation
+
+tests
+
+agent manifests
+
+API schemas
+
+1. One-Sentence Value Proposition
+
+ShieldCraft Engine converts plain-text specifications into fully governed, deterministic, audit-safe software systems — reproducibly, repeatedly, and without manual coding.
+
+2. What SE Is
+
+SE is a deterministic software manufacturing platform composed of:
+
+A canonical spec ingestion engine
+
+A deterministic pipeline orchestrator
+
+A multi-agent manufacturing system
+
+A governance & validation layer
+
+An artifact lineage and evidence subsystem
+
+A model abstraction layer ensuring repeatable outputs across vendors
+
+Its core promise:
+Same input → same output, across time, seeds, and environments.
+
+3. What SE Is Not
+
+To avoid all category confusion:
+
+SE is not:
+
+a chat interface
+
+a prompt-engineering tool
+
+an LLM “assistant”
+
+GitHub Copilot
+
+CodeWhisperer
+
+an autocomplete engine
+
+a no-code builder
+
+a boilerplate generator
+
+SE is a governed, reproducible manufacturing pipeline, not an assistant.
+
+4. Product Intent & Boundaries
+4.1 Purpose
+
+Turn natural-language specifications into governed, deterministic, production-ready software artifacts.
+
+4.2 Primary Function
+
+Software manufacturing, not “code generation.”
+
+Spec → Canonical Model → Agents → Artifacts → Verification → Signed Output
+
+4.3 Non-Goals (MVP)
+
+To maintain focus:
+
+No enterprise compliance agent in v1
+
+No WASM sandbox in v1
+
+No multi-language packs in v1 (Python only)
+
+No GUI or user dashboard
+
+No multi-tenant user management (API-key based only)
+
+4.4 Required Inputs
+
+Plain-text specification (human-authored)
+
+Optional configuration block (machine-friendly overrides)
+
+4.5 Expected Outputs (MVP)
+
+Canonicalized spec
+
+Architecture model & dependency map
+
+Deterministic codebase (Python pack)
+
+Deterministic test suite
+
+Verification report
+
+Signed evidence bundle
+
+Pipeline manifest
+
+4.6 Constraints
+
+Must be deterministic across: time, seed, environment, vendor
+
+Must produce reproducible artifact graph hashes
+
+Must fail closed (never silently accept nondeterminism)
+
+Must never mutate inputs
+
+Must run in isolation (no outbound network calls during manufacturing)
+
+5. Determinism Contract
+5.1 Definition
+
+Determinism in SE means:
+
+For any identical spec + configuration, SE must produce byte-identical artifacts across any compute environment, on any day, using any supported LLM vendor.
+
+5.2 Determinism Mechanisms
+
+Canonical serialization (stable ordering, normalized floats, UTF-8 LF)
+
+Strict model adapter wrappers (temperature clamp, seed lock, stop-token enforcement)
+
+Canonical prompt scaffolding (no runtime randomness)
+
+Artifact hashing (SHA-256 canonical graph hash)
+
+Agent input/output contracts enforced by schema
+
+Multi-run consistency check (MVP: 3 consecutive matches)
+
+5.3 Determinism Break Condition (BROKEN_DETERMINISM)
+
+The pipeline must halt and produce:
+
+an evidence bundle containing
+
+seed
+
+model version
+
+agent state
+
+partial artifacts
+
+failing diffs
+
+a strict FAILURE code
+No downstream agent is allowed to continue.
+
+6. System Architecture (High-Level)
+6.1 Pipeline Orchestrator
+
+A step-function-like orchestrator coordinating deterministic agent steps:
+
+Spec Normalizer
+
+Architecture Synthesizer
+
+Code Generation agent (Python)
+
+Test Synthesis agent
+
+Verification agent
+
+Evidence writer + signing
+
+6.2 Agent Model
+
+Every agent conforms to a strict schema:
+
+id
+
+version
+
+input_schema
+
+output_schema
+
+invariants
+
+resource_limits
+
+timeout
+
+deterministic flag
+
+6.3 Artifact System
+
+Every artifact must have:
+
+Stable path
+
+SHA-256 hash
+
+Lineage entry (which agent produced it)
+
+Canonical serialization
+
+Provenance fields (seed, model, time normalized)
+
+6.4 Evidence Bundle
+
+For every run (success or failure):
+
+manifest.json
+
+Graph hash
+
+Agent logs (canonicalized, filtered)
+
+Signature
+
+Verification report
+
+Drift check results
+
+Evidence bundles must be downloadable and replayable.
+
+7. Core Agents (MVP)
+7.1 Spec Normalizer
+
+Converts human spec → canonical SE-Spec
+
+Enforces structural consistency
+
+Detects ambiguity
+
+Extracts functional requirements, endpoints, data models
+
+7.2 Architecture Synthesizer
+
+Produces architecture model
+
+Component graph
+
+Data flow
+
+Dependency map
+
+Directory structure & build plan
+
+7.3 Code Generation Agent (Python Pack)
+
+Deterministic Python code structure
+
+Stable import ordering
+
+Stable formatting
+
+No nondeterministic constructs
+
+Strict code contract tests
+
+7.4 Test Synthesis Agent
+
+Generates unit tests
+
+Integration tests
+
+Behavioral tests
+
+Verifies API schemas
+
+Ensures deterministic golden snapshots
+
+7.5 Verification Agent
+
+Runs deterministic test suite
+
+Validates governance rules
+
+Performs drift detection (against golden run N-1)
+
+Emits verification report
+
+8. API Contract (MVP)
+8.1 Base Path
+
+/api/v1
+
+8.2 Endpoints
+POST /manufacture
+
+Purpose: Submit spec, initiate deterministic run.
+Body:
+
+spec (string or structured)
+
+config (optional)
+
+Response:
+
+run_id
+
+status
+
+artifact_manifest_url (when complete)
+
+GET /runs/{run_id}
+
+Returns run state and metadata.
+
+GET /runs/{run_id}/evidence
+
+Returns signed evidence bundle.
+
+8.3 Error Contract
+
+All errors must include:
+
+code
+
+message
+
+context
+
+trace_id
+
+Canonicalized.
+
+9. Evidence & Audit Model
+
+Every run (success or fail) must include:
+
+Determinism status
+
+Artifact graph hash
+
+Seed
+
+Model version
+
+Agent-level signatures
+
+Drift report
+
+Verification results
+
+Evidence bundles must be hash-chained for tamper detection.
+
+10. Security Model (MVP)
+
+All manufacturing runs isolated & sandboxed
+
+No outbound network access
+
+All inbound content sanitized
+
+API keys required for all endpoints
+
+No secrets written to logs
+
+Artifacts signed with SE-managed demo key (customer keys in future version)
+
+11. Performance Requirements (MVP)
+
+Full manufacturing cycle target: ≤12 minutes
+
+Determinism checking: ≤15 seconds
+
+Startup cold latency: ≤2 seconds
+
+Artifact graph hashing: ≤5 seconds
+
+12. Scalability Model (Conceptual)
+
+Designed for horizontal concurrency:
+
+Stateless orchestrator
+
+Agents as isolated Lambdas / containers
+
+State in durable, deterministic store
+
+Artifact storage in S3 or equivalent monotonic FS
+
+13. MVP Scope (Strict)
+
+These items are in:
+
+Deterministic engine
+
+Core agents (normalizer, architecture, codegen, tests, verification)
+
+Evidence bundle subsystem
+
+API v1
+
+Python code pack
+
+Determinism CI harness
+
+12-minute demo run
+
+These items are out:
+
+Compliance agent
+
+Multi-language packs
+
+WASM sandbox
+
+Agent marketplace
+
+Enterprise deployment model
+
+14. Post-MVP Roadmap (High level, no dates)
+
+Compliance agent
+
+On-prem mode
+
+WASM agent sandbox
+
+Language packs: TypeScript, Go
+
+Agent marketplace
+
+GUI for artifact exploration
+
+Governance rules marketplace
+
+15. Glossary
+
+Artifact Graph Hash – canonical, structural hash of entire output.
+
+Determinism – identical outputs across runs and environments.
+
+Evidence Bundle – signed audit package describing a run.
+
+SE-Spec – canonicalized structured specification.
+
+Agent – deterministic transformation unit.
+
+16. Absolute Invariants
+
+These cannot be violated under any circumstances:
+
+Identical input must yield byte-for-byte identical output.
+
+All nondeterminism must be normalized or rejected.
+
+A determinism failure must halt the pipeline.
+
+No ungoverned agent execution permitted.
+
+All artifacts must be signed and hashable.

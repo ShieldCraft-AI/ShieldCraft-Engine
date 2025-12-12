@@ -1,0 +1,168 @@
+{
+  "$schema": "https://shieldcraft.ai/schemas/se_dsl_v1.schema.json",
+
+  "metadata": {
+    "product_id": "shieldcraft_engine",
+    "product_name": "ShieldCraft Engine",
+    "spec_version": "1.0.0",
+    "created_at_utc": "",
+    "owner": "Deon Prinsloo",
+    "canonical_spec_hash": "",
+    "generator_version": ">=1.0,<2.0",
+    "language": "python",
+    "description": "Deterministic AI software manufacturing engine."
+  },
+
+  "determinism": {
+    "canonical_json": true,
+    "float_precision": 6,
+    "timestamp_format": "UTC_ISO8601",
+    "snapshot_runs": 3,
+    "hash_algorithm": "sha256"
+  },
+
+  "agents": [
+    {
+      "id": "documentation_agent",
+      "version": "v1",
+      "responsibilities": [
+        "generate_product_docs",
+        "generate_architecture_docs",
+        "generate_api_docs"
+      ],
+      "input_schema": "schemas/spec.json",
+      "output_schema": "schemas/docs_manifest.json",
+      "timeout_seconds": 120,
+      "resource_limits": { "cpu": 1000, "memory_mb": 1024}
+    },
+    {
+      "id": "verification_agent",
+      "version": "v1",
+      "responsibilities": ["validate_against_contracts", "run_deterministic_tests"],
+      "input_schema": "schemas/artifacts_manifest.json",
+      "output_schema": "schemas/verification_report.json",
+      "timeout_seconds": 300,
+      "resource_limits": { "cpu": 2000, "memory_mb": 2048 }
+    },
+    {
+      "id": "test_synthesis_agent",
+      "version": "v1",
+      "responsibilities": ["generate_unit_tests", "generate_integration_tests", "generate_snapshots"],
+      "output_schema": "schemas/test_suite_manifest.json",
+      "timeout_seconds": 600,
+      "resource_limits": { "cpu": 2000, "memory_mb": 2048 }
+    },
+    {
+      "id": "patch_pr_agent",
+      "version": "v1",
+      "responsibilities": ["generate_patch", "generate_rollback_patch"],
+      "output_schema": "schemas/patch_manifest.json",
+      "timeout_seconds": 300,
+      "resource_limits": { "cpu": 1500, "memory_mb": 1536 }
+    },
+    {
+      "id": "architecture_agent",
+      "version": "v1",
+      "responsibilities": ["generate_diagrams", "generate_dependency_graphs"],
+      "output_schema": "schemas/arch_manifest.json",
+      "timeout_seconds": 180,
+      "resource_limits": { "cpu": 1000, "memory_mb": 1024 }
+    }
+  ],
+
+  "pipeline": {
+    "states": [
+      "ingest_spec",
+      "validate_spec",
+      "run_agents",
+      "aggregate_results",
+      "verification",
+      "finalize",
+      "done"
+    ],
+    "transitions": [
+      { "id": "t1", "from": "ingest_spec", "to": "validate_spec" },
+      { "id": "t2", "from": "validate_spec", "to": "run_agents" },
+      { "id": "t3", "from": "run_agents", "to": "aggregate_results" },
+      { "id": "t4", "from": "aggregate_results", "to": "verification" },
+      { "id": "t5", "from": "verification", "to": "finalize" },
+      { "id": "t6", "from": "finalize", "to": "done" }
+    ]
+  },
+
+  "artifact_contract": {
+    "artifacts": [
+      { "id": "product_spec", "path": "spec/shieldcraft_engine.json", "classification": "contractual" },
+      { "id": "architecture_contract", "path": "architecture/contracts.json", "classification": "contractual" },
+      { "id": "tests", "path": "tests/", "classification": "near-contractual" },
+      { "id": "src", "path": "src/", "classification": "production_ready" },
+      { "id": "evidence_bundle", "path": "evidence/", "classification": "contractual" }
+    ],
+    "canonical_hash_algorithm": "sha256",
+    "sign_contractual_artifacts": true
+  },
+
+  "error_contract": {
+    "schema": "schemas/error.json",
+    "categories": [
+      "determinism_violation",
+      "spec_invalid",
+      "agent_timeout",
+      "agent_failure",
+      "vendor_failure"
+    ],
+    "canonical_error_fields": ["code", "message", "context", "trace_id"]
+  },
+
+  "evidence_bundle": {
+    "schema": "schemas/evidence_bundle.json",
+    "signing_required": true,
+    "signature_algorithm": "rsa-pss-sha256",
+    "retention_days": 365,
+    "provenance_required": true
+  },
+
+  "ci_contract": {
+    "required_jobs": [
+      "validate_schema",
+      "unit",
+      "integration",
+      "snapshot_verify",
+      "wasm",
+      "self_test",
+      "verify"
+    ],
+    "snapshot_determinism_enforced": true
+  },
+
+  "generation_mappings": {
+    "components": [
+      { "id": "agent_manifest", "template": "templates/agent_manifest.j2" },
+      { "id": "pipeline_diagram", "template": "templates/pipeline_diagram.mmd.j2" },
+      { "id": "governance_contract", "template": "templates/governance.j2" }
+    ],
+    "tasks": [
+      { "id": "generate_docs", "agent": "documentation_agent" },
+      { "id": "generate_tests", "agent": "test_synthesis_agent" },
+      { "id": "verify", "agent": "verification_agent" }
+    ],
+    "trace": true
+  },
+
+  "observability": {
+    "metrics": [
+      "determinism_failures",
+      "run_latency_ms",
+      "model_tokens_used",
+      "evidence_bundle_generated"
+    ],
+    "logs_enabled": true,
+    "metrics_enabled": true
+  },
+
+  "security": {
+    "no_external_calls": true,
+    "secrets_policy": "no_secrets_in_repo",
+    "allowed_paths": ["src/", "tests/", "spec/"]
+  }
+}

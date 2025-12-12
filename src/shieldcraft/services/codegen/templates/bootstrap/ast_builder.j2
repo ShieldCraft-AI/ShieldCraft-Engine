@@ -1,0 +1,45 @@
+# Bootstrap AST Builder
+# Source: {{source_pointer}}
+# Section: {{source_section}}
+# Item: {{item_id}}
+
+{{block:metadata}}
+"""
+AST Builder for ShieldCraft Engine
+Generated from: {{source_pointer}}
+"""
+{{endblock}}
+
+
+class ASTNode:
+    """AST Node with pointer tracking."""
+    
+    def __init__(self, node_type, value=None, ptr="/"):
+        self.type = node_type
+        self.value = value
+        self.ptr = ptr
+        self.children = []
+    
+    def add_child(self, child):
+        """{{text}}"""
+        self.children.append(child)
+        return child
+
+
+class ASTBuilder:
+    """Build AST from spec."""
+    
+    def build(self, spec):
+        """Build deterministic AST."""
+        root = ASTNode("root", ptr="/")
+        self._walk(spec, root, "/")
+        return root
+    
+    def _walk(self, node, parent, ptr):
+        """Recursively walk spec."""
+        if isinstance(node, dict):
+            for key in sorted(node.keys()):
+                child_ptr = f"{ptr}/{key}"
+                child = ASTNode("dict_entry", node[key], child_ptr)
+                parent.add_child(child)
+                self._walk(node[key], child, child_ptr)

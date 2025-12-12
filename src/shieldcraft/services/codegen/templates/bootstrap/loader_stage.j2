@@ -1,0 +1,23 @@
+{# Bootstrap template: loader_stage.j2 #}
+{# Minimal code skeleton for SE loader stage #}
+# Source: {{source_pointer}}
+# Section: {{source_section}}
+
+class LoaderStage:
+    """
+    Bootstrap: Spec loader component.
+    Generated from: {{source_pointer}}
+    """
+    
+    def __init__(self):
+        pass
+    
+    def load(self, spec_path):
+        """Load spec from path."""
+        import json
+        with open(spec_path) as f:
+            return json.load(f)
+    
+    def validate_format(self, spec):
+        """Validate spec format."""
+        return "metadata" in spec and "sections" in spec
