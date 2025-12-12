@@ -1,0 +1,137 @@
+{
+  "completed_subsystems": [
+    "src/shieldcraft/engine_batch.py",
+    "src/shieldcraft/main.py",
+    "src/shieldcraft/engine.py",
+    "src/shieldcraft/__init__.py",
+    "src/shieldcraft/services/__init__.py",
+    "src/shieldcraft/services/governance/provenance.py",
+    "src/shieldcraft/services/governance/rules_engine.py",
+    "src/shieldcraft/services/governance/verifier.py",
+    "src/shieldcraft/services/governance/determinism.py",
+    "src/shieldcraft/services/governance/__init__.py",
+    "src/shieldcraft/services/rules/graph.py",
+    "src/shieldcraft/services/artifacts/lineage.py",
+    "src/shieldcraft/services/diff/canonical_diff.py",
+    "src/shieldcraft/services/diff/impact.py",
+    "src/shieldcraft/services/ast/builder.py",
+    "src/shieldcraft/services/ast/shape_validator.py",
+    "src/shieldcraft/services/ast/reconcile.py",
+    "src/shieldcraft/services/ast/node.py",
+    "src/shieldcraft/services/ast/consistency.py",
+    "src/shieldcraft/services/ast/__init__.py"
+  ],
+  "dsl_version": "legacy",
+  "last_sync": "2025-12-12T19:40:51.179521+00:00",
+  "open_drift_items": [
+    {
+      "file": "scripts/sync/generate_sync_files.py",
+      "type": "stub"
+    },
+    {
+      "file": "src/shieldcraft/services/governance/evidence.py",
+      "type": "stub"
+    },
+    {
+      "file": "src/generated/851cc16ac33098af.py",
+      "type": "orphan"
+    },
+    {
+      "file": "src/generated/0b1af486c1ee6b81.py",
+      "type": "orphan"
+    },
+    {
+      "file": "src/generated/d85383f3abc84672.py",
+      "type": "orphan"
+    },
+    {
+      "file": "src/generated/da9431fab6074cda.py",
+      "type": "orphan"
+    },
+    {
+      "file": "src/generated/27696da06222c9fb.py",
+      "type": "orphan"
+    },
+    {
+      "file": "src/generated/aa71ff6a19f8825b.py",
+      "type": "orphan"
+    },
+    {
+      "file": "src/generated/8d7960f1a801cc90.py",
+      "type": "orphan"
+    },
+    {
+      "file": "src/generated/f69bb2b3f45eca5b.py",
+      "type": "orphan"
+    },
+    {
+      "file": "src/generated/b7f43f0e7c77b09d.py",
+      "type": "orphan"
+    },
+    {
+      "file": "src/generated/c0cf80335ad385c4.py",
+      "type": "orphan"
+    },
+    {
+      "pointer": "/architecture/ast/builder",
+      "type": "pointer_missing"
+    },
+    {
+      "pointer": "/architecture/checklist/generator",
+      "type": "pointer_missing"
+    },
+    {
+      "pointer": "/metadata/product_id",
+      "type": "pointer_missing"
+    },
+    {
+      "pointer": "/metadata/version",
+      "type": "pointer_missing"
+    },
+    {
+      "pointer": "/sections/0/tasks/0",
+      "type": "pointer_missing"
+    },
+    {
+      "pointer": "/sections/0/tasks/1",
+      "type": "pointer_missing"
+    },
+    {
+      "pointer": "/sections/1/tasks/0",
+      "type": "pointer_missing"
+    },
+    {
+      "pointer": "/sections/1/tasks/1",
+      "type": "pointer_missing"
+    },
+    {
+      "pointer": "/sections/2/tasks/0",
+      "type": "pointer_missing"
+    },
+    {
+      "pointer": "/sections/2/tasks/1",
+      "type": "pointer_missing"
+    }
+  ],
+  "pending_subsystems": [
+    "src/shieldcraft/services/governance/evidence.py",
+    "src/generated/851cc16ac33098af.py",
+    "src/generated/0b1af486c1ee6b81.py",
+    "src/generated/d85383f3abc84672.py",
+    "src/generated/da9431fab6074cda.py",
+    "src/generated/27696da06222c9fb.py",
+    "src/generated/aa71ff6a19f8825b.py",
+    "src/generated/8d7960f1a801cc90.py",
+    "src/generated/f69bb2b3f45eca5b.py",
+    "src/generated/b7f43f0e7c77b09d.py",
+    "src/generated/c0cf80335ad385c4.py",
+    "src/generated/bf4107508b811751.py",
+    "src/generated/84c7c21a7cfc0262.py",
+    "src/generated/e202b7929f44e1a0.py",
+    "src/generated/7ae6ba180155c08c.py",
+    "src/generated/b27471410d645e46.py",
+    "src/generated/e96768d7c7d1f189.py"
+  ],
+  "phase_number": 0,
+  "repo_fingerprint": "f1afe4268116c3d8e96e91a894b690081b497f92ec7359c86c171bce4fa12244"
+}

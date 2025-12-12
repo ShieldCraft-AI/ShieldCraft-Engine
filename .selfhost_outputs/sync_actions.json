@@ -1,0 +1,102 @@
+[
+  {
+    "category": "stub",
+    "file": "scripts/sync/generate_sync_files.py",
+    "suggested_fix": "Review and address stub issue"
+  },
+  {
+    "category": "stub",
+    "file": "src/shieldcraft/services/governance/evidence.py",
+    "suggested_fix": "Review and address stub issue"
+  },
+  {
+    "category": "orphan",
+    "file": "src/generated/851cc16ac33098af.py",
+    "suggested_fix": "Review and address orphan issue"
+  },
+  {
+    "category": "orphan",
+    "file": "src/generated/0b1af486c1ee6b81.py",
+    "suggested_fix": "Review and address orphan issue"
+  },
+  {
+    "category": "orphan",
+    "file": "src/generated/d85383f3abc84672.py",
+    "suggested_fix": "Review and address orphan issue"
+  },
+  {
+    "category": "orphan",
+    "file": "src/generated/da9431fab6074cda.py",
+    "suggested_fix": "Review and address orphan issue"
+  },
+  {
+    "category": "orphan",
+    "file": "src/generated/27696da06222c9fb.py",
+    "suggested_fix": "Review and address orphan issue"
+  },
+  {
+    "category": "orphan",
+    "file": "src/generated/aa71ff6a19f8825b.py",
+    "suggested_fix": "Review and address orphan issue"
+  },
+  {
+    "category": "orphan",
+    "file": "src/generated/8d7960f1a801cc90.py",
+    "suggested_fix": "Review and address orphan issue"
+  },
+  {
+    "category": "orphan",
+    "file": "src/generated/f69bb2b3f45eca5b.py",
+    "suggested_fix": "Review and address orphan issue"
+  },
+  {
+    "category": "orphan",
+    "file": "src/generated/b7f43f0e7c77b09d.py",
+    "suggested_fix": "Review and address orphan issue"
+  },
+  {
+    "category": "orphan",
+    "file": "src/generated/c0cf80335ad385c4.py",
+    "suggested_fix": "Review and address orphan issue"
+  },
+  {
+    "category": "pointer_missing",
+    "file": "/architecture/ast/builder",
+    "suggested_fix": "Review and address pointer_missing issue"
+  },
+  {
+    "category": "pointer_missing",
+    "file": "/architecture/checklist/generator",
+    "suggested_fix": "Review and address pointer_missing issue"
+  },
+  {
+    "category": "pointer_missing",
+    "file": "/metadata/product_id",
+    "suggested_fix": "Review and address pointer_missing issue"
+  },
+  {
+    "category": "pointer_missing",
+    "file": "/metadata/version",
+    "suggested_fix": "Review and address pointer_missing issue"
+  },
+  {
+    "category": "pointer_missing",
+    "file": "/sections/0/tasks/0",
+    "suggested_fix": "Review and address pointer_missing issue"
+  },
+  {
+    "category": "pointer_missing",
+    "file": "/sections/0/tasks/1",
+    "suggested_fix": "Review and address pointer_missing issue"
+  },
+  {
+    "category": "pointer_missing",
+    "file": "/sections/1/tasks/0",
+    "suggested_fix": "Review and address pointer_missing issue"
+  },
+  {
+    "category": "pointer_missing",
+    "file": "/sections/1/tasks/1",
+    "suggested_fix": "Review and address pointer_missing issue"
+  }
+]

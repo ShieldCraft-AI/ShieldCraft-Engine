@@ -1,0 +1,101 @@
+{
+  "generated_at": "2025-12-12T19:40:51.179526+00:00",
+  "git_status": {
+    "branch": "main",
+    "deleted": [
+      "src/shieldcraft/services/canonicalizer/__init__.py",
+      "src/shieldcraft/services/dsl/__init__.py",
+      "src/shieldcraft/services/dsl/loader.py",
+      "src/shieldcraft/services/dsl/validator.py",
+      "tests/dsl/test_dsl_validator.py",
+      "tests/test_bootstrap.py",
+      "tests/test_dsl_loader.py"
+    ],
+    "modified": [
+      "examples/selfhost/bootstrap_spec.json",
+      "scripts/emit_manifest_dryrun.py",
+      "spec/README.md",
+      "src/shieldcraft/dsl/loader.py",
+      "src/shieldcraft/engine.py",
+      "src/shieldcraft/services/ast/builder.py",
+      "src/shieldcraft/services/preflight/preflight.py",
+      "src/shieldcraft/services/spec/model.py",
+      "src/shieldcraft/services/spec/pointer_auditor.py",
+      "tests/selfhost/test_selfhost_minimal.py"
+    ],
+    "untracked": [
+      "scripts/sync/",
+      "scripts/deep_dsl_field_trace.py",
+      "scripts/dsl_runtime_reflector.py",
+      "scripts/extract_dsl_field_usage.py",
+      "scripts/instrument/",
+      "src/shieldcraft/dsl/canonical_loader.py",
+      "tests/fixtures/",
+      "tests/spec/test_canonical_loader_roundtrip.py",
+      "tests/spec/test_pointer_unreachable_canonical.py"
+    ]
+  },
+  "inconsistencies": {
+    "fields_missing_in_schema": [
+      "/api/endpoint",
+      "/architecture/modules",
+      "/architecture/version",
+      "/dependencies/fix1",
+      "/features/checker",
+      "/features/core",
+      "/features/engine",
+      "/features/parser",
+      "/features/processor",
+      "/features/validator"
+    ],
+    "orphaned_files": [
+      "src/generated/851cc16ac33098af.py",
+      "src/generated/0b1af486c1ee6b81.py",
+      "src/generated/d85383f3abc84672.py",
+      "src/generated/da9431fab6074cda.py",
+      "src/generated/27696da06222c9fb.py",
+      "src/generated/aa71ff6a19f8825b.py",
+      "src/generated/8d7960f1a801cc90.py",
+      "src/generated/f69bb2b3f45eca5b.py",
+      "src/generated/b7f43f0e7c77b09d.py",
+      "src/generated/c0cf80335ad385c4.py"
+    ],
+    "pointers_missing_in_ast": [
+      "/architecture/ast/builder",
+      "/architecture/checklist/generator",
+      "/metadata/product_id",
+      "/metadata/version",
+      "/sections/0/tasks/0",
+      "/sections/0/tasks/1",
+      "/sections/1/tasks/0",
+      "/sections/1/tasks/1",
+      "/sections/2/tasks/0",
+      "/sections/2/tasks/1"
+    ],
+    "stubs": [
+      "scripts/sync/generate_sync_files.py",
+      "src/shieldcraft/services/governance/evidence.py"
+    ],
+    "unused_modules": [
+      "src/shieldcraft/engine_batch.py",
+      "src/shieldcraft/main.py",
+      "src/shieldcraft/engine.py",
+      "src/shieldcraft/__init__.py",
+      "src/shieldcraft/services/__init__.py",
+      "src/shieldcraft/services/governance/provenance.py",
+      "src/shieldcraft/services/governance/rules_engine.py",
+      "src/shieldcraft/services/governance/verifier.py",
+      "src/shieldcraft/services/governance/evidence.py",
+      "src/shieldcraft/services/governance/determinism.py"
+    ]
+  },
+  "summary": {
+    "orphans": 16,
+    "pointer_coverage": 0.0,
+    "stubs": 2,
+    "total_files": 276,
+    "total_modules": 111,
+    "total_tests": 271,
+    "unused_modules": 111
+  }
+}

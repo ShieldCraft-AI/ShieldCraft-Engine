@@ -1,0 +1,2601 @@
+{
+  "files": [
+    {
+      "line_count": 398,
+      "path": "poetry.lock",
+      "size_bytes": 38043
+    },
+    {
+      "line_count": 17,
+      "path": "pyproject.toml",
+      "size_bytes": 393
+    },
+    {
+      "line_count": 62,
+      "path": "README.md",
+      "size_bytes": 1312
+    },
+    {
+      "line_count": 66,
+      "path": "list_tree.sh",
+      "size_bytes": 1997
+    },
+    {
+      "line_count": 57,
+      "path": "artifacts/repo_sync_state.json",
+      "sha256": "28e7016ff7ef518d0530caec9db8c5ea13f98a18c5a41df665ef55d512dbcfc7",
+      "size_bytes": 2635
+    },
+    {
+      "line_count": 49,
+      "path": "artifacts/stubs_list.txt",
+      "size_bytes": 1658
+    },
+    {
+      "line_count": 366,
+      "path": "artifacts/dsl_field_usage.json",
+      "sha256": "d921a5870876753a05a71ceba1fc29742694e0cb8c1875e49ecaa286eb237ef0",
+      "size_bytes": 6664
+    },
+    {
+      "line_count": 3,
+      "path": "artifacts/dsl_migration_summary.txt",
+      "size_bytes": 115
+    },
+    {
+      "line_count": 122,
+      "path": "artifacts/test_failures/summary.txt",
+      "size_bytes": 8486
+    },
+    {
+      "line_count": 44,
+      "path": "artifacts/test_failures/batch47_final.txt",
+      "size_bytes": 3593
+    },
+    {
+      "line_count": 8,
+      "path": "artifacts/test_failures/batch47.txt",
+      "size_bytes": 342
+    },
+    {
+      "line_count": 73,
+      "path": "artifacts/test_failures/full_summary.txt",
+      "size_bytes": 2788
+    },
+    {
+      "line_count": 4,
+      "path": "artifacts/determinism/check.txt",
+      "size_bytes": 198
+    },
+    {
+      "line_count": 1,
+      "path": "artifacts/determinism/run2.json",
+      "sha256": "1f14ea5b8513a2a28ef4e12da4494ecfa90a94d767f2c203f19c2de8f33bcd2f",
+      "size_bytes": 7249
+    },
+    {
+      "line_count": 1,
+      "path": "artifacts/determinism/run1.json",
+      "sha256": "1f14ea5b8513a2a28ef4e12da4494ecfa90a94d767f2c203f19c2de8f33bcd2f",
+      "size_bytes": 7249
+    },
+    {
+      "line_count": 11,
+      "path": "evidence/bundle.json",
+      "sha256": "844cb0fcdc58384a4e365af201a1dcb05126adaa4c4d5049292508829c5f6c4e",
+      "size_bytes": 590
+    },
+    {
+      "line_count": 81,
+      "path": "scripts/deep_dsl_field_trace.py",
+      "sha256": "03540416cd4b3b46c90c143d7cd0fd2b20915715add9cfe5a4dc7280debf2ee1",
+      "size_bytes": 2272
+    },
+    {
+      "line_count": 80,
+      "path": "scripts/dsl_runtime_reflector.py",
+      "sha256": "d65e0f7940fcded9972a3793f4da1d3bb2a6f0619613f68a53c066301b65c012",
+      "size_bytes": 2166
+    },
+    {
+      "line_count": 68,
+      "path": "scripts/extract_dsl_field_usage.py",
+      "sha256": "3a0ff94f7fc2040dea9dff84756ff9d2658acdbec8c5986672d9d5bf16e7d3d0",
+      "size_bytes": 1870
+    },
+    {
+      "line_count": 46,
+      "path": "scripts/package_generated.sh",
+      "size_bytes": 1085
+    },
+    {
+      "line_count": 44,
+      "path": "scripts/check_determinism.sh",
+      "size_bytes": 1102
+    },
+    {
+      "line_count": 58,
+      "path": "scripts/emit_manifest_dryrun.py",
+      "sha256": "ca78523c2598cf78472e8f76f03d93307004281a0b514723fcc1dcf32da0273e",
+      "size_bytes": 1615
+    },
+    {
+      "line_count": 11,
+      "path": "scripts/run_tests.sh",
+      "size_bytes": 174
+    },
+    {
+      "line_count": 3,
+      "path": "scripts/sync/README.md",
+      "size_bytes": 370
+    },
+    {
+      "line_count": 586,
+      "path": "scripts/sync/generate_sync_files.py",
+      "sha256": "333a4be6ec67ac68990b3cb03b74e360dab00e99261b656f7e1db359aa20834e",
+      "size_bytes": 22007
+    },
+    {
+      "line_count": 1,
+      "path": "scripts/sync/__init__.py",
+      "sha256": "e7c4c4f8735d05ed1de5d9f37d276d22b8390673e0eedfae7c55da920ffc345c",
+      "size_bytes": 27
+    },
+    {
+      "line_count": 34,
+      "path": "scripts/instrument/run_with_tracking.py",
+      "sha256": "1635b081f98de1ec520f510ef7336e6373db02032d38cb4c6a239da78ce609e6",
+      "size_bytes": 808
+    },
+    {
+      "line_count": 59,
+      "path": "scripts/instrument/raw_tracker.py",
+      "sha256": "6df52e1ff4f5a76166f725d45e339374249e0f5ee2aff6eb4134eac2c34520be",
+      "size_bytes": 1610
+    },
+    {
+      "line_count": 5,
+      "path": "products/test/checklist/warnings.json",
+      "sha256": "92edf6a40664286ae61f96b4ace45e651ffad14eb2779af520217a5fffdcc29d",
+      "size_bytes": 71
+    },
+    {
+      "line_count": 3,
+      "path": "products/unknown/checklist/warnings.json",
+      "sha256": "63d45ddc225cb61f5b9d08589f9173cb2ef6ff38ec05b4d2fef1d798d1c07fdb",
+      "size_bytes": 20
+    },
+    {
+      "line_count": 3,
+      "path": "products/shieldcraft_engine/checklist/warnings.json",
+      "sha256": "63d45ddc225cb61f5b9d08589f9173cb2ef6ff38ec05b4d2fef1d798d1c07fdb",
+      "size_bytes": 20
+    },
+    {
+      "line_count": 1,
+      "path": "products/shieldcraft_engine/checklist/preflight.json",
+      "sha256": "8471fe68db944c12eb78c92e0c2db915937bca75ac6097d9d26cb9e364b1199d",
+      "size_bytes": 43999
+    },
+    {
+      "line_count": 4,
+      "path": "releases/rc-0.1.0.txt",
+      "size_bytes": 159
+    },
+    {
+      "line_count": 58,
+      "path": "src/shieldcraft/engine_batch.py",
+      "sha256": "02f7955f2af2e97bc7779a2c22b30ab9f6f0171485db21541c27ba52f29bfda4",
+      "size_bytes": 1636
+    },
+    {
+      "line_count": 236,
+      "path": "src/shieldcraft/main.py",
+      "sha256": "3d263698588ef8d30e936dd96f6dea6783e348e1adb694cdc70c026fa34a84e9",
+      "size_bytes": 8344
+    },
+    {
+      "line_count": 353,
+      "path": "src/shieldcraft/engine.py",
+      "sha256": "0215734a237e88ae6a8e7ab7bb8e58170dcdc8477f4c2f8d90d17316dd6c71b3",
+      "size_bytes": 13971
+    },
+    {
+      "line_count": 0,
+      "path": "src/shieldcraft/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "src/shieldcraft/services/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 22,
+      "path": "src/shieldcraft/services/governance/provenance.py",
+      "sha256": "f541afa7d50a36c95bbaf07c1280aaf304ef1d67fbc0f17f164a3c6c0037a3df",
+      "size_bytes": 680
+    },
+    {
+      "line_count": 104,
+      "path": "src/shieldcraft/services/governance/rules_engine.py",
+      "sha256": "886664da531f6a7f3b154cb990df99c90bb7ab89a5a659a0657c7641c918fd68",
+      "size_bytes": 3747
+    },
+    {
+      "line_count": 48,
+      "path": "src/shieldcraft/services/governance/verifier.py",
+      "sha256": "831b424ba2ddae0200c68c6b671b8f8bc9bee1f8ef318a9e4800688930b58160",
+      "size_bytes": 2065
+    },
+    {
+      "line_count": 71,
+      "path": "src/shieldcraft/services/governance/evidence.py",
+      "sha256": "a3b963a2b806f30198399bc94e86f9c8c41da3a371581023be72dc90521314cf",
+      "size_bytes": 2613
+    },
+    {
+      "line_count": 17,
+      "path": "src/shieldcraft/services/governance/determinism.py",
+      "sha256": "bf380e00dd2ec3cc2217c55c0f0b1cab815faac406c706f67a34dd131279a318",
+      "size_bytes": 550
+    },
+    {
+      "line_count": 0,
+      "path": "src/shieldcraft/services/governance/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 70,
+      "path": "src/shieldcraft/services/rules/graph.py",
+      "sha256": "dfb489dfb1b7f2090a0704284a82a360b3150021ad84c3ffd0ccafa965da6b42",
+      "size_bytes": 1530
+    },
+    {
+      "line_count": 57,
+      "path": "src/shieldcraft/services/artifacts/lineage.py",
+      "sha256": "e49768e33051c847493e45345ce7b001d74442f45a012f94cbd2ac49863b00b1",
+      "size_bytes": 1515
+    },
+    {
+      "line_count": 51,
+      "path": "src/shieldcraft/services/diff/canonical_diff.py",
+      "sha256": "88a98774b9e2927cc5182908ef25427f199fbeafd78b0642ba5a1e06488bc8b7",
+      "size_bytes": 1546
+    },
+    {
+      "line_count": 104,
+      "path": "src/shieldcraft/services/diff/impact.py",
+      "sha256": "3969b2ff90aefa2ac6e1118e5f4d2117337bdf6d61979bfe1c2f1681016b0697",
+      "size_bytes": 2723
+    },
+    {
+      "line_count": 103,
+      "path": "src/shieldcraft/services/ast/builder.py",
+      "sha256": "fc4eaac121b4c31c323d6794e7840f58544d9e9e7af90700de055e1543f217f6",
+      "size_bytes": 3590
+    },
+    {
+      "line_count": 57,
+      "path": "src/shieldcraft/services/ast/shape_validator.py",
+      "sha256": "a658ec4267c1dc97bf686c385006db65ab4695a69e989096a852a032d55704c9",
+      "size_bytes": 1652
+    },
+    {
+      "line_count": 41,
+      "path": "src/shieldcraft/services/ast/reconcile.py",
+      "sha256": "687c063caa6ee2aee78ddac8653da57600443af459f93e8da438e50609728968",
+      "size_bytes": 1079
+    },
+    {
+      "line_count": 115,
+      "path": "src/shieldcraft/services/ast/node.py",
+      "sha256": "48a8338fbaa27975aa8c8206335597b3bd8ac878477092ec28f97075b7a19acf",
+      "size_bytes": 3688
+    },
+    {
+      "line_count": 108,
+      "path": "src/shieldcraft/services/ast/consistency.py",
+      "sha256": "cbe7bba3c183dce31020747932ec7ad22e899da5d4de826a024faefbd66ff373",
+      "size_bytes": 3131
+    },
+    {
+      "line_count": 0,
+      "path": "src/shieldcraft/services/ast/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 77,
+      "path": "src/shieldcraft/services/ast/lineage.py",
+      "sha256": "e00dab343013d677babd08f1f63f7f1447225bb2bac0caa2b934361b6c4eb6f4",
+      "size_bytes": 1870
+    },
+    {
+      "line_count": 107,
+      "path": "src/shieldcraft/services/checklist/resolution_chain.py",
+      "sha256": "9bb22100c1391421f05656448ee3a2b02c4b1097a0b93dc5a70b7175272ce8f4",
+      "size_bytes": 2624
+    },
+    {
+      "line_count": 42,
+      "path": "src/shieldcraft/services/checklist/constraints.py",
+      "sha256": "410c7b79772a322477b382c990bf79933da4283d1619bf2e9b3048d4df00580a",
+      "size_bytes": 1253
+    },
+    {
+      "line_count": 31,
+      "path": "src/shieldcraft/services/checklist/plan.py",
+      "sha256": "e045a3557e3fb3d961039a1d6e19babd611a8db4baab443effe0011e8b83a4e5",
+      "size_bytes": 833
+    },
+    {
+      "line_count": 85,
+      "path": "src/shieldcraft/services/checklist/rollup.py",
+      "sha256": "77bf563dd08ffe4f96650e6296bac78c5a3704c3acff518de18817af344553b0",
+      "size_bytes": 2594
+    },
+    {
+      "line_count": 162,
+      "path": "src/shieldcraft/services/checklist/derived.py",
+      "sha256": "77c919254168cf5fdb35dc81ad1643b90531cd98b74fbba99390ed34d09a6fd8",
+      "size_bytes": 7011
+    },
+    {
+      "line_count": 90,
+      "path": "src/shieldcraft/services/checklist/extractor.py",
+      "sha256": "7333c6e38017dabbf9f5c0ee121a04dfed2be13a864402d166b7be6e92df45f9",
+      "size_bytes": 3527
+    },
+    {
+      "line_count": 76,
+      "path": "src/shieldcraft/services/checklist/normalization_audit.py",
+      "sha256": "aee20cda15f06515b1892a0902ace0ccb5453bf656c8d5abfcd07c207e98811f",
+      "size_bytes": 2515
+    },
+    {
+      "line_count": 26,
+      "path": "src/shieldcraft/services/checklist/writer.py",
+      "sha256": "6088a721f44ffd22e8f3013c660f4cf25129eabe6b319c66f388eb2d92223710",
+      "size_bytes": 751
+    },
+    {
+      "line_count": 13,
+      "path": "src/shieldcraft/services/checklist/dedupe.py",
+      "sha256": "51231b14cc3491fcccdbfb21209127bbd1c2f52a46ca400b9908c5f233134c04",
+      "size_bytes": 349
+    },
+    {
+      "line_count": 106,
+      "path": "src/shieldcraft/services/checklist/order.py",
+      "sha256": "c7119bc75c4a791997994506ae9dc1003aaf5db20de10ca308b8b57507404b7e",
+      "size_bytes": 2944
+    },
+    {
+      "line_count": 130,
+      "path": "src/shieldcraft/services/checklist/classify.py",
+      "sha256": "d52af9092aeaa6110aa017646c32a5d547df079cf5f6373c4a24b317cc6a305f",
+      "size_bytes": 3413
+    },
+    {
+      "line_count": 545,
+      "path": "src/shieldcraft/services/checklist/generator.py",
+      "sha256": "ee4e4bb20aa7e92692f3ae81783d68d2d101fd76098fda3affe793d26463e191",
+      "size_bytes": 21063
+    },
+    {
+      "line_count": 24,
+      "path": "src/shieldcraft/services/checklist/sanity.py",
+      "sha256": "6d81a2a4c25fdd6600e6bd3de225f2df2d35f7069e9faef9cbdb1727220698e9",
+      "size_bytes": 614
+    },
+    {
+      "line_count": 89,
+      "path": "src/shieldcraft/services/checklist/model.py",
+      "sha256": "385d882b0b8d324098bd3bc8b45fcd6ea998a0045159f053cf33ea90cb911dbd",
+      "size_bytes": 3118
+    },
+    {
+      "line_count": 19,
+      "path": "src/shieldcraft/services/checklist/idgen.py",
+      "sha256": "9b2a532e43eda15656da5dc94ff15eed74a10de9796014f24b756ebee0abef6e",
+      "size_bytes": 501
+    },
+    {
+      "line_count": 9,
+      "path": "src/shieldcraft/services/checklist/warnings.py",
+      "sha256": "e0864d0fc862c5361ab74849a57483a9812f1ec38fc85c804a7ce3b1b94dc153",
+      "size_bytes": 284
+    },
+    {
+      "line_count": 65,
+      "path": "src/shieldcraft/services/checklist/id_registry.py",
+      "sha256": "a2379e31f8ceb42ed376f461eefd5b1cd6ff7121769ccb7c9c1ed5fdbc7450e6",
+      "size_bytes": 1623
+    },
+    {
+      "line_count": 94,
+      "path": "src/shieldcraft/services/checklist/implicit_deps.py",
+      "sha256": "f70c402dd8be8a1b2c332a485fb20b335295f924c7c897f67ebb537d23afc67b",
+      "size_bytes": 3078
+    },
+    {
+      "line_count": 63,
+      "path": "src/shieldcraft/services/checklist/cross.py",
+      "sha256": "57d9b762e4409466f22925bd15ebe8a6d72a96142ecbf8a726abc803919e6615",
+      "size_bytes": 2263
+    },
+    {
+      "line_count": 110,
+      "path": "src/shieldcraft/services/checklist/graph.py",
+      "sha256": "9839c9832b97826267b29c99842509c75bdad704f22d3a925a2ba6332bd8606d",
+      "size_bytes": 2870
+    },
+    {
+      "line_count": 73,
+      "path": "src/shieldcraft/services/checklist/classifier.py",
+      "sha256": "5dcde40b61c78fd0de231bd527dcbd95f666bec7b18f2e5562a9599fb38d3db3",
+      "size_bytes": 1836
+    },
+    {
+      "line_count": 176,
+      "path": "src/shieldcraft/services/checklist/semantic.py",
+      "sha256": "27ded9a88e90e60aa866f7ad3536fb86e07c785ddcb050ff03e79bda2d9ef10b",
+      "size_bytes": 5865
+    },
+    {
+      "line_count": 121,
+      "path": "src/shieldcraft/services/checklist/invariants.py",
+      "sha256": "c687792359b5faa2e900c16bcddc84fd9c0237bcf4b31e7fc5892eb3b57880df",
+      "size_bytes": 4121
+    },
+    {
+      "line_count": 117,
+      "path": "src/shieldcraft/services/checklist/deps.py",
+      "sha256": "bae127930ce3e74c3fb6566650eb39f59fd705c4c66a325880ffcd6f06fd1ef8",
+      "size_bytes": 3826
+    },
+    {
+      "line_count": 27,
+      "path": "src/shieldcraft/services/checklist/evidence.py",
+      "sha256": "18a57487ebce2d480a05583f72656ffe94de69b70ec999649187ec5b87feea5c",
+      "size_bytes": 597
+    },
+    {
+      "line_count": 29,
+      "path": "src/shieldcraft/services/checklist/flow.py",
+      "sha256": "0b89b4f03784095520949f746c68198cced815a6cbc78a3f7bc56c31780fe988",
+      "size_bytes": 758
+    },
+    {
+      "line_count": 67,
+      "path": "src/shieldcraft/services/checklist/validator.py",
+      "sha256": "8fa53cf960398a4c04177a5f5b958100d85e51cf4ed5ca0e1bf3c1606c70d20e",
+      "size_bytes": 2093
+    },
+    {
+      "line_count": 43,
+      "path": "src/shieldcraft/services/checklist/severity.py",
+      "sha256": "3d5fedfa97e5870031425cd435f145e550df77a409273aa47ce0f161d2c0a53a",
+      "size_bytes": 1308
+    },
+    {
+      "line_count": 17,
+      "path": "src/shieldcraft/services/checklist/canonical.py",
+      "sha256": "d8b70d163d8f615e1b54249702481aeb862dd61ab44e4ed78469ae190e54a009",
+      "size_bytes": 360
+    },
+    {
+      "line_count": 117,
+      "path": "src/shieldcraft/services/checklist/ancestry.py",
+      "sha256": "1f000e628d7a083bff9ab87302a2d03f46cd65561b1151c89912d01c84986f63",
+      "size_bytes": 3500
+    },
+    {
+      "line_count": 23,
+      "path": "src/shieldcraft/services/checklist/collapse.py",
+      "sha256": "e8b16544dfda5854bd7312a7dcb9fc264a1a4e1e8ac77618b4f4ed0013e47311",
+      "size_bytes": 657
+    },
+    {
+      "line_count": 51,
+      "path": "src/shieldcraft/services/checklist/sections.py",
+      "sha256": "c690a9bf544bc29855e6d11755503bbaddb2a17a32271445f74389b129cb5190",
+      "size_bytes": 1181
+    },
+    {
+      "line_count": 0,
+      "path": "src/shieldcraft/services/checklist/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 62,
+      "path": "src/shieldcraft/services/checklist/grouping.py",
+      "sha256": "1cea1d57befb284c1260ff347b65204462c1f7992601b86628b69954ce73e73b",
+      "size_bytes": 1572
+    },
+    {
+      "line_count": 9,
+      "path": "src/shieldcraft/services/checklist/deps_tasks.py",
+      "sha256": "60673872caa2ae9310229a1cd51e953a5370c65671b30009fb1908a8f03ccf6f",
+      "size_bytes": 235
+    },
+    {
+      "line_count": 11,
+      "path": "src/shieldcraft/services/checklist/meta.py",
+      "sha256": "6fa7ba2a95a0b25e9615a8a5a12b7e972891734d5370bb454a480d8664733954",
+      "size_bytes": 345
+    },
+    {
+      "line_count": 50,
+      "path": "src/shieldcraft/services/generator/contract_verifier.py",
+      "sha256": "55e222d99f55685a67e5a9b5eb66c2008b191820ec48add9f703deaad62924b9",
+      "size_bytes": 1744
+    },
+    {
+      "line_count": 40,
+      "path": "src/shieldcraft/services/generator/invariants.py",
+      "sha256": "63de40db7dc2297b3db60601114b1eaf538511bb843b76c3ced0f4fc503b90e1",
+      "size_bytes": 1283
+    },
+    {
+      "line_count": 69,
+      "path": "src/shieldcraft/services/selfhost/preview_validator.py",
+      "sha256": "8d84420a1d7baf4fe417072ec4f59031776adaeca7428372382f7ab3023fc928",
+      "size_bytes": 2190
+    },
+    {
+      "line_count": 162,
+      "path": "src/shieldcraft/services/io/manifest_writer.py",
+      "sha256": "0235300b43fe2216e79a8bd02eeb1117e95ca45c5e5aeccacc32414767434178",
+      "size_bytes": 6062
+    },
+    {
+      "line_count": 14,
+      "path": "src/shieldcraft/services/io/canonical_writer.py",
+      "sha256": "d42ead0d44eeac7e1ae40c8ba8770aa69c106c91072f337f986d291decd67463",
+      "size_bytes": 312
+    },
+    {
+      "line_count": 188,
+      "path": "src/shieldcraft/services/plan/execution_plan.py",
+      "sha256": "89190b95e9707dde8a211704cb9589446538aa34c99052525b483847996d0b74",
+      "size_bytes": 5723
+    },
+    {
+      "line_count": 128,
+      "path": "src/shieldcraft/services/preflight/preflight.py",
+      "sha256": "98d881daa533b61449209890f458101b5e80f87583f23dcacc4cdea8a9089e03",
+      "size_bytes": 5102
+    },
+    {
+      "line_count": 16,
+      "path": "src/shieldcraft/services/planner/planner.py",
+      "sha256": "1a5f714058f0b17b8f292d1b91fe0656889c1e6316be1ca585330d24309b4fe1",
+      "size_bytes": 442
+    },
+    {
+      "line_count": 0,
+      "path": "src/shieldcraft/services/planner/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 53,
+      "path": "src/shieldcraft/services/mapping/pointer_map.py",
+      "sha256": "f03b03003dd48dcc0ddb626443ea308bba5e5d2907958a78a0e542e7fbd9d5b5",
+      "size_bytes": 1415
+    },
+    {
+      "line_count": 238,
+      "path": "src/shieldcraft/services/stability/stability.py",
+      "sha256": "411309f0ccc62d17c1a287074a72b631c79bff527f9644a8a50b1bfa779bf81f",
+      "size_bytes": 7562
+    },
+    {
+      "line_count": 0,
+      "path": "src/shieldcraft/services/validator/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 22,
+      "path": "src/shieldcraft/services/spec/dependency_contract.py",
+      "sha256": "21d34974ac33b47331aa05ff9bb55b4b37908a75d620255c21da6e75d1219f59",
+      "size_bytes": 849
+    },
+    {
+      "line_count": 39,
+      "path": "src/shieldcraft/services/spec/coverage.py",
+      "sha256": "c9c5b045e49f28a0deb486fd56528caed976be04a88cabc707a68c9b44ec8907",
+      "size_bytes": 1003
+    },
+    {
+      "line_count": 295,
+      "path": "src/shieldcraft/services/spec/pointer_auditor.py",
+      "sha256": "06448c594405786ce603e7699845d7e9f209772d48f8ccd7642b04ab96cb8a1f",
+      "size_bytes": 10769
+    },
+    {
+      "line_count": 240,
+      "path": "src/shieldcraft/services/spec/model.py",
+      "sha256": "99c0764811d826ac31ce894e3191b4658878ba7d14638f1e63017f782d7fe078",
+      "size_bytes": 8796
+    },
+    {
+      "line_count": 58,
+      "path": "src/shieldcraft/services/spec/lifecycle.py",
+      "sha256": "252ff49cc64fabf1132cb468dbef316fdcd4fad0b2a27da1e36b08e5d84fa429",
+      "size_bytes": 1581
+    },
+    {
+      "line_count": 48,
+      "path": "src/shieldcraft/services/spec/invariants.py",
+      "sha256": "8ca1dc3c5f1282519642cecae73c425abd2d8d7dda351675069549c637493c5a",
+      "size_bytes": 1543
+    },
+    {
+      "line_count": 75,
+      "path": "src/shieldcraft/services/spec/evolution.py",
+      "sha256": "eb95c30d4717f3e6b9987642ee1e0ce62c930e9fe9a762f77772fd67d68baf36",
+      "size_bytes": 2027
+    },
+    {
+      "line_count": 67,
+      "path": "src/shieldcraft/services/spec/stats.py",
+      "sha256": "281254b838d4c442f98b92f15b6eda61c687d65923f9120ca2b790b9f75e4928",
+      "size_bytes": 1883
+    },
+    {
+      "line_count": 60,
+      "path": "src/shieldcraft/services/spec/fingerprint.py",
+      "sha256": "d0f3f920d49ec2fefbba7451deeaccf49b70248057f2343bb21210e72387e969",
+      "size_bytes": 1845
+    },
+    {
+      "line_count": 67,
+      "path": "src/shieldcraft/services/spec/metrics.py",
+      "sha256": "34699561ad2e76359631809c4e1daec82b94cd22ec92efce2f6d5f8a9fd0d0c6",
+      "size_bytes": 2402
+    },
+    {
+      "line_count": 49,
+      "path": "src/shieldcraft/services/spec/schema_validator.py",
+      "sha256": "95d20fc3a6e0f298373a9d25a58fcf71fb17c0552b106e2b2709174d5a67a42e",
+      "size_bytes": 1470
+    },
+    {
+      "line_count": 423,
+      "path": "src/shieldcraft/services/codegen/generator.py",
+      "sha256": "88d9b397352dba95489a5dcfd4ca0a39fe499ce2ef1b3784bbdbc0eee3c6a586",
+      "size_bytes": 17695
+    },
+    {
+      "line_count": 192,
+      "path": "src/shieldcraft/services/codegen/template_engine.py",
+      "sha256": "6f92c0a3029827920f13d52d961fb93c8d5a5b50e9ecc6dc54e41a37f87b5a32",
+      "size_bytes": 6530
+    },
+    {
+      "line_count": 56,
+      "path": "src/shieldcraft/services/codegen/mapping_inspector.py",
+      "sha256": "b72b673291758c7f5f1d815332892e9e606cb9542b186ce58b08904986b2a304",
+      "size_bytes": 1682
+    },
+    {
+      "line_count": 23,
+      "path": "src/shieldcraft/services/codegen/file_plan.py",
+      "sha256": "c6bbb55b66d60e4dc59bf60555bfca65589741595f4bcb3838583f2c562efc82",
+      "size_bytes": 669
+    },
+    {
+      "line_count": 0,
+      "path": "src/shieldcraft/services/codegen/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 11,
+      "path": "src/shieldcraft/services/codegen/templates/module.j2",
+      "sha256": "a603c0a6cfb9284efcfc4f0c1aef1ba97e33e12e4d4e51df9112fec1d142d500",
+      "size_bytes": 319
+    },
+    {
+      "line_count": 10,
+      "path": "src/shieldcraft/services/codegen/templates/model.j2",
+      "sha256": "0a3f3ccf7263165e3c97a996c0a8a488ea37d1cda58bdb1d0ccdaeb1934c579e",
+      "size_bytes": 183
+    },
+    {
+      "line_count": 8,
+      "path": "src/shieldcraft/services/codegen/templates/default.j2",
+      "sha256": "9ab0130e19e54c5c27f1cee9a32741e6f219debb5b0823649be6bd8250a8a379",
+      "size_bytes": 134
+    },
+    {
+      "line_count": 29,
+      "path": "src/shieldcraft/services/codegen/templates/integration.j2",
+      "sha256": "d2a0fc9ccaa4f4ac52dee19621d71c705e16219104eb768200178b7f3d95b362",
+      "size_bytes": 619
+    },
+    {
+      "line_count": 8,
+      "path": "src/shieldcraft/services/codegen/templates/api_handler.j2",
+      "sha256": "8694a2d1d6a2a315cde20d8ecbe038b8ae94ec836021f7f98049d6b03c98353b",
+      "size_bytes": 173
+    },
+    {
+      "line_count": 43,
+      "path": "src/shieldcraft/services/codegen/templates/resolve_cycle.j2",
+      "sha256": "fc2a3f2a414e040b4e41872e00eda2c5873c1d5531a9d68226683b0763a1a8e0",
+      "size_bytes": 1060
+    },
+    {
+      "line_count": 14,
+      "path": "src/shieldcraft/services/codegen/templates/fix_invariant.j2",
+      "sha256": "236ec7bf920ff922dfe6cef4284b87ef4f840e6e5f42eecc5f9c62506fc3bd50",
+      "size_bytes": 311
+    },
+    {
+      "line_count": 8,
+      "path": "src/shieldcraft/services/codegen/templates/basic_python.txt",
+      "size_bytes": 118
+    },
+    {
+      "line_count": 1,
+      "path": "src/shieldcraft/services/codegen/templates/__init__.j2",
+      "sha256": "51ca13755fc8411af4b9aafc1d9e1b5e00e621c23a38e949e569fe025a23abe5",
+      "size_bytes": 21
+    },
+    {
+      "line_count": 9,
+      "path": "src/shieldcraft/services/codegen/templates/rule.j2",
+      "sha256": "9ae78661abc97af4696b93024d95778bb1a6e4045c984546f94accd5291ab90c",
+      "size_bytes": 127
+    },
+    {
+      "line_count": 0,
+      "path": "src/shieldcraft/services/codegen/templates/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 15,
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap/module_bootstrap.j2",
+      "sha256": "f03d81af5430dc2ce05d2c815926afd44bb236effcbde6de5f896979fe112cc2",
+      "size_bytes": 391
+    },
+    {
+      "line_count": 23,
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap/loader_stage.j2",
+      "sha256": "031721fc5665d2c3ddba4e9650842c190177028c7673313d898ae8d741a02cad",
+      "size_bytes": 597
+    },
+    {
+      "line_count": 43,
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap/checklist_driver.j2",
+      "sha256": "9e0a8023f0ec01c28751d4d98cb1b0e3ee1d0a573e9e86d3bd264d3de17fb674",
+      "size_bytes": 1139
+    },
+    {
+      "line_count": 21,
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap/engine_stage.j2",
+      "sha256": "b84119b94bf2c935648bc8ab650542f183782c95bd72475cac3a4ce22fe4a1d3",
+      "size_bytes": 565
+    },
+    {
+      "line_count": 31,
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap/spec_loader.j2",
+      "sha256": "0b7bd0d2d06def1f73277f42737e3dcde99163d001f4d4f894758c19f9032723",
+      "size_bytes": 734
+    },
+    {
+      "line_count": 45,
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap/ast_builder.j2",
+      "sha256": "62b78b90d0f3e0c65f9ec0da5b9116c8c55c7544e1f02523ba02e547b15926ec",
+      "size_bytes": 1144
+    },
+    {
+      "line_count": 51,
+      "path": "src/shieldcraft/services/codegen/templates/bootstrap/engine_core.j2",
+      "sha256": "c93c267bcaccca6c620cb4525eb00bffc750e4ed1e4aafad9480133315a15bde",
+      "size_bytes": 1286
+    },
+    {
+      "line_count": 9,
+      "path": "src/shieldcraft/services/codegen/emitter/writer.py",
+      "sha256": "da902f723f3b5262728a257fdb6b8b32d0c98affb48e8a5d4c8465761a165ab4",
+      "size_bytes": 239
+    },
+    {
+      "line_count": 0,
+      "path": "src/shieldcraft/services/codegen/emitter/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 30,
+      "path": "src/shieldcraft/util/canonical_digest.py",
+      "sha256": "a67a7b796516afdc7db1324163813a5f01005be3b9d79b081e626c494ce7b1f1",
+      "size_bytes": 706
+    },
+    {
+      "line_count": 0,
+      "path": "src/shieldcraft/util/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 10,
+      "path": "src/shieldcraft/util/json_canonicalizer.py",
+      "sha256": "c912aef2f7db7cb1afd8827b2aa3b00869a46db0f35b5000f4739033eb23902a",
+      "size_bytes": 162
+    },
+    {
+      "line_count": 140,
+      "path": "src/shieldcraft/dsl/canonical_loader.py",
+      "sha256": "f0ae63437821bd3da32cceaaa1bb46c66ebd98fabb387fc5a0e48758ae4b0499",
+      "size_bytes": 4408
+    },
+    {
+      "line_count": 53,
+      "path": "src/shieldcraft/dsl/loader.py",
+      "sha256": "2f35f830d4a837d32dc50753ef5a017e43b63b62edab5a518aa9899b2dbd1227",
+      "size_bytes": 1453
+    },
+    {
+      "line_count": 0,
+      "path": "src/shieldcraft/dsl/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 146,
+      "path": "src/shieldcraft/dsl/schema/se_dsl.schema.json",
+      "sha256": "9c6a355257ec3774b8083b8066699f1c61edcde0a33c6c20546d01df204e1254",
+      "size_bytes": 4221
+    },
+    {
+      "line_count": 80,
+      "path": "src/shieldcraft/dsl/schema/manifest.schema.json",
+      "sha256": "548186ff3d773c8218a0fd4d24e9da248aedc6f48f6568e685b8837b2d5cac1a",
+      "size_bytes": 2047
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/851cc16ac33098af.py",
+      "sha256": "8900f44a5461b5f7b02638e0deed7426da43ff3bbf783cb56d5752745a6cb85e",
+      "size_bytes": 290
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/0b1af486c1ee6b81.py",
+      "sha256": "b1042a0f5724f873efa63ba23cecc57dd27f50ca86795cdb493aedea1f50406c",
+      "size_bytes": 279
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/d85383f3abc84672.py",
+      "sha256": "c8098bade9b8b19c3381e4a008ec256fac11116d9a32c2e583fa4539275809d4",
+      "size_bytes": 276
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/da9431fab6074cda.py",
+      "sha256": "7a8db263518ed16f69e6fe53c788f8ea44b6cf1e0928ae463efcb23030bfdeab",
+      "size_bytes": 299
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/27696da06222c9fb.py",
+      "sha256": "64a7dfdc708488b39f03aa09d530ff6103c475cded9fc27972e486c651d88f18",
+      "size_bytes": 350
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/aa71ff6a19f8825b.py",
+      "sha256": "b9affab9dc98a51b661c4f4ad093f9e491ea3663dccb3da77b06483ee916a899",
+      "size_bytes": 270
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/8d7960f1a801cc90.py",
+      "sha256": "e25d7e1fc9f36fd3d811c15839c53afd5fc95114c115e2a02f2ee621cff3ed78",
+      "size_bytes": 285
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/f69bb2b3f45eca5b.py",
+      "sha256": "c57f8cd3f71ba5c73de28a1ee38525aec5b23c49e1ad26f386029a614896ce70",
+      "size_bytes": 350
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/b7f43f0e7c77b09d.py",
+      "sha256": "0212c6ae8eb115b065f105f50363ace9e6e186975ed677aa022a42c148b368d3",
+      "size_bytes": 263
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/c0cf80335ad385c4.py",
+      "sha256": "f4b7a294189325a06f023782e9242d987442da08585bd4c7c62479b1fc8babb9",
+      "size_bytes": 329
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/bf4107508b811751.py",
+      "sha256": "26f292a86335a4ca766e8fca5296afb7f850df2951736001faf96e200ff4e554",
+      "size_bytes": 261
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/84c7c21a7cfc0262.py",
+      "sha256": "12bf912d8e51ab48b494c11527a9c76bc4b0cbfa5d64cb886ff02d2b20536605",
+      "size_bytes": 299
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/e202b7929f44e1a0.py",
+      "sha256": "5f8527c7c9501e3d083b75e3fc1db5e34eac55be9d1876e05eb51f0e1a2a596c",
+      "size_bytes": 273
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/7ae6ba180155c08c.py",
+      "sha256": "04d86a6c71852bd3669fbc1c080a0b1649a878486cd974403281df4a15f65a30",
+      "size_bytes": 314
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/b27471410d645e46.py",
+      "sha256": "0044b746b556d921c0b7382ae5e81fa96c9f1996c8e3f7c5bb14e6bedaa0dde5",
+      "size_bytes": 266
+    },
+    {
+      "line_count": 13,
+      "path": "src/generated/e96768d7c7d1f189.py",
+      "sha256": "ef0c4325f097be058730a6d2a5849598520971b44aa508c869705de72ced4f4c",
+      "size_bytes": 260
+    },
+    {
+      "line_count": 3050,
+      "path": "repo_introspection/report.json",
+      "sha256": "51096477a325c75c924c8058531e1e46ab8db8deea2b52307dc5603661353f0f",
+      "size_bytes": 74476
+    },
+    {
+      "line_count": 82,
+      "path": "examples/selfhost/bootstrap_spec.json",
+      "sha256": "15488e443acc434d0c784183325d39b6d6247fa3678d6a44231f7d26b428ce62",
+      "size_bytes": 1900
+    },
+    {
+      "line_count": 198,
+      "path": "docs/Fiona.txt",
+      "size_bytes": 9668
+    },
+    {
+      "line_count": 482,
+      "path": "docs/product.txt",
+      "size_bytes": 7835
+    },
+    {
+      "line_count": 897,
+      "path": "docs/product.yml",
+      "sha256": "223f8d1cdfed3cc19a8bb44df928e773fa7767f2841cc2cc60ad5c7fa6a1386a",
+      "size_bytes": 23330
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/languages/python.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/languages/rust.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/languages/docker.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/languages/node.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/languages/react.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/languages/go.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/patterns/design-patterns.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/patterns/testing-standards.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/patterns/solid.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/patterns/naming-conventions.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/frameworks/fastapi.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/frameworks/express.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/frameworks/nextjs.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/frameworks/flask.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/core/rules-core.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/core/rules-safety.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/core/rules-checklist.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/core/rules-governance.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/core/rules-output.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 0,
+      "path": "docs/se_rules/core/rules-architecture.md",
+      "size_bytes": 0
+    },
+    {
+      "line_count": 371,
+      "path": "spec/se_dsl_v1.spec.json",
+      "sha256": "9be2b2a3018b33d319df08b848d3ba9ed4be6bb8e7bd41d8594b30ae2e8181e4",
+      "size_bytes": 9395
+    },
+    {
+      "line_count": 17,
+      "path": "spec/pointer_map.json",
+      "sha256": "94b3adb7fdf85e3318c4ebe8ea43a12cc40af42ce435d02d6694c765feccebcb",
+      "size_bytes": 836
+    },
+    {
+      "line_count": 41,
+      "path": "spec/README.md",
+      "size_bytes": 1218
+    },
+    {
+      "line_count": 168,
+      "path": "spec/se_dsl_v1.template.json",
+      "sha256": "d3aae900dcba2357f8a458bbe215a6eaf8ddf0d08822dcb02edad9f41eb205c1",
+      "size_bytes": 5104
+    },
+    {
+      "line_count": 210,
+      "path": "spec/products/shieldcraft_engine/se_spec_v1.json",
+      "sha256": "03af42c348ad90517f12a806528c1eeb14f8b3f6dfbd527f7d97bbfd34066c28",
+      "size_bytes": 5634
+    },
+    {
+      "line_count": 182,
+      "path": "spec/schemas/se_dsl_v1.schema.json",
+      "sha256": "82cf24ac6062310da45e7126144f3e0ea0cc384d77a613d3df0c6fe740808f87",
+      "size_bytes": 4434
+    },
+    {
+      "line_count": 10,
+      "path": "tests/test_preflight_contract.py",
+      "sha256": "5153bb13286002e7bdf8576e11f3befd4f2196c76eb22e5294f9d97807550b06",
+      "size_bytes": 345
+    },
+    {
+      "line_count": 27,
+      "path": "tests/test_dedupe_collapse_canonical.py",
+      "sha256": "24f331405b8d8bda0130e353bbd1092d8252b11b8da06c1eb4c0a41862ea090c",
+      "size_bytes": 760
+    },
+    {
+      "line_count": 12,
+      "path": "tests/test_governance_evidence.py",
+      "sha256": "63862399c557a70ccd7a06ae91cf510b257ab1b39f85d5e24078aef24283ca9a",
+      "size_bytes": 507
+    },
+    {
+      "line_count": 9,
+      "path": "tests/test_writer.py",
+      "sha256": "ef614937570922cf99eb2d4fb83cd6b6ea5c7363063cdd0e1961638e6a2f4788",
+      "size_bytes": 276
+    },
+    {
+      "line_count": 21,
+      "path": "tests/test_classification_severity_order.py",
+      "sha256": "937f334e7758c79886ed15166fee8c30e243b4b6d03cee6c08d66872373ce351",
+      "size_bytes": 779
+    },
+    {
+      "line_count": 13,
+      "path": "tests/test_checklist_generator_expanded.py",
+      "sha256": "f4e12d371b93d57cbf77121d05fa7afa954e3d28bc952424ec3307c4faaf22d0",
+      "size_bytes": 430
+    },
+    {
+      "line_count": 25,
+      "path": "tests/test_group_rollup_evidence.py",
+      "sha256": "eb3d6f9f1a2545f46eb2eca06c81da5b4768c55f4ce01f6d9b3937660e8c8540",
+      "size_bytes": 957
+    },
+    {
+      "line_count": 7,
+      "path": "tests/test_governance_determinism.py",
+      "sha256": "c3fa352319a3ff50df025496b30137901ca62d8e4076f197e3d62a5b04516eaf",
+      "size_bytes": 212
+    },
+    {
+      "line_count": 10,
+      "path": "tests/test_ast.py",
+      "sha256": "769e270db1fd417110d25ed2da59cd0801d50073cbbd3b6aa7eacac6b64adfcc",
+      "size_bytes": 355
+    },
+    {
+      "line_count": 12,
+      "path": "tests/test_checklist_model.py",
+      "sha256": "c1d4228295919ac8f8f2fc3ae04892f8d0908ce09377f793d92b2d958c859a62",
+      "size_bytes": 362
+    },
+    {
+      "line_count": 15,
+      "path": "tests/test_flow_and_order.py",
+      "sha256": "98731fbbfe477fb672b983a0af3d474be0cdcaf8181c30a4ec9ad09444321534",
+      "size_bytes": 544
+    },
+    {
+      "line_count": 18,
+      "path": "tests/test_deps_and_cross.py",
+      "sha256": "6212b13e5262754b1d26aa47d4935ffdb98a2ef0007f430e8f5df74e603c4b38",
+      "size_bytes": 574
+    },
+    {
+      "line_count": 21,
+      "path": "tests/test_constraints_and_semantic.py",
+      "sha256": "456ce6cdff0c7cd3a4f2b21c521d2d03fda59c652e9f811a4c9e8e22816ee7d3",
+      "size_bytes": 691
+    },
+    {
+      "line_count": 12,
+      "path": "tests/test_extractor.py",
+      "sha256": "a127a364c98844392e72cf97aa4c6dcb8712d371cf47ff99499bc9c439224e42",
+      "size_bytes": 335
+    },
+    {
+      "line_count": 20,
+      "path": "tests/test_task_id_and_category.py",
+      "sha256": "1e7a652950d0d22488f6f7910011b28e781b8035c572614432eb691671cf8248",
+      "size_bytes": 628
+    },
+    {
+      "line_count": 13,
+      "path": "tests/test_plan_and_diff.py",
+      "sha256": "d875186e81e9f83cf6aebb302715f195725ffbe7a312e5de50306af99be6e9cd",
+      "size_bytes": 322
+    },
+    {
+      "line_count": 9,
+      "path": "tests/test_planner.py",
+      "sha256": "5c2083307a92e4c50f1547cc1a2f6b23a3d7d48c7980ffe7f0f0d7301e9445a6",
+      "size_bytes": 246
+    },
+    {
+      "line_count": 5,
+      "path": "tests/test_sections.py",
+      "sha256": "903085fcc996252cf6964c475f24bdc8c72dfc2d1f6747ddffe63b9148dcae4d",
+      "size_bytes": 163
+    },
+    {
+      "line_count": 22,
+      "path": "tests/test_codegen_engine.py",
+      "sha256": "298eb5b89f57720488314b96a01d691462be168e4d87bd121872b3aac4b37b05",
+      "size_bytes": 616
+    },
+    {
+      "line_count": 9,
+      "path": "tests/test_checklist.py",
+      "sha256": "7fc5628d66bf312bd9e2ec090c324ec7126a2a13efa99c4f18ae9ad5e3538ee0",
+      "size_bytes": 304
+    },
+    {
+      "line_count": 17,
+      "path": "tests/test_lineage_manifest_stability.py",
+      "sha256": "91b35e64071aac669d90305e636f86119016dd531cc3a38bbf2e1eca76f14f27",
+      "size_bytes": 515
+    },
+    {
+      "line_count": 20,
+      "path": "tests/test_engine.py",
+      "sha256": "6f60449709d4ef90b148c8609069baf1946cf45c9c9b96d28528c93480c9cfe3",
+      "size_bytes": 660
+    },
+    {
+      "line_count": 12,
+      "path": "tests/test_checklist_generator.py",
+      "sha256": "e61502f9747983224d86e740d497dfa348bdf2b192b26df2ff4cde8fc640a1f8",
+      "size_bytes": 356
+    },
+    {
+      "line_count": 91,
+      "path": "tests/governance/test_evidence_expanded.py",
+      "sha256": "e9dbcf973296bab72e27280f8c5fa1f88a3ce03ba907a4ed616f43d9e665348c",
+      "size_bytes": 2974
+    },
+    {
+      "line_count": 23,
+      "path": "tests/fixtures/canonical/minimal_spec.json",
+      "sha256": "25f4ba14c1b5bbcddca229cd8d69c973c99c20dba715a0039d8065eeaba76101",
+      "size_bytes": 488
+    },
+    {
+      "line_count": 112,
+      "path": "tests/bootstrap/test_derived_tasks.py",
+      "sha256": "984dd71fad2cae74859d0419c88b07dc3211521eea487ea82b65cb9cf8074d78",
+      "size_bytes": 3142
+    },
+    {
+      "line_count": 72,
+      "path": "tests/artifacts/test_manifest_bundle.py",
+      "sha256": "2c31b8efdef1d4c575c21850b1d2e7bda1d28d15311c46a63c75f501f0d09584",
+      "size_bytes": 2205
+    },
+    {
+      "line_count": 83,
+      "path": "tests/diff/test_impact_classification.py",
+      "sha256": "f25543fdaf5eb55a7c216cca6f4bf492b9d978895bb38ee4b0373fcc50edba71",
+      "size_bytes": 2058
+    },
+    {
+      "line_count": 86,
+      "path": "tests/ast/test_ast_queries.py",
+      "sha256": "d4f77d242dd06e0fb42fcf46a7575c7cb22aa01f88114ba9994712ebed54432a",
+      "size_bytes": 1969
+    },
+    {
+      "line_count": 204,
+      "path": "tests/ast/test_lineage_consistency.py",
+      "sha256": "c5d1c2f176b893a51e03c959f61d89899d3c31a6009ed8961da8eefab5f5158c",
+      "size_bytes": 6080
+    },
+    {
+      "line_count": 87,
+      "path": "tests/ast/test_ast_builder.py",
+      "sha256": "3dae9071219442158dca77b4da12f3d460d9b20b8014b9a60281389d0b5a13d3",
+      "size_bytes": 1906
+    },
+    {
+      "line_count": 88,
+      "path": "tests/ast/test_consistency.py",
+      "sha256": "da25f43cdcf6bd83ec5ee2856291756f7aad7891241932fbbf4928919419478b",
+      "size_bytes": 2066
+    },
+    {
+      "line_count": 102,
+      "path": "tests/ast/test_completeness.py",
+      "sha256": "b16edd9ff797a97298d60cfa6a070447aea8fb1e9be8b26a8050d20e6806bc14",
+      "size_bytes": 2723
+    },
+    {
+      "line_count": 64,
+      "path": "tests/checklist/test_implicit_deps.py",
+      "sha256": "b1e67fd1c9d6efe49b9b052490012d775d2655392d53e1720d48b8ed80b7d26e",
+      "size_bytes": 1512
+    },
+    {
+      "line_count": 56,
+      "path": "tests/checklist/test_id_collision.py",
+      "sha256": "bb43e1e4c02b4401690d66b0bd04ce76d136efcea4dc0fe29ea45169e449504a",
+      "size_bytes": 1532
+    },
+    {
+      "line_count": 45,
+      "path": "tests/checklist/test_timings.py",
+      "sha256": "7376daefc7a45a45a548e43b637e0aa6c98f4241f6d23f705bc8846fba5887ee",
+      "size_bytes": 1311
+    },
+    {
+      "line_count": 59,
+      "path": "tests/checklist/test_classification_types.py",
+      "sha256": "9b3d1cb9b9e8c79a7529d5ec3ad35bc34a8e80b0dd4862b295f8b38f665772b8",
+      "size_bytes": 1682
+    },
+    {
+      "line_count": 37,
+      "path": "tests/checklist/test_integration_items.py",
+      "sha256": "0ca70142d6b7944764cd192564d803a718a1b5907780e3fd603fd857cc3e93f0",
+      "size_bytes": 964
+    },
+    {
+      "line_count": 31,
+      "path": "tests/checklist/test_derived.py",
+      "sha256": "62f3e648c7182df563e4f8fe61c0230af6067cb3b98060968acd519eceb12324",
+      "size_bytes": 865
+    },
+    {
+      "line_count": 34,
+      "path": "tests/checklist/test_invariants.py",
+      "sha256": "bc7272362669aca0d917eeb4cab6d606411e35974939dcd9ee1e55dceb06b754",
+      "size_bytes": 910
+    },
+    {
+      "line_count": 154,
+      "path": "tests/checklist/test_derived_determinism.py",
+      "sha256": "111e338fa926f37c2cb48ad60ff57687ffd8bcddbaf4559fcb441bf1a51255d6",
+      "size_bytes": 4288
+    },
+    {
+      "line_count": 123,
+      "path": "tests/checklist/test_cycles.py",
+      "sha256": "21260f01f3f1d9f8854ddaafb8816e02d38bc4f4974542cbe15d1f54d16d3f1a",
+      "size_bytes": 3686
+    },
+    {
+      "line_count": 75,
+      "path": "tests/checklist/test_ordering_stability.py",
+      "sha256": "81213a96a3fedb201837dc791ee8a4eb2e8229914f8d66293af4e63266ebb87b",
+      "size_bytes": 2927
+    },
+    {
+      "line_count": 71,
+      "path": "tests/checklist/test_cross_section_order.py",
+      "sha256": "fe6329a7270b117c9262a85c7ee825edc9b8e21a9df9e971049147fb2a0868fa",
+      "size_bytes": 2233
+    },
+    {
+      "line_count": 54,
+      "path": "tests/checklist/test_resolution_chain.py",
+      "sha256": "9ddd5016059175e0dcb404522e8de0b0dea1e99a6b288e1ce2e1e7c6099fc193",
+      "size_bytes": 1311
+    },
+    {
+      "line_count": 89,
+      "path": "tests/checklist/test_ancestry.py",
+      "sha256": "da87c946aa30353cc644d30d048a5514d73fd4370aba334fd94655b8c301a315",
+      "size_bytes": 2375
+    },
+    {
+      "line_count": 115,
+      "path": "tests/checklist/test_ast_integration.py",
+      "sha256": "0eb1ec3db862bfd07af8bdde92429e115f0e4fd4d71345fbb000f06fa6b31474",
+      "size_bytes": 2676
+    },
+    {
+      "line_count": 162,
+      "path": "tests/selfhost/test_governance_and_pointers.py",
+      "sha256": "55766f34abe018a8fdf8ee242f49ac0d70eedfb84753e3a3ceafce86b8aa7458",
+      "size_bytes": 4743
+    },
+    {
+      "line_count": 177,
+      "path": "tests/selfhost/test_bootstrap_codegen.py",
+      "sha256": "993ed54aba2d022a9e2c8a4e08079106cbe55a0c81f70150186637c68f47b92a",
+      "size_bytes": 5462
+    },
+    {
+      "line_count": 106,
+      "path": "tests/selfhost/test_basic_selfhost_pipeline.py",
+      "sha256": "1dd6c671ba32d37db73a3041e06d6762dbeec99c51e00a8c498e186936939e49",
+      "size_bytes": 3236
+    },
+    {
+      "line_count": 82,
+      "path": "tests/selfhost/test_selfhost_dryrun.py",
+      "sha256": "7510f82718f73c696cb6c15605baa9008174c84f163251b0c1c1cf7cc89a2494",
+      "size_bytes": 2397
+    },
+    {
+      "line_count": 163,
+      "path": "tests/selfhost/test_selfhost_minimal.py",
+      "sha256": "d38f4865da96f97bd99d5bd35ff679d30236a4e4c71f7c971bce072ff29f59ff",
+      "size_bytes": 5477
+    },
+    {
+      "line_count": 264,
+      "path": "tests/io/test_manifest_structure.py",
+      "sha256": "bd9c15463a4f2823f97deb93a1b6eca6b49c6f738b562006c0346f941fe589d0",
+      "size_bytes": 8026
+    },
+    {
+      "line_count": 69,
+      "path": "tests/engine/test_batch.py",
+      "sha256": "2d13181ec8c1adfa2b86c62494a2e5f2adb89d8491508140d544e30468f9bce8",
+      "size_bytes": 2184
+    },
+    {
+      "line_count": 108,
+      "path": "tests/engine/test_engine_end_to_end.py",
+      "sha256": "12c56db050f33d25f21a2eb7daf6ac086129d385208e49279230dfe31ae76d19",
+      "size_bytes": 3160
+    },
+    {
+      "line_count": 81,
+      "path": "tests/plan/test_execution_plan.py",
+      "sha256": "fc55256a410cd735ca73192d4c2461ef25be82149346b21d0412e9843c0b3286",
+      "size_bytes": 1990
+    },
+    {
+      "line_count": 163,
+      "path": "tests/plan/test_ordering.py",
+      "sha256": "3955f4012632e12d77502e3df55547b61843c0ded84b37d92ec34ff99ecbfed3",
+      "size_bytes": 4450
+    },
+    {
+      "line_count": 139,
+      "path": "tests/stability/test_extended_hashset.py",
+      "sha256": "43cbfbe3db07274ef4da1c56c7acb22a5a3dd52dad848c00f33862216bb8fdd1",
+      "size_bytes": 3430
+    },
+    {
+      "line_count": 74,
+      "path": "tests/stability/test_stability_compare.py",
+      "sha256": "2c0339b5c682947d8707d4ec09a564ba999e19fb128d3757f1b09e2e65f161a1",
+      "size_bytes": 1576
+    },
+    {
+      "line_count": 103,
+      "path": "tests/traceability/test_pointer_propagation.py",
+      "sha256": "e3e98f9f31a03476d84cc111a313b333698a45c71df5d1a7dd508957685ac020",
+      "size_bytes": 2673
+    },
+    {
+      "line_count": 129,
+      "path": "tests/traceability/test_codegen_traceability.py",
+      "sha256": "def025b38296377108e6afc580b59fd6e05ec0febdacb379713054d8e15fb6b4",
+      "size_bytes": 3574
+    },
+    {
+      "line_count": 115,
+      "path": "tests/spec/test_pointer_map.py",
+      "sha256": "a561be96d61238f863ea36f2a4525dd1547894b7c95ec374d868f419285bb542",
+      "size_bytes": 3997
+    },
+    {
+      "line_count": 69,
+      "path": "tests/spec/test_pointer_shape.py",
+      "sha256": "5c4bfbb4533974c68b80791e22c62b96e4f7ae8fffd7e1252d496141b73dc866",
+      "size_bytes": 1488
+    },
+    {
+      "line_count": 102,
+      "path": "tests/spec/test_format_check.py",
+      "sha256": "d8f93eb16df98a63bc3b779d05fe52bd8cb7939e23f07d4007b5fd13ec338623",
+      "size_bytes": 3629
+    },
+    {
+      "line_count": 97,
+      "path": "tests/spec/test_schema_compliance.py",
+      "sha256": "7662f4ed59c237ad5f006457ddec814be5f784de5fa8b95e5599e0767e22da74",
+      "size_bytes": 3456
+    },
+    {
+      "line_count": 129,
+      "path": "tests/spec/test_canonical_loader_roundtrip.py",
+      "sha256": "86a600fc09b91464a36a04fee766c39ac623739e56bfea30c887b07ef9f92659",
+      "size_bytes": 3669
+    },
+    {
+      "line_count": 149,
+      "path": "tests/spec/test_pointer_range.py",
+      "sha256": "5a3380d01a6eb4f58405f0b3e8f3c40441e2d95c5c846164fafd048b3f6bfbb5",
+      "size_bytes": 3598
+    },
+    {
+      "line_count": 101,
+      "path": "tests/spec/test_pointer_missing.py",
+      "sha256": "f2657579d59af7e731665c0a8605c512724c0d397cf61644242438f2bbc7ff2d",
+      "size_bytes": 2911
+    },
+    {
+      "line_count": 175,
+      "path": "tests/spec/test_pointer_locality.py",
+      "sha256": "c2d656789123f98272ea41749200e692735ec7a5a2f1f5b95d0bd088c95a4144",
+      "size_bytes": 5053
+    },
+    {
+      "line_count": 203,
+      "path": "tests/spec/test_pointer_strict_mode.py",
+      "sha256": "8f2a3f543a3d03701f90765b88a17d04f79dcf5ac35f89cc414547c96f65303d",
+      "size_bytes": 5819
+    },
+    {
+      "line_count": 114,
+      "path": "tests/spec/test_pointer_unreachable_canonical.py",
+      "sha256": "1317f8f6fd0589723bf4aff2033d2a953b9d1166478bbaec55387dae53406ada",
+      "size_bytes": 3381
+    },
+    {
+      "line_count": 84,
+      "path": "tests/spec/test_canonical_json.py",
+      "sha256": "7ba3b938de077e211f827365cb29d17d503bb328caca453d0c570c1904ce9f9a",
+      "size_bytes": 3009
+    },
+    {
+      "line_count": 122,
+      "path": "tests/cli/test_validate_spec.py",
+      "sha256": "07ab3c61004e14757d37b0843810c868394f866a75069b65709370f52b051d70",
+      "size_bytes": 4038
+    },
+    {
+      "line_count": 96,
+      "path": "tests/ci/test_spec_pipeline_smoke.py",
+      "sha256": "5d78de0a098e0a839dedaa26fa055e75f8d10105b4376e4e98a239d4df73e646",
+      "size_bytes": 3132
+    },
+    {
+      "line_count": 174,
+      "path": "tests/codegen/test_provenance_headers.py",
+      "sha256": "f0ad02bc6b99326d6e8cf62c9aa02e1d9bea87bd6e4a67791fb23f034bdf13aa",
+      "size_bytes": 5364
+    },
+    {
+      "line_count": 30,
+      "path": "tests/codegen/test_template_engine.py",
+      "sha256": "d0f501774488abc9a986d4710082516e5b153763231b7e135bc3053ab7cd015f",
+      "size_bytes": 924
+    },
+    {
+      "line_count": 63,
+      "path": "tests/codegen/test_template_validation.py",
+      "sha256": "c0d841b05c83a64e63fc3efbd99a1d952613627247fdcacb9419f5b56aaac055",
+      "size_bytes": 2018
+    },
+    {
+      "line_count": 54,
+      "path": "tests/codegen/test_dry_run.py",
+      "sha256": "4c89e4381689a24f25d4bc641da484e8573404c9724940c7759996cb5a44baac",
+      "size_bytes": 1365
+    },
+    {
+      "line_count": 233,
+      "path": "tests/codegen/test_templates_render.py",
+      "sha256": "ff51b91f8fe598c9c31504e1dfe5093e8a276e0c29a5345160dea857f82ededb",
+      "size_bytes": 6618
+    },
+    {
+      "line_count": 65,
+      "path": "tests/codegen/test_codegen_roundtrip.py",
+      "sha256": "e35f77b77f6d462135a759a4513f58c1e96c86b86e3367800396ff745188c5fb",
+      "size_bytes": 1766
+    },
+    {
+      "line_count": 47,
+      "path": "ci/selfhost_dryrun.yml",
+      "sha256": "6b748a01827d8c62fa099f39cd25e76c89a5b8c8675f7790213b476cecd40207",
+      "size_bytes": 1221
+    },
+    {
+      "line_count": 6,
+      "path": "generators/lockfile.json",
+      "sha256": "2b09c52e1afdb642c2f5ae348cd8aee10391f29603b7a64b7482c7960a3056e3",
+      "size_bytes": 99
+    }
+  ],
+  "generated_at": "2025-12-12T19:40:51.179396+00:00",
+  "modules": [
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "hashlib",
+        "shieldcraft"
+      ],
+      "path": "src/shieldcraft/engine_batch.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "pathlib",
+        "argparse",
+        "traceback",
+        "shieldcraft",
+        "shutil",
+        "json",
+        "os"
+      ],
+      "path": "src/shieldcraft/main.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "pathlib",
+        "shieldcraft",
+        "hashlib",
+        "json",
+        "os"
+      ],
+      "path": "src/shieldcraft/engine.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/__init__.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/__init__.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "pathlib",
+        "datetime",
+        "hashlib"
+      ],
+      "path": "src/shieldcraft/services/governance/provenance.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/governance/rules_engine.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "shieldcraft"
+      ],
+      "path": "src/shieldcraft/services/governance/verifier.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "pathlib",
+        "json",
+        "hashlib"
+      ],
+      "path": "src/shieldcraft/services/governance/evidence.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "datetime",
+        "json",
+        "hashlib"
+      ],
+      "path": "src/shieldcraft/services/governance/determinism.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/governance/__init__.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "hashlib"
+      ],
+      "path": "src/shieldcraft/services/rules/graph.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "hashlib"
+      ],
+      "path": "src/shieldcraft/services/artifacts/lineage.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json"
+      ],
+      "path": "src/shieldcraft/services/diff/canonical_diff.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/diff/impact.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "node"
+      ],
+      "path": "src/shieldcraft/services/ast/builder.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/ast/shape_validator.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "shieldcraft"
+      ],
+      "path": "src/shieldcraft/services/ast/reconcile.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "hashlib",
+        "shieldcraft"
+      ],
+      "path": "src/shieldcraft/services/ast/node.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/ast/consistency.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/ast/__init__.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/ast/lineage.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/resolution_chain.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/constraints.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/plan.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/rollup.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "idgen",
+        "json",
+        "shieldcraft"
+      ],
+      "path": "src/shieldcraft/services/checklist/derived.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/extractor.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/normalization_audit.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "sections"
+      ],
+      "path": "src/shieldcraft/services/checklist/writer.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/dedupe.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "sections",
+        "classify"
+      ],
+      "path": "src/shieldcraft/services/checklist/order.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/classify.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "severity",
+        "implicit_deps",
+        "order",
+        "grouping",
+        "derived",
+        "rollup",
+        "canonical",
+        "semantic",
+        "json",
+        "flow",
+        "resolution_chain",
+        "ancestry",
+        "time",
+        "classify",
+        "model",
+        "meta",
+        "shieldcraft",
+        "hashlib",
+        "deps_tasks",
+        "invariants",
+        "os",
+        "plan",
+        "evidence",
+        "sections",
+        "sanity",
+        "dedupe",
+        "validator",
+        "id_registry",
+        "writer",
+        "constraints",
+        "warnings",
+        "deps",
+        "graph",
+        "cross",
+        "idgen",
+        "collapse",
+        "extractor"
+      ],
+      "path": "src/shieldcraft/services/checklist/generator.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/sanity.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "idgen",
+        "hashlib"
+      ],
+      "path": "src/shieldcraft/services/checklist/model.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "hashlib"
+      ],
+      "path": "src/shieldcraft/services/checklist/idgen.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "os"
+      ],
+      "path": "src/shieldcraft/services/checklist/warnings.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/id_registry.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "re"
+      ],
+      "path": "src/shieldcraft/services/checklist/implicit_deps.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/cross.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/graph.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/classifier.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "re"
+      ],
+      "path": "src/shieldcraft/services/checklist/semantic.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "re"
+      ],
+      "path": "src/shieldcraft/services/checklist/invariants.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/deps.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "hashlib"
+      ],
+      "path": "src/shieldcraft/services/checklist/evidence.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/flow.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/validator.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/severity.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/canonical.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "hashlib"
+      ],
+      "path": "src/shieldcraft/services/checklist/ancestry.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/collapse.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/sections.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/__init__.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/grouping.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/deps_tasks.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/checklist/meta.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "spec",
+        "pathlib",
+        "json"
+      ],
+      "path": "src/shieldcraft/services/generator/contract_verifier.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "hashlib"
+      ],
+      "path": "src/shieldcraft/services/generator/invariants.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/selfhost/preview_validator.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "canonical_writer",
+        "shieldcraft",
+        "hashlib",
+        "json",
+        "datetime",
+        "os"
+      ],
+      "path": "src/shieldcraft/services/io/manifest_writer.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json"
+      ],
+      "path": "src/shieldcraft/services/io/canonical_writer.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "hashlib",
+        "shieldcraft"
+      ],
+      "path": "src/shieldcraft/services/plan/execution_plan.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "ast",
+        "generator",
+        "spec",
+        "shieldcraft",
+        "json"
+      ],
+      "path": "src/shieldcraft/services/preflight/preflight.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/planner/planner.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/planner/__init__.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "pathlib"
+      ],
+      "path": "src/shieldcraft/services/mapping/pointer_map.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "hashlib",
+        "os"
+      ],
+      "path": "src/shieldcraft/services/stability/stability.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/validator/__init__.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/spec/dependency_contract.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "shieldcraft"
+      ],
+      "path": "src/shieldcraft/services/spec/coverage.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "re",
+        "shieldcraft"
+      ],
+      "path": "src/shieldcraft/services/spec/pointer_auditor.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "shieldcraft"
+      ],
+      "path": "src/shieldcraft/services/spec/model.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "hashlib",
+        "shieldcraft",
+        "time"
+      ],
+      "path": "src/shieldcraft/services/spec/lifecycle.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/spec/invariants.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "shieldcraft"
+      ],
+      "path": "src/shieldcraft/services/spec/evolution.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/spec/stats.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "hashlib"
+      ],
+      "path": "src/shieldcraft/services/spec/fingerprint.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "shieldcraft"
+      ],
+      "path": "src/shieldcraft/services/spec/metrics.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json",
+        "jsonschema"
+      ],
+      "path": "src/shieldcraft/services/spec/schema_validator.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "pathlib",
+        "jinja2",
+        "shieldcraft",
+        "hashlib",
+        "template_engine",
+        "file_plan"
+      ],
+      "path": "src/shieldcraft/services/codegen/generator.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "pathlib",
+        "json",
+        "os",
+        "re"
+      ],
+      "path": "src/shieldcraft/services/codegen/template_engine.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/codegen/mapping_inspector.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "hashlib"
+      ],
+      "path": "src/shieldcraft/services/codegen/file_plan.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/codegen/__init__.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/codegen/templates/__init__.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "pathlib"
+      ],
+      "path": "src/shieldcraft/services/codegen/emitter/writer.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/services/codegen/emitter/__init__.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "hashlib"
+      ],
+      "path": "src/shieldcraft/util/canonical_digest.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/util/__init__.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "json"
+      ],
+      "path": "src/shieldcraft/util/json_canonicalizer.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "pathlib",
+        "shieldcraft",
+        "json",
+        "datetime",
+        "jsonschema"
+      ],
+      "path": "src/shieldcraft/dsl/canonical_loader.py"
+    },
+    {
+      "exports": [],
+      "imports": [
+        "pathlib",
+        "json",
+        "shieldcraft",
+        "logging"
+      ],
+      "path": "src/shieldcraft/dsl/loader.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/shieldcraft/dsl/__init__.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/851cc16ac33098af.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/0b1af486c1ee6b81.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/d85383f3abc84672.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/da9431fab6074cda.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/27696da06222c9fb.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/aa71ff6a19f8825b.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/8d7960f1a801cc90.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/f69bb2b3f45eca5b.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/b7f43f0e7c77b09d.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/c0cf80335ad385c4.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/bf4107508b811751.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/84c7c21a7cfc0262.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/e202b7929f44e1a0.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/7ae6ba180155c08c.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/b27471410d645e46.py"
+    },
+    {
+      "exports": [],
+      "imports": [],
+      "path": "src/generated/e96768d7c7d1f189.py"
+    }
+  ],
+  "orphaned_files": [
+    "src/generated/851cc16ac33098af.py",
+    "src/generated/0b1af486c1ee6b81.py",
+    "src/generated/d85383f3abc84672.py",
+    "src/generated/da9431fab6074cda.py",
+    "src/generated/27696da06222c9fb.py",
+    "src/generated/aa71ff6a19f8825b.py",
+    "src/generated/8d7960f1a801cc90.py",
+    "src/generated/f69bb2b3f45eca5b.py",
+    "src/generated/b7f43f0e7c77b09d.py",
+    "src/generated/c0cf80335ad385c4.py",
+    "src/generated/bf4107508b811751.py",
+    "src/generated/84c7c21a7cfc0262.py",
+    "src/generated/e202b7929f44e1a0.py",
+    "src/generated/7ae6ba180155c08c.py",
+    "src/generated/b27471410d645e46.py",
+    "src/generated/e96768d7c7d1f189.py"
+  ],
+  "repo_fingerprint": "f1afe4268116c3d8e96e91a894b690081b497f92ec7359c86c171bce4fa12244",
+  "stubs": [
+    "scripts/sync/generate_sync_files.py",
+    "src/shieldcraft/services/governance/evidence.py"
+  ],
+  "test_summary": {
+    "test_files": 79,
+    "tests_per_file": {
+      "tests/artifacts/test_manifest_bundle.py": 5,
+      "tests/ast/test_ast_builder.py": 5,
+      "tests/ast/test_ast_queries.py": 6,
+      "tests/ast/test_completeness.py": 3,
+      "tests/ast/test_consistency.py": 5,
+      "tests/ast/test_lineage_consistency.py": 5,
+      "tests/bootstrap/test_derived_tasks.py": 6,
+      "tests/checklist/test_ancestry.py": 4,
+      "tests/checklist/test_ast_integration.py": 5,
+      "tests/checklist/test_classification_types.py": 5,
+      "tests/checklist/test_cross_section_order.py": 3,
+      "tests/checklist/test_cycles.py": 6,
+      "tests/checklist/test_derived.py": 3,
+      "tests/checklist/test_derived_determinism.py": 6,
+      "tests/checklist/test_id_collision.py": 4,
+      "tests/checklist/test_implicit_deps.py": 4,
+      "tests/checklist/test_integration_items.py": 2,
+      "tests/checklist/test_invariants.py": 3,
+      "tests/checklist/test_ordering_stability.py": 4,
+      "tests/checklist/test_resolution_chain.py": 3,
+      "tests/checklist/test_timings.py": 2,
+      "tests/ci/test_spec_pipeline_smoke.py": 4,
+      "tests/cli/test_validate_spec.py": 2,
+      "tests/codegen/test_codegen_roundtrip.py": 4,
+      "tests/codegen/test_dry_run.py": 2,
+      "tests/codegen/test_provenance_headers.py": 4,
+      "tests/codegen/test_template_engine.py": 3,
+      "tests/codegen/test_template_validation.py": 3,
+      "tests/codegen/test_templates_render.py": 10,
+      "tests/diff/test_impact_classification.py": 4,
+      "tests/engine/test_batch.py": 2,
+      "tests/engine/test_engine_end_to_end.py": 4,
+      "tests/governance/test_evidence_expanded.py": 2,
+      "tests/io/test_manifest_structure.py": 5,
+      "tests/plan/test_execution_plan.py": 4,
+      "tests/plan/test_ordering.py": 4,
+      "tests/selfhost/test_basic_selfhost_pipeline.py": 3,
+      "tests/selfhost/test_bootstrap_codegen.py": 5,
+      "tests/selfhost/test_governance_and_pointers.py": 5,
+      "tests/selfhost/test_selfhost_dryrun.py": 3,
+      "tests/selfhost/test_selfhost_minimal.py": 3,
+      "tests/spec/test_canonical_json.py": 4,
+      "tests/spec/test_canonical_loader_roundtrip.py": 4,
+      "tests/spec/test_format_check.py": 4,
+      "tests/spec/test_pointer_locality.py": 3,
+      "tests/spec/test_pointer_map.py": 4,
+      "tests/spec/test_pointer_missing.py": 4,
+      "tests/spec/test_pointer_range.py": 5,
+      "tests/spec/test_pointer_shape.py": 3,
+      "tests/spec/test_pointer_strict_mode.py": 5,
+      "tests/spec/test_pointer_unreachable_canonical.py": 4,
+      "tests/spec/test_schema_compliance.py": 7,
+      "tests/stability/test_extended_hashset.py": 5,
+      "tests/stability/test_stability_compare.py": 6,
+      "tests/test_ast.py": 1,
+      "tests/test_checklist.py": 1,
+      "tests/test_checklist_generator.py": 1,
+      "tests/test_checklist_generator_expanded.py": 1,
+      "tests/test_checklist_model.py": 1,
+      "tests/test_classification_severity_order.py": 4,
+      "tests/test_codegen_engine.py": 2,
+      "tests/test_constraints_and_semantic.py": 3,
+      "tests/test_dedupe_collapse_canonical.py": 3,
+      "tests/test_deps_and_cross.py": 2,
+      "tests/test_engine.py": 1,
+      "tests/test_extractor.py": 1,
+      "tests/test_flow_and_order.py": 2,
+      "tests/test_governance_determinism.py": 1,
+      "tests/test_governance_evidence.py": 1,
+      "tests/test_group_rollup_evidence.py": 3,
+      "tests/test_lineage_manifest_stability.py": 2,
+      "tests/test_plan_and_diff.py": 2,
+      "tests/test_planner.py": 1,
+      "tests/test_preflight_contract.py": 1,
+      "tests/test_sections.py": 1,
+      "tests/test_task_id_and_category.py": 2,
+      "tests/test_writer.py": 1,
+      "tests/traceability/test_codegen_traceability.py": 5,
+      "tests/traceability/test_pointer_propagation.py": 5
+    },
+    "total_tests": 271
+  },
+  "unused_modules_candidates": [
+    "src/shieldcraft/engine_batch.py",
+    "src/shieldcraft/main.py",
+    "src/shieldcraft/engine.py",
+    "src/shieldcraft/__init__.py",
+    "src/shieldcraft/services/__init__.py",
+    "src/shieldcraft/services/governance/provenance.py",
+    "src/shieldcraft/services/governance/rules_engine.py",
+    "src/shieldcraft/services/governance/verifier.py",
+    "src/shieldcraft/services/governance/evidence.py",
+    "src/shieldcraft/services/governance/determinism.py",
+    "src/shieldcraft/services/governance/__init__.py",
+    "src/shieldcraft/services/rules/graph.py",
+    "src/shieldcraft/services/artifacts/lineage.py",
+    "src/shieldcraft/services/diff/canonical_diff.py",
+    "src/shieldcraft/services/diff/impact.py",
+    "src/shieldcraft/services/ast/builder.py",
+    "src/shieldcraft/services/ast/shape_validator.py",
+    "src/shieldcraft/services/ast/reconcile.py",
+    "src/shieldcraft/services/ast/node.py",
+    "src/shieldcraft/services/ast/consistency.py",
+    "src/shieldcraft/services/ast/__init__.py",
+    "src/shieldcraft/services/ast/lineage.py",
+    "src/shieldcraft/services/checklist/resolution_chain.py",
+    "src/shieldcraft/services/checklist/constraints.py",
+    "src/shieldcraft/services/checklist/plan.py",
+    "src/shieldcraft/services/checklist/rollup.py",
+    "src/shieldcraft/services/checklist/derived.py",
+    "src/shieldcraft/services/checklist/extractor.py",
+    "src/shieldcraft/services/checklist/normalization_audit.py",
+    "src/shieldcraft/services/checklist/writer.py",
+    "src/shieldcraft/services/checklist/dedupe.py",
+    "src/shieldcraft/services/checklist/order.py",
+    "src/shieldcraft/services/checklist/classify.py",
+    "src/shieldcraft/services/checklist/generator.py",
+    "src/shieldcraft/services/checklist/sanity.py",
+    "src/shieldcraft/services/checklist/model.py",
+    "src/shieldcraft/services/checklist/idgen.py",
+    "src/shieldcraft/services/checklist/warnings.py",
+    "src/shieldcraft/services/checklist/id_registry.py",
+    "src/shieldcraft/services/checklist/implicit_deps.py",
+    "src/shieldcraft/services/checklist/cross.py",
+    "src/shieldcraft/services/checklist/graph.py",
+    "src/shieldcraft/services/checklist/classifier.py",
+    "src/shieldcraft/services/checklist/semantic.py",
+    "src/shieldcraft/services/checklist/invariants.py",
+    "src/shieldcraft/services/checklist/deps.py",
+    "src/shieldcraft/services/checklist/evidence.py",
+    "src/shieldcraft/services/checklist/flow.py",
+    "src/shieldcraft/services/checklist/validator.py",
+    "src/shieldcraft/services/checklist/severity.py",
+    "src/shieldcraft/services/checklist/canonical.py",
+    "src/shieldcraft/services/checklist/ancestry.py",
+    "src/shieldcraft/services/checklist/collapse.py",
+    "src/shieldcraft/services/checklist/sections.py",
+    "src/shieldcraft/services/checklist/__init__.py",
+    "src/shieldcraft/services/checklist/grouping.py",
+    "src/shieldcraft/services/checklist/deps_tasks.py",
+    "src/shieldcraft/services/checklist/meta.py",
+    "src/shieldcraft/services/generator/contract_verifier.py",
+    "src/shieldcraft/services/generator/invariants.py",
+    "src/shieldcraft/services/selfhost/preview_validator.py",
+    "src/shieldcraft/services/io/manifest_writer.py",
+    "src/shieldcraft/services/io/canonical_writer.py",
+    "src/shieldcraft/services/plan/execution_plan.py",
+    "src/shieldcraft/services/preflight/preflight.py",
+    "src/shieldcraft/services/planner/planner.py",
+    "src/shieldcraft/services/planner/__init__.py",
+    "src/shieldcraft/services/mapping/pointer_map.py",
+    "src/shieldcraft/services/stability/stability.py",
+    "src/shieldcraft/services/validator/__init__.py",
+    "src/shieldcraft/services/spec/dependency_contract.py",
+    "src/shieldcraft/services/spec/coverage.py",
+    "src/shieldcraft/services/spec/pointer_auditor.py",
+    "src/shieldcraft/services/spec/model.py",
+    "src/shieldcraft/services/spec/lifecycle.py",
+    "src/shieldcraft/services/spec/invariants.py",
+    "src/shieldcraft/services/spec/evolution.py",
+    "src/shieldcraft/services/spec/stats.py",
+    "src/shieldcraft/services/spec/fingerprint.py",
+    "src/shieldcraft/services/spec/metrics.py",
+    "src/shieldcraft/services/spec/schema_validator.py",
+    "src/shieldcraft/services/codegen/generator.py",
+    "src/shieldcraft/services/codegen/template_engine.py",
+    "src/shieldcraft/services/codegen/mapping_inspector.py",
+    "src/shieldcraft/services/codegen/file_plan.py",
+    "src/shieldcraft/services/codegen/__init__.py",
+    "src/shieldcraft/services/codegen/templates/__init__.py",
+    "src/shieldcraft/services/codegen/emitter/writer.py",
+    "src/shieldcraft/services/codegen/emitter/__init__.py",
+    "src/shieldcraft/util/canonical_digest.py",
+    "src/shieldcraft/util/__init__.py",
+    "src/shieldcraft/util/json_canonicalizer.py",
+    "src/shieldcraft/dsl/canonical_loader.py",
+    "src/shieldcraft/dsl/loader.py",
+    "src/shieldcraft/dsl/__init__.py",
+    "src/generated/851cc16ac33098af.py",
+    "src/generated/0b1af486c1ee6b81.py",
+    "src/generated/d85383f3abc84672.py",
+    "src/generated/da9431fab6074cda.py",
+    "src/generated/27696da06222c9fb.py",
+    "src/generated/aa71ff6a19f8825b.py",
+    "src/generated/8d7960f1a801cc90.py",
+    "src/generated/f69bb2b3f45eca5b.py",
+    "src/generated/b7f43f0e7c77b09d.py",
+    "src/generated/c0cf80335ad385c4.py",
+    "src/generated/bf4107508b811751.py",
+    "src/generated/84c7c21a7cfc0262.py",
+    "src/generated/e202b7929f44e1a0.py",
+    "src/generated/7ae6ba180155c08c.py",
+    "src/generated/b27471410d645e46.py",
+    "src/generated/e96768d7c7d1f189.py"
+  ]
+}
