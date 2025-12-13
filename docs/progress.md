@@ -184,3 +184,9 @@ These constraints are enforced by the PR gating rules in `docs/pr_structure_phas
 	- tests/test_task_id_and_category.py
 
 Notes: All non-doc modifications must be reviewed in a separate PR; foundation-alignment closure is contingent on removing or moving these changes to a dedicated review branch if they are to be retained.
+
+
+**Phase 14: Self-Hosting Validation**
+
+- self-hosting-validation: STARTED
+- Workspace verified clean before entry
