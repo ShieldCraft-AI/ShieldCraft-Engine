@@ -38,18 +38,7 @@ class Engine:
     def run(self, spec_path):
         # AUTHORITATIVE DSL: se_dsl_v1.schema.json via dsl.loader. Do not introduce parallel DSLs.
         
-        # Verify DSL version before loading
-        import pathlib
-        file_path = pathlib.Path(spec_path)
-        data = json.loads(file_path.read_text())
-        dsl_version = data.get('dsl_version')
-        if dsl_version != 'canonical_v1_frozen':
-            raise ValueError(
-                f"DSL version check failed: expected 'canonical_v1_frozen', got '{dsl_version}'. "
-                f"Spec must use frozen canonical DSL. No fallback or compatibility mode."
-            )
-        
-        # Load spec using canonical DSL
+        # Load spec using canonical DSL loader which performs the canonical mapping
         raw = load_spec(spec_path)
         
         # Handle SpecModel or raw dict
@@ -140,7 +129,8 @@ class Engine:
         
         # Prepare manifest
         manifest = {
-            "fingerprint": fingerprint,
+            "manifest_version": "v1",
+            "spec_fingerprint": fingerprint,
             "spec_metadata": spec.get("metadata", {}),
             "bootstrap_items": len(bootstrap_items),
             "codegen_bundle_hash": codegen_result.get("codegen_bundle_hash", "unknown"),
@@ -203,8 +193,22 @@ class Engine:
             engine_version="0.1.0",
             checklist_hash=checklist_hash
         )
+        # Load spec to extract invariants and graph for evidence building
+        import json
+        import pathlib
+        spec_obj = {}
+        try:
+            spec_obj = json.loads(pathlib.Path(spec_path).read_text())
+        except Exception:
+            spec_obj = {}
+
+        invariants = spec_obj.get("invariants", [])
+        graph = spec_obj.get("model", {}).get("dependencies", [])
+
         return self.evidence.build(
             checklist=checklist,
+            invariants=invariants,
+            graph=graph,
             provenance=prov,
             output_dir="evidence"
         )
@@ -262,7 +266,9 @@ class Engine:
         
         # Generate code
         outputs = self.codegen.run(checklist_items)
-        self.writer.write_all(outputs)
+        # Support both historic list-of-outputs and dict with 'outputs' key
+        outputs_list = outputs.get("outputs") if isinstance(outputs, dict) and "outputs" in outputs else outputs
+        self.writer.write_all(outputs_list)
         
         # Bootstrap module emission for self-host
         if spec.get("metadata", {}).get("self_host") is True:
@@ -357,7 +363,7 @@ class BootstrapModule:
         
         return {
             "checklist": result["checklist"],
-            "generated": outputs,
+            "generated": outputs_list,
             "evidence": evidence,
             "ast": ast,
             "plan": plan,

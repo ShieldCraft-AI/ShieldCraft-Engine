@@ -1,0 +1,373 @@
+{
+  "$schema": "../src/shieldcraft/dsl/schema/se_dsl.schema.json",
+  "canonical_spec_hash": "401245945d57d7576769888e2d691f2941880e483461e696c56391d6a6830e16",
+  "codegen_targets": [
+    {
+      "id": "module",
+      "template": "module.j2"
+    },
+    {
+      "id": "bootstrap_engine",
+      "template": "engine_stage.j2"
+    }
+  ],
+  "execution": {
+    "stages": [
+      {
+        "id": "1.ingest",
+        "inputs": [
+          "spec"
+        ],
+        "outputs": [
+          "validated_spec"
+        ]
+      },
+      {
+        "id": "2.ast",
+        "inputs": [
+          "validated_spec"
+        ],
+        "outputs": [
+          "ast"
+        ]
+      },
+      {
+        "id": "3.checklist",
+        "inputs": [
+          "ast"
+        ],
+        "outputs": [
+          "checklist"
+        ]
+      },
+      {
+        "id": "4.codegen",
+        "inputs": [
+          "checklist"
+        ],
+        "outputs": [
+          "modules"
+        ]
+      },
+      {
+        "id": "5.governance",
+        "inputs": [
+          "modules"
+        ],
+        "outputs": [
+          "evidence"
+        ]
+      },
+      {
+        "id": "6.manifest",
+        "inputs": [
+          "modules",
+          "evidence"
+        ],
+        "outputs": [
+          "manifest"
+        ]
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "inv.component_dependencies_exist",
+      "rule": "forall(component.depends_on \u2192 exists(model.components.id))"
+    },
+    {
+      "id": "inv.no_cycles",
+      "rule": "acyclic(model.dependencies)"
+    },
+    {
+      "id": "inv.no_empty_sections",
+      "rule": "sections[*].tasks > 0"
+    },
+    {
+      "id": "inv.unique_components",
+      "rule": "unique(model.components[*].id)"
+    }
+  ],
+  "metadata": {
+    "authors": [],
+    "created_at": "2025-12-12T00:00:00Z",
+    "generator_version": "1.0.0",
+    "language": "python",
+    "product_id": "shieldcraft_engine",
+    "self_host": true,
+    "spec_version": "1.0",
+    "spec_format": "canonical_json_v1"
+  },
+  "model": {
+    "components": [
+      {
+        "depends_on": [
+          "dsl_loader",
+          "ast_builder",
+          "checklist_pipeline",
+          "codegen_engine",
+          "governance_layer"
+        ],
+        "id": "engine_core",
+        "provides": [
+          "run",
+          "generate_code",
+          "generate_manifest"
+        ],
+        "type": "module"
+      },
+      {
+        "depends_on": [],
+        "id": "dsl_loader",
+        "provides": [
+          "load_spec",
+          "validate_schema"
+        ],
+        "type": "module"
+      },
+      {
+        "depends_on": [
+          "dsl_loader"
+        ],
+        "id": "ast_builder",
+        "provides": [
+          "build_ast"
+        ],
+        "type": "module"
+      },
+      {
+        "depends_on": [
+          "ast_builder"
+        ],
+        "id": "checklist_pipeline",
+        "provides": [
+          "generate_checklist"
+        ],
+        "type": "pipeline"
+      },
+      {
+        "depends_on": [
+          "checklist_pipeline"
+        ],
+        "id": "codegen_engine",
+        "provides": [
+          "emit_modules",
+          "emit_bootstrap"
+        ],
+        "type": "engine"
+      },
+      {
+        "depends_on": [
+          "checklist_pipeline"
+        ],
+        "id": "governance_layer",
+        "provides": [
+          "determinism_check",
+          "evidence_bundle"
+        ],
+        "type": "service"
+      },
+      {
+        "depends_on": [
+          "codegen_engine",
+          "governance_layer"
+        ],
+        "id": "manifest_writer",
+        "provides": [
+          "write_manifest"
+        ],
+        "type": "service"
+      }
+    ],
+    "dependencies": [
+      {
+        "from": "engine_core",
+        "to": "dsl_loader"
+      },
+      {
+        "from": "engine_core",
+        "to": "ast_builder"
+      },
+      {
+        "from": "engine_core",
+        "to": "checklist_pipeline"
+      },
+      {
+        "from": "engine_core",
+        "to": "codegen_engine"
+      },
+      {
+        "from": "engine_core",
+        "to": "governance_layer"
+      },
+      {
+        "from": "ast_builder",
+        "to": "dsl_loader"
+      },
+      {
+        "from": "checklist_pipeline",
+        "to": "ast_builder"
+      },
+      {
+        "from": "codegen_engine",
+        "to": "checklist_pipeline"
+      },
+      {
+        "from": "governance_layer",
+        "to": "checklist_pipeline"
+      },
+      {
+        "from": "manifest_writer",
+        "to": "codegen_engine"
+      },
+      {
+        "from": "manifest_writer",
+        "to": "governance_layer"
+      }
+    ]
+  },
+  "pointer_map": {
+    "ast_construction.build_nodes": "/sections/ast_construction/tasks/0",
+    "ast_construction.check_completeness": "/sections/ast_construction/tasks/1",
+    "checklist_generation.dependency": "/sections/checklist_generation/tasks/2",
+    "checklist_generation.extract": "/sections/checklist_generation/tasks/0",
+    "checklist_generation.invariants": "/sections/checklist_generation/tasks/3",
+    "checklist_generation.rollup": "/sections/checklist_generation/tasks/4",
+    "checklist_generation.semantic": "/sections/checklist_generation/tasks/1",
+    "code_generation.emit_bootstrap": "/sections/code_generation/tasks/1",
+    "code_generation.emit_modules": "/sections/code_generation/tasks/0",
+    "governance.determinism": "/sections/governance/tasks/0",
+    "governance.evidence_bundle": "/sections/governance/tasks/1",
+    "manifest.sign": "/sections/manifest/tasks/1",
+    "manifest.write": "/sections/manifest/tasks/0",
+    "spec_ingestion.fingerprint": "/sections/spec_ingestion/tasks/1",
+    "spec_ingestion.validate_schema": "/sections/spec_ingestion/tasks/0"
+  },
+  "sections": [
+    {
+      "id": "spec_ingestion",
+      "tasks": [
+        {
+          "description": "Validate DSL spec against JSON Schema.",
+          "id": "spec_ingestion.validate_schema",
+          "ptr": "/sections/spec_ingestion/tasks/0",
+          "requires": [
+            "model.components",
+            "model.types"
+          ],
+          "type": "validation"
+        },
+        {
+          "description": "Compute canonical spec fingerprint.",
+          "id": "spec_ingestion.fingerprint",
+          "ptr": "/sections/spec_ingestion/tasks/1",
+          "type": "hash"
+        }
+      ]
+    },
+    {
+      "id": "ast_construction",
+      "tasks": [
+        {
+          "description": "Convert raw spec into canonical AST nodes.",
+          "id": "ast_construction.build_nodes",
+          "ptr": "/sections/ast_construction/tasks/0",
+          "type": "ast"
+        },
+        {
+          "description": "Verify 1:1 raw\u2192AST field coverage.",
+          "id": "ast_construction.check_completeness",
+          "ptr": "/sections/ast_construction/tasks/1",
+          "type": "ast"
+        }
+      ]
+    },
+    {
+      "id": "checklist_generation",
+      "tasks": [
+        {
+          "description": "Extract raw tasks from AST.",
+          "id": "checklist_generation.extract",
+          "ptr": "/sections/checklist_generation/tasks/0",
+          "type": "checklist"
+        },
+        {
+          "description": "Apply semantic validation.",
+          "id": "checklist_generation.semantic",
+          "ptr": "/sections/checklist_generation/tasks/1",
+          "type": "checklist"
+        },
+        {
+          "description": "Validate component and task dependencies.",
+          "id": "checklist_generation.dependency",
+          "ptr": "/sections/checklist_generation/tasks/2",
+          "type": "checklist"
+        },
+        {
+          "description": "Validate invariants against tasks.",
+          "id": "checklist_generation.invariants",
+          "ptr": "/sections/checklist_generation/tasks/3",
+          "type": "checklist"
+        },
+        {
+          "description": "Compute rollups and stability hashes.",
+          "id": "checklist_generation.rollup",
+          "ptr": "/sections/checklist_generation/tasks/4",
+          "type": "checklist"
+        }
+      ]
+    },
+    {
+      "id": "code_generation",
+      "tasks": [
+        {
+          "description": "Emit modules for each component.",
+          "id": "code_generation.emit_modules",
+          "ptr": "/sections/code_generation/tasks/0",
+          "type": "codegen"
+        },
+        {
+          "description": "If self_host=true, generate bootstrap modules.",
+          "id": "code_generation.emit_bootstrap",
+          "ptr": "/sections/code_generation/tasks/1",
+          "type": "codegen"
+        }
+      ]
+    },
+    {
+      "id": "governance",
+      "tasks": [
+        {
+          "description": "Check determinism: fingerprint, task hashes, AST hashes.",
+          "id": "governance.determinism",
+          "ptr": "/sections/governance/tasks/0",
+          "type": "governance"
+        },
+        {
+          "description": "Construct evidence bundle with provenance.",
+          "id": "governance.evidence_bundle",
+          "ptr": "/sections/governance/tasks/1",
+          "type": "governance"
+        }
+      ]
+    },
+    {
+      "id": "manifest",
+      "tasks": [
+        {
+          "description": "Write final manifest.json with canonical ordering.",
+          "id": "manifest.write",
+          "ptr": "/sections/manifest/tasks/0",
+          "type": "manifest"
+        },
+        {
+          "description": "Sign manifest with KMS key.",
+          "id": "manifest.sign",
+          "ptr": "/sections/manifest/tasks/1",
+          "type": "manifest"
+        }
+      ]
+    }
+  ],
+  "dsl_version": "canonical_v1_frozen"
+}

@@ -42,9 +42,7 @@ def verify_generation_contract(spec, checklist_items, uncovered_ptrs):
         spec_version = spec.get("metadata", {}).get("generator_version", "unknown")
         
         if spec_version != lockfile_version:
-            raise ValueError(
-                f"GENERATOR_LOCKFILE_MISMATCH: expected {lockfile_version} but spec requests {spec_version}"
-            )
+            violations.append(f"GENERATOR_LOCKFILE_MISMATCH: expected {lockfile_version} but spec requests {spec_version}")
 
     ok = not violations
     return ok, violations

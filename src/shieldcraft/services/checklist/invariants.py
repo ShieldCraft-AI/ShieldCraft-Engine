@@ -20,14 +20,36 @@ def extract_invariants(ast):
                         if field in value_obj:
                             constraint = value_obj[field]
                             invariants.append({
-                                "id": f"inv.{node.ptr.replace('/', '.')}.{field}",
-                                "spec_ptr": node.ptr,
-                                "expr": constraint,
-                                "severity": value_obj.get("severity", "medium")
+                                "pointer": node.ptr,
+                                "type": "invariant",
+                                "constraint": constraint,
+                                "severity": value_obj.get("severity", "error")
                             })
+    # Handle raw spec dicts by simple recursive scan
+    elif isinstance(ast, dict):
+        def _scan_dict(obj, base_ptr=""):
+            if isinstance(obj, dict):
+                for k, v in obj.items():
+                    ptr = f"{base_ptr}/{k}"
+                    if isinstance(v, dict):
+                        # Check for invariant-like keys inside dict
+                        for field in ["must", "forbid", "require", "invariant"]:
+                            if field in v:
+                                invariants.append({
+                                    "pointer": ptr,
+                                    "type": "invariant",
+                                    "constraint": v[field],
+                                    "severity": v.get("severity", "error")
+                                })
+                        # Recurse
+                        _scan_dict(v, ptr)
+                    elif isinstance(v, list):
+                        for idx, item in enumerate(v):
+                            _scan_dict(item, f"{ptr}/{idx}")
+        _scan_dict(ast, "")
     
-    # Canonical sort by id
-    invariants.sort(key=lambda inv: inv["id"])
+    # Canonical sort by pointer
+    invariants.sort(key=lambda inv: inv.get("pointer", inv.get("id", "")))
     
     return invariants
 

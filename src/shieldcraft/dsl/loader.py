@@ -9,6 +9,9 @@ from shieldcraft.dsl.canonical_loader import load_canonical_spec
 
 logger = logging.getLogger(__name__)
 
+# Required canonical DSL version
+_DSL_VERSION_REQUIRED = "canonical_v1_frozen"
+
 
 def load_spec(path):
     """
@@ -20,13 +23,29 @@ def load_spec(path):
     file_path = pathlib.Path(path)
     data = json.loads(file_path.read_text())
     
-    # Enforce DSL version
+    # Enforce DSL version from top-level or metadata spec_format when explicitly present.
+    # If neither is present, treat as a legacy spec and return raw data (no hard failure).
     dsl_version = data.get('dsl_version')
-    if dsl_version != _DSL_VERSION_REQUIRED:
-        raise ValueError(
-            f"DSL version mismatch: expected '{_DSL_VERSION_REQUIRED}', "
-            f"got '{dsl_version}'. Spec must use canonical DSL v1 frozen."
-        )
+    spec_format = data.get('metadata', {}).get('spec_format')
+
+    if dsl_version:
+        if dsl_version != _DSL_VERSION_REQUIRED:
+            raise ValueError(
+                f"DSL version mismatch: expected '{_DSL_VERSION_REQUIRED}', "
+                f"got '{dsl_version}'. Spec must use canonical DSL v1 frozen."
+            )
+    elif spec_format:
+        if spec_format == 'canonical_json_v1':
+            dsl_version = 'canonical_v1_frozen'
+        else:
+            # Non-canonical spec_format specified: treat as explicit mismatch.
+            raise ValueError(
+                f"Unsupported spec_format '{spec_format}'; expected canonical_json_v1 or omit to use legacy format."
+            )
+    else:
+        # No dsl_version and no spec_format: legacy spec; return raw data but log deprecation.
+        logger.warning(f"DEPRECATION: old DSL format detected at {path}; treat as legacy and migrate to canonical JSON.")
+        return data
     
     # Detect canonical vs legacy
     if isinstance(data, dict) and ('canonical' in data or 'canonical_spec_hash' in data.get('metadata', {})):

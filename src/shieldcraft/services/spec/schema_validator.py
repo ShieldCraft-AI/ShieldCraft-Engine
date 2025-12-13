@@ -42,6 +42,16 @@ def validate_spec_against_schema(spec, schema):
     Validate spec dict using provided JSON Schema.
     Returns (valid: bool, errors: list[str]).
     """
+    # If schema is a file path, load it
+    if isinstance(schema, str):
+        from pathlib import Path
+        schema_path = Path(schema)
+        if schema_path.exists():
+            with open(schema_path) as f:
+                schema = json.load(f)
+        else:
+            raise FileNotFoundError(f"Schema path not found: {schema}")
+
     validator = jsonschema.Draft202012Validator(schema)
     errors = sorted(validator.iter_errors(spec), key=lambda e: e.path)
     if errors:

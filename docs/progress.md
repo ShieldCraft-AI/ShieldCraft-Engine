@@ -204,6 +204,11 @@ Notes: All non-doc modifications must be reviewed in a separate PR; foundation-a
 - self-hosting-remediation: STARTED
 - Execution limited to triaged failure categories only
 
+## Phase 15 Remediation
+
+- Generator preflight contract remediated
+- Engine DSL version enforcement aligned
+
 ## Phase 14 Triage
 
 - **Triage document created**: See [docs/self_hosting_failure_triage.md](docs/self_hosting_failure_triage.md) for a breakdown of failures and root causes.

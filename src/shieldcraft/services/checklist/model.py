@@ -5,7 +5,7 @@ from .idgen import stable_id
 class ChecklistModel:
     ALLOWED_TYPES = {
         "task", "module", "fix-dependency", "resolve-invariant",
-        "resolve-cycle", "integration", "bootstrap"
+        "resolve-cycle", "integration", "bootstrap", "set-metadata"
     }
     
     # Canonical key order for to_dict()

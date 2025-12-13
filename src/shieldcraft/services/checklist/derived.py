@@ -41,6 +41,7 @@ def infer_tasks(item):
     parent_lineage_id = item.get("lineage_id")
     parent_spec_ptr = item.get("source_pointer", ptr)
     parent_node_type = item.get("source_node_type", "unknown")
+    value = item.get("value", {}) or {}
     
     # Module-type derived tasks
     if item_type == "module":
@@ -116,8 +117,8 @@ def infer_tasks(item):
         })
     
     # Missing dependency derived tasks
-    if item_type == "fix-dependency" or "depends_on" in item:
-        depends_on = item.get("depends_on", [])
+    if item_type == "fix-dependency" or "depends_on" in item or "dependencies" in item:
+        depends_on = item.get("depends_on", []) + item.get("dependencies", [])
         if isinstance(depends_on, list):
             for dep in depends_on:
                 dep_payload = {"type": "fix_dep", "dependency": dep}
@@ -136,10 +137,72 @@ def infer_tasks(item):
                     "source_node_type": parent_node_type,
                     "meta": {"parent_id": base_id, "derived_type": "fix-dependency", "dependency": dep}
                 })
+    # Also detect dependencies inside value payload
+    if isinstance(value, dict) and "dependencies" in value:
+        deps = value.get("dependencies", [])
+        if isinstance(deps, list):
+            for dep in deps:
+                dep_payload = {"type": "fix_dep", "dependency": dep}
+                derived.append({
+                    "id": _make_deterministic_id(base_id, "fix-dependency", dep_payload),
+                    "ptr": f"{ptr}/dependencies/{dep}",
+                    "text": f"Fix missing dependency: {dep}",
+                    "type": "fix-dependency",
+                    "category": category,
+                    "classification": "fix-dependency",
+                    "severity": "high",
+                    "dependency_ref": dep,
+                    "source_pointer": parent_spec_ptr,
+                    "source_section": item.get("source_section", "unknown"),
+                    "lineage_id": parent_lineage_id,
+                    "source_node_type": parent_node_type,
+                    "meta": {"parent_id": base_id, "derived_type": "fix-dependency", "dependency": dep}
+                })
     
     # Invariant violation derived tasks
-    if item.get("invariant_violation") or item_type == "resolve-invariant":
-        invariant_id = item.get("invariant_id", "unknown")
+
+    # Metadata missing field derived tasks (e.g., product_id, version)
+    if ptr == "/metadata" and isinstance(value, dict):
+        if "product_id" not in value:
+            payload = {"type": "set", "field": "product_id"}
+            derived.append({
+                "id": _make_deterministic_id(base_id, "set_product_id", payload),
+                "ptr": f"{ptr}/product_id",
+                "text": "Set product_id in metadata",
+                "type": "set-metadata",
+                "category": "meta",
+                "classification": "meta",
+                "severity": "critical",
+                "source_pointer": parent_spec_ptr,
+                "source_section": item.get("source_section", "unknown"),
+                "lineage_id": parent_lineage_id,
+                "source_node_type": parent_node_type,
+                "meta": {"parent_id": base_id, "derived_type": "set_product_id"}
+            })
+        if "version" not in value:
+            payload = {"type": "set", "field": "version"}
+            derived.append({
+                "id": _make_deterministic_id(base_id, "set_version", payload),
+                "ptr": f"{ptr}/version",
+                "text": "Set version in metadata",
+                "type": "set-metadata",
+                "category": "meta",
+                "classification": "meta",
+                "severity": "critical",
+                "source_pointer": parent_spec_ptr,
+                "source_section": item.get("source_section", "unknown"),
+                "lineage_id": parent_lineage_id,
+                "source_node_type": parent_node_type,
+                "meta": {"parent_id": base_id, "derived_type": "set_version"}
+            })
+    # legacy and structured invariant reporting
+    invs = item.get("meta", {}).get("invariant_violations", []) or []
+    if item.get("invariant_violation") or item_type == "resolve-invariant" or (isinstance(invs, list) and len(invs) > 0):
+        # Prefer explicit invariant_id if present in meta; fallback to item field
+        if isinstance(invs, list) and len(invs) > 0 and isinstance(invs[0], dict):
+            invariant_id = invs[0].get("id", item.get("invariant_id", "unknown"))
+        else:
+            invariant_id = item.get("invariant_id", "unknown")
         inv_payload = {"type": "resolve_inv", "invariant": invariant_id}
         derived.append({
             "id": _make_deterministic_id(base_id, "resolve-invariant", inv_payload),
@@ -160,3 +223,6 @@ def infer_tasks(item):
         })
     
     return sorted(derived, key=lambda x: (x["ptr"], x.get("id", "")))
+
+
+

@@ -115,7 +115,16 @@ def run_self_host(spec_file, schema_path):
             else:
                 checklist_items = []
             
+            # Compute a lightweight fingerprint for deterministic identification
+            try:
+                from shieldcraft.services.spec.fingerprint import compute_spec_fingerprint
+                spec_fp = compute_spec_fingerprint(result.get("spec", {}))
+            except Exception:
+                spec_fp = "unknown"
+
             manifest_data = {
+                "manifest_version": "v1",
+                "spec_fingerprint": spec_fp,
                 "checklist": checklist_data,
                 "plan": result.get("plan", {}),
                 "lineage": result.get("lineage", {})

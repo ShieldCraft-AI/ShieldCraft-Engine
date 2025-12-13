@@ -76,8 +76,8 @@ def ensure_stable_order(items):
     # Build section order map
     section_order_map = {s: i for i, s in enumerate(SECTION_ORDER)}
     
-    # Define severity order
-    severity_order = {"low": 0, "medium": 1, "high": 2, "critical": 3}
+    # Define severity order (higher priority first): critical, high, medium, low
+    severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
     
     def sort_key(item):
         # Extract section from ptr
