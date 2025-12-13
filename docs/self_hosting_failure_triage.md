@@ -26,6 +26,7 @@ This file categorizes the failures observed during Phase 14 validation runs and 
 - RFC alignment: `rfc-generator-version-contract.md`
 - Required behavior (authoritative): Preflight should return a violations list and mark contract_ok=False for mismatch; raising an exception is reserved for CI or CLI enforcement, not unit-level contract checks.
 - Implementation notes (non-executable): Adjust `verify_generation_contract` to return violations; update preflight to aggregate violations rather than raising.
+ - Status: REMEDIATED (Phase 15) - `verify_generation_contract` now returns violations instead of raising, and `run_preflight` aggregates violations.
 
 2) DSL version enforcement
 - Observed error: `ValueError: DSL version check failed: expected 'canonical_v1_frozen', got 'None'. Spec must use frozen canonical DSL.`
@@ -35,6 +36,7 @@ This file categorizes the failures observed during Phase 14 validation runs and 
 - RFC alignment: `rfc-pointer-map-semantics.md` and the Phase 13 schema changes that map `metadata.spec_format` to canonical DSL v1.
 - Required behavior: Engine must accept `metadata.spec_format` and map without raising, or tests must include explicit `dsl_version` for canonical specs.
 - Implementation notes: Add mapping in engine `run` checks to accept `metadata.spec_format` values or move mapping into loader and ensure engine uses loader result to decide validation.
+ - Status: REMEDIATED (Phase 15) - `Engine.run` no longer performs a pre-check; `load_spec` handles canonical mapping for `metadata.spec_format` and supports legacy specs.
 
 3) EvidenceBundle backward compatibility
 - Observed error: `TypeError: EvidenceBundle.build() missing 2 required keyword-only arguments: 'invariants' and 'graph'`
