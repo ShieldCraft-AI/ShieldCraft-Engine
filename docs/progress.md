@@ -99,6 +99,14 @@ Notes:
 - Rationale: User confirmed baseline commit and accepted the changes since baseline as intentional and ready for review.
 - Next-step: Create PR(s) grouping code/test changes by feature area for Phase 13 review, align with RFC approvals, and implement schema updates.
 
+## Phase 14 Validation
+
+- Self-hosting checklist generation executed twice using `spec/se_dsl_v1.spec.json` (with canonical mapping). Artifacts saved at `artifacts/self_hosting_run_1/` and `artifacts/self_hosting_run_2/`.
+- Deterministic outputs verified (byte-for-byte identity): `manifest.json`, `summary.json`, and `generated/` files identical across runs.
+- Manifest schema validation: `src/shieldcraft/dsl/schema/manifest.schema.json` — PASS for both runs.
+- Additional validations: against forbidden variability found deterministic timestamps (epoch) but no environment paths or random IDs.
+- Caveat: Full test suite shows regressions after Phase 14 validation runs (55 failures). The failures are primarily due to generator contract enforcement and recent engine changes necessary for self-hosting support. These regressions must be triaged and resolved in subsequent PRs before Phase 14 can be considered fully complete.
+
 ## Phase 13 Decisions
 
 - Approved RFCs:

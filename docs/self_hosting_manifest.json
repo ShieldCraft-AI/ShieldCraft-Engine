@@ -1,0 +1,20 @@
+{
+  "spec_input_path": "spec/se_dsl_v1.spec.json",
+  "execution_command": "python src/shieldcraft/main.py --self-host {spec}",
+  "expected_output_paths": [
+    "artifacts/self_hosting_run_1/.selfhost_outputs/manifest.json",
+    "artifacts/self_hosting_run_1/.selfhost_outputs/summary.json",
+    "artifacts/self_hosting_run_1/.selfhost_outputs/generated"
+  ],
+  "determinism_checks": [
+    "manifest.json identical (no timestamps)",
+    "summary.json identical",
+    "generated content identical across runs",
+    "lockfile hash identical"
+  ],
+  "forbidden_variability": [
+    "timestamp",
+    "random ids not derived from stable_id",
+    "environment-dependent paths or values"
+  ]
+}
