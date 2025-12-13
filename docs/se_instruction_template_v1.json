@@ -1,0 +1,27 @@
+{
+  "version": "1.0",
+  "name": "shieldcraft_instruction_template_v1",
+  "description": "Template for construction instructions with invariant-first enforcement",
+  "invariants": [
+    "No ambient state (time, randomness, env)",
+    "Stable ordering and sorted outputs",
+    "Deterministic serialization",
+    "Single canonical DSL only (spec/schemas/se_dsl_v1.schema.json)",
+    "No implicit defaults"
+  ],
+  "rule": "No construction actions allowed before invariants are declared",
+  "instructions": [
+    {
+      "id": "step.1",
+      "type": "verification",
+      "description": "Verify and assert invariants above are present, canonical and explicit",
+      "execute_before": []
+    },
+    {
+      "id": "step.2",
+      "type": "construction",
+      "description": "Construction steps go here; they must follow invariants verification",
+      "depends_on_invariants": true
+    }
+  ]
+}
