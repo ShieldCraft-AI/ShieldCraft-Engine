@@ -52,3 +52,7 @@ This repository is transitioned to post-spec-hardening state. No further *spec* 
 ---
 
 Status: CLOSED — Phase 13 complete.
+
+## Explicit Authorization
+
+- No further *spec* changes or migration behavior adjustments are authorized under Phase 13. Any additional specification work must be expressed via a new RFC and will proceed through normal Phase workflows.
