@@ -82,6 +82,8 @@ This document serves as the authoritative record of ShieldCraft Engine's develop
 - All spec gaps identified and documented as RFCs
 - No implementation decisions taken
 - No code or test changes authorized
+- self-hosting-validation: CLOSED (FAIL)
+- Failures triaged; remediation required before reattempt
 
 ## Phase 13: spec-hardening-and-alignment
 
@@ -196,5 +198,14 @@ Notes: All non-doc modifications must be reviewed in a separate PR; foundation-a
 
 **Phase 14: Self-Hosting Validation**
 
-- self-hosting-validation: STARTED
+- self-hosting-validation: CLOSED (FAIL)
+- Failures triaged; remediation required before reattempt
 - Workspace verified clean before entry
+- self-hosting-remediation: STARTED
+- Execution limited to triaged failure categories only
+
+## Phase 14 Triage
+
+- **Triage document created**: See [docs/self_hosting_failure_triage.md](docs/self_hosting_failure_triage.md) for a breakdown of failures and root causes.
+- **Next steps**: Create focused PRs per triaged category (generator-lockfile, DSL mapping, evidence bundle compatibility, codegen output shapes, pointer map canonicalization).
+
