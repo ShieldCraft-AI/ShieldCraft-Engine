@@ -162,9 +162,21 @@ def verify_repo_state_authoritative(repo_root: str = ".") -> Dict[str, str]:
 
     # 'repo_state_sync' mode: verify external repo_state_sync.json and associated artifacts
     if authority == "repo_state_sync":
-        res = verify_repo_sync(repo_root)
-        res["authority"] = "repo_state_sync"
-        return res
+        # Treat repo_state_sync as derived state (non-mandatory):
+        # If the external sync artifact is present, validate it; if it is
+        # missing, allow the run to proceed (do not raise SyncError).
+        try:
+            res = verify_repo_sync(repo_root)
+            res["authority"] = "repo_state_sync"
+            return res
+        except Exception as e:
+            # If it's a SyncError due to missing artifact, relax and proceed;
+            # otherwise re-raise to preserve strict failure modes for other errors.
+            from inspect import getmodule
+            # Detect SyncError by attribute presence (class imported above)
+            if getattr(e, "code", None) == SYNC_MISSING:
+                return {"ok": True, "authority": "repo_state_sync", "artifact": None}
+            raise
 
     # Snapshot-based authority (opt-in only)
     from shieldcraft.snapshot import validate_snapshot, generate_snapshot, DEFAULT_SNAPSHOT_PATH, SnapshotError
