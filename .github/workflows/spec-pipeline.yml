@@ -29,6 +29,8 @@ jobs:
       continue-on-error: false
 
     - name: Run self-host tests specifically
+      env:
+        SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY: '1'
       run: pytest -q tests/selfhost -q
 
     - name: Ensure critical tests exist
