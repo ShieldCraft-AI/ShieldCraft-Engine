@@ -3,7 +3,9 @@ name: Reproducibility Check
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - 'fix/*'
 
 jobs:
   repro:
