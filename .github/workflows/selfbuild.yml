@@ -18,7 +18,8 @@ jobs:
 
       - name: Install
         run: |
-          pip install -e .
+          python -m pip install --upgrade pip
+          python -m pip install -e .
 
       - name: Run self-build
         run: |
