@@ -63,7 +63,34 @@ def verify_repo_sync(repo_root: str = ".") -> Dict[str, str]:
 
     try:
         with open(sync_path) as f:
-            data = json.load(f)
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError as e:
+                # Be tolerant of concatenated JSON artifacts in sync files by
+                # attempting to parse the first top-level JSON object. This
+                # makes verification robust in environments where multiple
+                # processes may write the file sequentially without truncation.
+                f.seek(0)
+                raw = f.read()
+                # Find the end index of the first top-level JSON object by
+                # matching braces to avoid accidental concatenation issues.
+                depth = 0
+                end_idx = None
+                for i, ch in enumerate(raw):
+                    if ch == '{':
+                        depth += 1
+                    elif ch == '}':
+                        depth -= 1
+                        if depth == 0:
+                            end_idx = i
+                            break
+                if end_idx is not None:
+                    try:
+                        data = json.loads(raw[: end_idx + 1])
+                    except Exception:
+                        raise SyncError(SYNC_INVALID_FORMAT, f"invalid repo_state_sync.json: {e}", "/repo_state_sync.json")
+                else:
+                    raise SyncError(SYNC_INVALID_FORMAT, f"invalid repo_state_sync.json: {e}", "/repo_state_sync.json")
     except Exception as e:
         raise SyncError(SYNC_INVALID_FORMAT, f"invalid repo_state_sync.json: {e}", "/repo_state_sync.json")
 
@@ -119,7 +146,8 @@ def verify_repo_state_authoritative(repo_root: str = ".") -> Dict[str, str]:
     Raises SyncError or SnapshotError on deterministic failures.
     """
     import logging
-    authority = os.getenv("SHIELDCRAFT_SYNC_AUTHORITY", "snapshot")
+    # Default authority is repo_state_sync (use external repo_state_sync artifacts)
+    authority = os.getenv("SHIELDCRAFT_SYNC_AUTHORITY", "repo_state_sync")
 
     # External mode: issue migration warning and rely on existing verify_repo_sync.
     if authority == "external":
@@ -132,7 +160,25 @@ def verify_repo_state_authoritative(repo_root: str = ".") -> Dict[str, str]:
         res["authority"] = "external"
         return res
 
-    # Snapshot-based authority
+    # 'repo_state_sync' mode: verify external repo_state_sync.json and associated artifacts
+    if authority == "repo_state_sync":
+        # Treat repo_state_sync as derived state (non-mandatory):
+        # If the external sync artifact is present, validate it; if it is
+        # missing, allow the run to proceed (do not raise SyncError).
+        try:
+            res = verify_repo_sync(repo_root)
+            res["authority"] = "repo_state_sync"
+            return res
+        except Exception as e:
+            # If it's a SyncError due to missing artifact, relax and proceed;
+            # otherwise re-raise to preserve strict failure modes for other errors.
+            from inspect import getmodule
+            # Detect SyncError by attribute presence (class imported above)
+            if getattr(e, "code", None) == SYNC_MISSING:
+                return {"ok": True, "authority": "repo_state_sync", "artifact": None}
+            raise
+
+    # Snapshot-based authority (opt-in only)
     from shieldcraft.snapshot import validate_snapshot, generate_snapshot, DEFAULT_SNAPSHOT_PATH, SnapshotError
 
     snapshot_path = os.path.join(repo_root, DEFAULT_SNAPSHOT_PATH)

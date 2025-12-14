@@ -1,0 +1,25 @@
+{
+  "artifacts": [
+    {
+      "path": "src/shieldcraft/observability/__init__.py",
+      "sha256": "0dd1049f6ca9bb20cbbae92b02571426f81429fc4bbce84c714f7592cce686b6"
+    },
+    {
+      "path": "src/shieldcraft/persona/__init__.py",
+      "sha256": "83d9f0efbda45198c8e4c0db773222af09363ae7ce65335579edcd2897353153"
+    },
+    {
+      "path": "src/shieldcraft/persona/persona_event_v1.schema.json",
+      "sha256": "5ae47a563d0679f08a20f8d371e36bd0f4069a8396e38a9c7f8ca07f1763484f"
+    },
+    {
+      "path": "src/shieldcraft/persona/persona_v1.schema.json",
+      "sha256": "2e97d96a704713847b90a255832516cb7c415cab94b714c0c2c898678495d4ea"
+    },
+    {
+      "path": "src/shieldcraft/services/selfhost/artifact_manifest.json",
+      "sha256": "6dce8deb5d9850188cc7ac60648dfa0f160bf9143f816bfbdbf236a3b597a743"
+    }
+  ],
+  "manifest_version": 1
+}

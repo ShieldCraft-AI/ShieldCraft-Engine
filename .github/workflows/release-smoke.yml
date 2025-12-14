@@ -1,0 +1,26 @@
+name: Release Smoke Suite
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || true
+      - name: Generate release manifest
+        run: |
+          python -c "from shieldcraft.release import generate_release_manifest; generate_release_manifest()"
+      - name: Run smoke tests
+        run: |
+          pytest -q tests/release/test_release_manifest.py tests/release/test_compatibility_matrix.py

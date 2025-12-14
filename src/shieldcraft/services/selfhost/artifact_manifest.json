@@ -1,4 +1,20 @@
 {
+  "version": 1,
+  "allowed_prefixes": [
+    "bootstrap/",
+    "modules/",
+    "fixes/",
+    "cycles/",
+    "integration/",
+    "__init__",
+    "bootstrap_manifest.json",
+    "manifest.json",
+    "summary.json",
+    "errors.json"
+  ],
+  "allowed_files": []
+}
+{
   "allowed_prefixes": [
     "bootstrap/",
     "modules/",

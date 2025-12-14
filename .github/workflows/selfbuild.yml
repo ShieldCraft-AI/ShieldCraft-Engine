@@ -3,7 +3,9 @@ name: Self-Build Verification
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - 'fix/*'
 
 jobs:
   selfbuild:
@@ -18,13 +20,14 @@ jobs:
 
       - name: Install
         run: |
-          pip install -e .
+          python -m pip install --upgrade pip
+          python -m pip install -e .
 
       - name: Run self-build
         run: |
           python - <<PY
-from src.shieldcraft.engine import Engine
-e = Engine('src/shieldcraft/dsl/schema/se_dsl.schema.json')
-e.run_self_build('spec/se_dsl_v1.spec.json', dry_run=False)
-print('Self-build completed')
-PY
+          from src.shieldcraft.engine import Engine
+          e = Engine('src/shieldcraft/dsl/schema/se_dsl.schema.json')
+          e.run_self_build('spec/se_dsl_v1.spec.json', dry_run=False)
+          print('Self-build completed')
+          PY

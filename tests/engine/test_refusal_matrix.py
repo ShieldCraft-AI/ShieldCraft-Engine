@@ -32,3 +32,17 @@ def test_engine_refuses_on_disallowed_input():
     with pytest.raises(RuntimeError) as e:
         engine.run_self_host(bad_spec, dry_run=True)
     assert "disallowed_selfhost_input" in str(e.value)
+
+
+def test_engine_refuses_on_persona_veto(monkeypatch):
+    from shieldcraft.engine import Engine
+    from shieldcraft.persona import PersonaContext, emit_veto
+    monkeypatch.setenv("SHIELDCRAFT_PERSONA_ENABLED", "1")
+    engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
+    spec = json.load(open("spec/se_dsl_v1.spec.json"))
+    # Emit veto and ensure preflight raises persona_veto
+    p = PersonaContext(name="x", role=None, display_name=None, scope=["preflight"], allowed_actions=["veto"], constraints={})
+    emit_veto(engine, p, "preflight", "forbid", {"explanation_code": "reason", "details": "stop"}, "high")
+    with pytest.raises(RuntimeError) as e:
+        engine.preflight(spec)
+    assert "persona_veto" in str(e.value)

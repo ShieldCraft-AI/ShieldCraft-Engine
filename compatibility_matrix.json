@@ -1,0 +1,6 @@
+{
+  "engine_version": "0.1.0",
+  "compatibility": [
+    {"engine": "0.1.0", "spec_versions": ["se_dsl_v1"], "generator_versions": ["v1"]}
+  ]
+}

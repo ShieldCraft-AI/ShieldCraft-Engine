@@ -3,7 +3,9 @@ name: Reproducibility Check
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - 'fix/*'
 
 jobs:
   repro:
@@ -18,21 +20,22 @@ jobs:
 
       - name: Install package
         run: |
-          pip install -e .
-          pip install pytest
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install pytest
 
       - name: Run self-host twice
         run: |
           rm -rf artifacts || true
           mkdir -p artifacts/run1 artifacts/run2
           python - <<PY
-from src.shieldcraft.main import run_self_host
-run_self_host('examples/selfhost/bootstrap_spec.json', 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
-import shutil, os
-shutil.copytree('.selfhost_outputs', 'artifacts/run1/selfhost', dirs_exist_ok=True)
-run_self_host('examples/selfhost/bootstrap_spec.json', 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
-shutil.copytree('.selfhost_outputs', 'artifacts/run2/selfhost', dirs_exist_ok=True)
-PY
+          from src.shieldcraft.main import run_self_host
+          run_self_host('examples/selfhost/bootstrap_spec.json', 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
+          import shutil, os
+          shutil.copytree('.selfhost_outputs', 'artifacts/run1/selfhost', dirs_exist_ok=True)
+          run_self_host('examples/selfhost/bootstrap_spec.json', 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
+          shutil.copytree('.selfhost_outputs', 'artifacts/run2/selfhost', dirs_exist_ok=True)
+          PY
 
       - name: Diff outputs
         run: |
