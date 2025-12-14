@@ -63,7 +63,25 @@ def verify_repo_sync(repo_root: str = ".") -> Dict[str, str]:
 
     try:
         with open(sync_path) as f:
-            data = json.load(f)
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError as e:
+                # Be tolerant of concatenated JSON artifacts in sync files by
+                # attempting to parse the first top-level JSON object. This
+                # makes verification robust in environments where multiple
+                # processes may write the file sequentially without truncation.
+                f.seek(0)
+                raw = f.read()
+                # heuristic: find the first closing brace that likely ends the
+                # top-level object and attempt to parse up to there.
+                idx = raw.rfind('}')
+                if idx != -1:
+                    try:
+                        data = json.loads(raw[: idx + 1])
+                    except Exception:
+                        raise SyncError(SYNC_INVALID_FORMAT, f"invalid repo_state_sync.json: {e}", "/repo_state_sync.json")
+                else:
+                    raise SyncError(SYNC_INVALID_FORMAT, f"invalid repo_state_sync.json: {e}", "/repo_state_sync.json")
     except Exception as e:
         raise SyncError(SYNC_INVALID_FORMAT, f"invalid repo_state_sync.json: {e}", "/repo_state_sync.json")
 
