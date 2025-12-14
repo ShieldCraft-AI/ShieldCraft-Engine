@@ -20,6 +20,7 @@ from shieldcraft.services.artifacts.lineage import bundle
 from shieldcraft.services.io.manifest_writer import write_manifest_v2
 from shieldcraft.services.diff.impact import impact_summary
 from shieldcraft.services.stability.stability import compare
+from shieldcraft.services.validator import validate_spec_instructions
 
 
 class Engine:
@@ -59,6 +60,12 @@ class Engine:
         
         # AST already built in spec_model
         spec = normalized
+
+        # Instruction validation: enforce instruction invariants before plan creation
+        # Only validate when `instructions` are present in the spec (legacy specs without
+        # instruction blocks are not required to include invariants).
+        if "instructions" in spec:
+            validate_spec_instructions(spec)
         
         # Create execution plan
         plan = from_ast(ast)
