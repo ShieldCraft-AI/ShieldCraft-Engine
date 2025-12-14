@@ -15,6 +15,8 @@ def main():
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--self-host", dest="self_host", metavar="PRODUCT_SPEC_FILE",
                         help="Run self-host dry-run pipeline")
+    parser.add_argument("--enable-persona", dest="enable_persona", action="store_true",
+                        help="Enable persona influence (opt-in, auditable and non-authoritative)")
     parser.add_argument("--validate-spec", dest="validate_spec", metavar="SPEC_FILE",
                         help="Validate spec only (run preflight checks)")
     args = parser.parse_args()
@@ -26,6 +28,9 @@ def main():
     
     # Self-host mode
     if args.self_host:
+        # If persona flag provided, enable via env var for Engine to pick up deterministically
+        if args.enable_persona:
+            os.environ["SHIELDCRAFT_PERSONA_ENABLED"] = "1"
         run_self_host(args.self_host, args.schema)
         return
     
@@ -34,6 +39,11 @@ def main():
         parser.error("--spec is required unless using --self-host or --validate-spec")
 
     engine = Engine(args.schema)
+
+    # Honor CLI persona flag in long-running modes as well
+    if args.enable_persona:
+        os.environ["SHIELDCRAFT_PERSONA_ENABLED"] = "1"
+        engine.persona_enabled = True
     
     if args.all:
         out = engine.execute(args.spec)

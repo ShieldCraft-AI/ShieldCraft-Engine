@@ -162,7 +162,20 @@ class Engine:
             fp = compute_spec_fingerprint(spec)
             if getattr(self, "_last_validated_spec_fp", None) != fp:
                 raise RuntimeError("validation_not_performed")
-
+        # Check for persona vetoes after validation but before finishing preflight
+        try:
+            if hasattr(self, "_persona_vetoes") and self._persona_vetoes:
+                # Deterministic resolution: sort by severity (critical>high>medium>low), then persona_id
+                severity_order = {"critical": 4, "high": 3, "medium": 2, "low": 1}
+                def _key(v):
+                    return (severity_order.get(v.get("severity"), 0), v.get("persona_id"))
+                sel = sorted(self._persona_vetoes, key=_key, reverse=True)[0]
+                raise RuntimeError(f"persona_veto: {sel.get('persona_id')}:{sel.get('code')}")
+        except RuntimeError:
+            raise
+        except Exception:
+            # Observability must not alter behavior if failing
+            pass
         try:
             from shieldcraft.observability import emit_state
             emit_state(self, "preflight", "preflight", "ok")
