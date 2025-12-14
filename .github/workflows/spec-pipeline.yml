@@ -38,7 +38,12 @@ jobs:
         python - <<PY
         import pathlib, sys
         repo = pathlib.Path('.').resolve()
-        txt = repo.read_text()
+        txt = ''
+        for p in repo.rglob('*.py'):
+            try:
+                txt += p.read_text()
+            except Exception:
+                pass
         required = [
           'test_selfhost_roundtrip_identity',
           'test_selfhost_closed_loop_determinism',
