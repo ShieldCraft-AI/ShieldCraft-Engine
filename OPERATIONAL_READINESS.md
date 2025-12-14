@@ -10,6 +10,7 @@ ShieldCraft Engine v1 is now declared operational. Key points:
   - Deterministic outputs across runs on the same repo/spec.
   - Non-bypassable preflight: repo sync and instruction validation are enforced before side-effects.
   - Allowed artifact emission is locked to the canonical manifest.
+  - Persona subsystem: hardened and declared STABLE — opt-in only, auditable annotations/vetoes, deterministic and non-authoritative.
 
 - Failure modes:
   - Sync mismatch raises `SyncError` and aborts with structured `errors.json` (no side-effects).
