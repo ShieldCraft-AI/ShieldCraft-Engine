@@ -26,8 +26,8 @@ jobs:
       - name: Run self-build
         run: |
           python - <<PY
-            from src.shieldcraft.engine import Engine
-            e = Engine('src/shieldcraft/dsl/schema/se_dsl.schema.json')
-            e.run_self_build('spec/se_dsl_v1.spec.json', dry_run=False)
-            print('Self-build completed')
+          from src.shieldcraft.engine import Engine
+          e = Engine('src/shieldcraft/dsl/schema/se_dsl.schema.json')
+          e.run_self_build('spec/se_dsl_v1.spec.json', dry_run=False)
+          print('Self-build completed')
           PY
