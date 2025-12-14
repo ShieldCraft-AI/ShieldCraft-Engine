@@ -146,7 +146,8 @@ def verify_repo_state_authoritative(repo_root: str = ".") -> Dict[str, str]:
     Raises SyncError or SnapshotError on deterministic failures.
     """
     import logging
-    authority = os.getenv("SHIELDCRAFT_SYNC_AUTHORITY", "snapshot")
+    # Default authority is repo_state_sync (use external repo_state_sync artifacts)
+    authority = os.getenv("SHIELDCRAFT_SYNC_AUTHORITY", "repo_state_sync")
 
     # External mode: issue migration warning and rely on existing verify_repo_sync.
     if authority == "external":
@@ -159,7 +160,13 @@ def verify_repo_state_authoritative(repo_root: str = ".") -> Dict[str, str]:
         res["authority"] = "external"
         return res
 
-    # Snapshot-based authority
+    # 'repo_state_sync' mode: verify external repo_state_sync.json and associated artifacts
+    if authority == "repo_state_sync":
+        res = verify_repo_sync(repo_root)
+        res["authority"] = "repo_state_sync"
+        return res
+
+    # Snapshot-based authority (opt-in only)
     from shieldcraft.snapshot import validate_snapshot, generate_snapshot, DEFAULT_SNAPSHOT_PATH, SnapshotError
 
     snapshot_path = os.path.join(repo_root, DEFAULT_SNAPSHOT_PATH)
