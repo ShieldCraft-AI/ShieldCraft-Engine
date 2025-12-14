@@ -72,12 +72,21 @@ def verify_repo_sync(repo_root: str = ".") -> Dict[str, str]:
                 # processes may write the file sequentially without truncation.
                 f.seek(0)
                 raw = f.read()
-                # heuristic: find the first closing brace that likely ends the
-                # top-level object and attempt to parse up to there.
-                idx = raw.rfind('}')
-                if idx != -1:
+                # Find the end index of the first top-level JSON object by
+                # matching braces to avoid accidental concatenation issues.
+                depth = 0
+                end_idx = None
+                for i, ch in enumerate(raw):
+                    if ch == '{':
+                        depth += 1
+                    elif ch == '}':
+                        depth -= 1
+                        if depth == 0:
+                            end_idx = i
+                            break
+                if end_idx is not None:
                     try:
-                        data = json.loads(raw[: idx + 1])
+                        data = json.loads(raw[: end_idx + 1])
                     except Exception:
                         raise SyncError(SYNC_INVALID_FORMAT, f"invalid repo_state_sync.json: {e}", "/repo_state_sync.json")
                 else:
