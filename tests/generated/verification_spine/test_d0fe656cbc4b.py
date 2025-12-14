@@ -19,4 +19,6 @@ def test_item_d0fe656cbc4b():
     spec = json.loads(SPEC.read_text())
     # Existence check only (no assertion about non-emptiness)
     val = resolve_ptr(spec, '/metadata/self_host')
-    assert val is not None
+    # Spec explicitly sets self_host: assert boolean and expected value
+    assert isinstance(val, bool)
+    assert val is True

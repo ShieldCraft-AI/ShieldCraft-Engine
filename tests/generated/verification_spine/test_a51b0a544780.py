@@ -19,4 +19,6 @@ def test_item_a51b0a544780():
     spec = json.loads(SPEC.read_text())
     # Existence check only (no assertion about non-emptiness)
     val = resolve_ptr(spec, '/metadata/language')
-    assert val is not None
+    # Spec explicitly sets language; assert expected value
+    assert isinstance(val, str)
+    assert val == 'python'

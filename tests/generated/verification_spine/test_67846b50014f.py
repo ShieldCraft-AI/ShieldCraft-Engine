@@ -19,4 +19,6 @@ def test_item_67846b50014f():
     spec = json.loads(SPEC.read_text())
     # Existence check only (no assertion about non-emptiness)
     val = resolve_ptr(spec, '/metadata/spec_version')
-    assert val is not None
+    # Spec explicitly contains spec_version; assert expected value
+    assert isinstance(val, str)
+    assert val == '1.0'
