@@ -1,7 +1,1 @@
-version: 0.1.0
-
-# Operational Readiness
-
-This document describes operational readiness expectations and checks.
-
-* Placeholder content to satisfy governance presence checks.
+Canonical governance file: docs/governance/OPERATIONAL_READINESS.md
