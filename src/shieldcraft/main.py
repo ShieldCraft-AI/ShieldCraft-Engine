@@ -83,6 +83,22 @@ def run_self_host(spec_file, schema_path):
     try:
         result = engine.execute(spec_file)
     except Exception as e:
+        # Handle structured ValidationError specially so self-host emits a deterministic
+        # `errors.json` payload that CI and tooling can consume.
+        try:
+            from shieldcraft.services.validator import ValidationError
+        except Exception:
+            ValidationError = None
+
+        if ValidationError is not None and isinstance(e, ValidationError):
+            print(f"[SELF-HOST] VALIDATION ERROR during execute: {e}")
+            error_path = os.path.join(output_dir, "errors.json")
+            with open(error_path, "w") as f:
+                # serialize as a single-element `errors` list for forward compatibility
+                json.dump({"errors": [e.to_dict()]}, f, indent=2, sort_keys=True)
+            print(f"[SELF-HOST] Validation errors written to: {error_path}")
+            return
+
         print(f"[SELF-HOST] ERROR during execute: {e}")
         import traceback
         error_path = os.path.join(output_dir, "error.txt")

@@ -27,6 +27,31 @@ def test_ambient_state_fails():
         validate_spec_instructions(spec)
 
 
+def test_validation_deterministic_on_repeat():
+    """Repeated validation on identical invalid spec yields identical error objects."""
+    from shieldcraft.services.validator import ValidationError
+
+    spec = {
+        "metadata": {"product_id": "x"},
+        "invariants": ["no ambient"],
+        "instructions": [{"id": "i1", "type": "construction", "timestamp": "now"}],
+    }
+
+    err1 = None
+    err2 = None
+    try:
+        validate_spec_instructions(spec)
+    except ValidationError as e:
+        err1 = e.to_dict()
+
+    try:
+        validate_spec_instructions(spec)
+    except ValidationError as e:
+        err2 = e.to_dict()
+
+    assert err1 == err2
+
+
 def test_valid_spec_passes():
     spec = {
         "metadata": {"product_id": "x"},

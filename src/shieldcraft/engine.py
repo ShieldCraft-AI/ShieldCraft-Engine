@@ -36,6 +36,54 @@ class Engine:
         self.evidence = EvidenceBundle(self.det, self.prov)
         self.verifier = ChecklistVerifier()
 
+    def preflight(self, spec_or_path):
+        """Run preflight validation (schema + instruction validation) without side-effects.
+
+        Accepts either a spec dict or a path to a spec file. Raises `ValidationError` on
+        instruction-level failures or returns a dict with schema validation failures.
+        """
+        # Load spec if a path is provided
+        if isinstance(spec_or_path, str):
+            raw = load_spec(spec_or_path)
+            if isinstance(raw, SpecModel):
+                spec = raw.raw
+            else:
+                spec = raw
+        else:
+            spec = spec_or_path
+
+        # Schema validation for legacy normalized specs
+        if isinstance(spec, dict):
+            try:
+                valid, errors = validate_spec_against_schema(spec, self.schema_path)
+            except Exception:
+                valid, errors = True, []
+            if not valid:
+                return {"type": "schema_error", "details": errors}
+
+        # Instruction validation raises ValidationError on failures
+        self._validate_spec(spec)
+
+        return {"ok": True}
+
+    def _validate_spec(self, spec):
+        """Centralized validation gate for instruction-level checks.
+
+        All engine entrypoints that accept a `spec` MUST call this method
+        before performing any work that could be influenced by instruction
+        contents (AST build, plan creation, codegen). This ensures a single,
+        deterministic validator is used across the codebase and prevents
+        accidental bypasses.
+        """
+        if not isinstance(spec, dict):
+            return
+
+        # Only validate when instructions are present (backwards compatible)
+        if "instructions" in spec:
+            from shieldcraft.services.validator import validate_spec_instructions
+
+            validate_spec_instructions(spec)
+
     def run(self, spec_path):
         # AUTHORITATIVE DSL: se_dsl_v1.schema.json via dsl.loader. Do not introduce parallel DSLs.
         
@@ -61,11 +109,11 @@ class Engine:
         # AST already built in spec_model
         spec = normalized
 
-        # Instruction validation: enforce instruction invariants before plan creation
-        # Only validate when `instructions` are present in the spec (legacy specs without
-        # instruction blocks are not required to include invariants).
-        if "instructions" in spec:
-            validate_spec_instructions(spec)
+        # Instruction validation: enforce instruction invariants before plan creation.
+        # Use the single engine validation entrypoint to avoid duplicated validators
+        # and to ensure all code-paths that ingest `spec` are subject to the same
+        # deterministic validation behavior.
+        self._validate_spec(spec)
         
         # Create execution plan
         plan = from_ast(ast)
@@ -114,6 +162,11 @@ class Engine:
         import hashlib
         from pathlib import Path
         
+        # Validate instructions before doing any work. This is the non-bypassable
+        # validation gate for self-host mode: do not build AST or generate code for
+        # specs that fail instruction validation.
+        self._validate_spec(spec)
+
         # Build AST and checklist
         ast = self.ast.build(spec)
         checklist = self.checklist_gen.build(spec, ast=ast)
@@ -229,12 +282,17 @@ class Engine:
             spec_model = raw
             spec = spec_model.raw
             ast = spec_model.ast
+            # Ensure instruction validation even when loader returns a SpecModel.
+            self._validate_spec(spec)
         else:
             # Legacy: normalize and validate
             spec = canonicalize(raw) if not isinstance(raw, dict) else raw
             valid, errors = validate_spec_against_schema(spec, self.schema_path)
             if not valid:
                 return {"type": "schema_error", "details": errors}
+            # Enforce instruction validation before building AST or creating plans
+            # to ensure we do not process invalid instruction specs.
+            self._validate_spec(spec)
             ast = self.ast.build(spec)
         
         # Check for spec evolution

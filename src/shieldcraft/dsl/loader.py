@@ -47,13 +47,15 @@ def load_spec(path):
         logger.warning(f"DEPRECATION: old DSL format detected at {path}; treat as legacy and migrate to canonical JSON.")
         return data
     
-    # Detect canonical vs legacy
+    # Detect canonical vs legacy and prefer dsl_version/spec_format mapping
+    if dsl_version == _DSL_VERSION_REQUIRED:
+        return load_canonical_spec(path)
+    # Fallback to legacy detection (legacy payload may still include explicit signals)
     if isinstance(data, dict) and ('canonical' in data or 'canonical_spec_hash' in data.get('metadata', {})):
         return load_canonical_spec(path)
-    else:
-        logger.warning(f"DEPRECATION: old DSL format in use at {path}; migrate to canonical JSON.")
-        # Return raw data for legacy
-        return data
+    # Default: legacy spec, deprecated
+    logger.warning(f"DEPRECATION: old DSL format in use at {path}; migrate to canonical JSON.")
+    return data
 
 
 def extract_json_pointers(spec, base=""):
