@@ -1,1 +1,11 @@
+{
+  "files": [
+    {
+      "path": "artifacts/repo_sync_state.json",
+      "sha256": "c48b08c876b67c559cee4fbc54babf402cddb4e166109437094216ca8cbffd87"
+    }
+  ],
+  "repo_tree_hash": "",
+  "generated_by": "fix/v1-head-stabilization"
+}
 {"files": [{"path": "artifacts/repo_sync_state.json", "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"}]}
