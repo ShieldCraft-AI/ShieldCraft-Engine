@@ -319,11 +319,12 @@ class ChecklistGenerator:
             schema = {"type": "object"}  # default minimal schema
         preflight = run_preflight(spec, schema, decorated)
         
-        # Write preflight report
-        pre_path = f"products/{product_id}/checklist/preflight.json"
-        os.makedirs(os.path.dirname(pre_path), exist_ok=True)
-        write_canonical_json(pre_path, preflight)
-        
+        # Enforce explicit test coverage: every checklist item must reference at least one test
+        missing_tests = [it for it in decorated if not it.get("test_refs")]
+        if missing_tests:
+            missing_ids = [it.get("id") for it in missing_tests]
+            raise RuntimeError(f"missing_test_refs: {missing_ids}")
+
         plan = ExecutionPlan(decorated)
         plan.stage_pass1(decorated)
 

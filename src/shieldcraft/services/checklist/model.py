@@ -10,7 +10,7 @@ class ChecklistModel:
     
     # Canonical key order for to_dict()
     CANONICAL_KEYS = [
-        "id", "spec_pointer", "ptr", "category", "severity", "deps", "invariants",
+        "id", "spec_pointer", "ptr", "test_refs", "category", "severity", "deps", "invariants",
         "meta", "derived", "origin"
     ]
     
@@ -21,6 +21,9 @@ class ChecklistModel:
         # Canonicalize: if spec_pointer is missing but ptr exists, set spec_pointer deterministically
         if "spec_pointer" not in item and "ptr" in item:
             item["spec_pointer"] = item["ptr"]
+        # Ensure test_refs field exists (may be empty until final validation)
+        if "test_refs" not in item:
+            item["test_refs"] = item.get("meta", {}).get("test_refs", [])
         ptr = item.get("ptr")
         text = item.get("text", "")
         

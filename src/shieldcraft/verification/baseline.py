@@ -39,6 +39,13 @@ BASELINE_PROPERTIES = [
         severity="error",
         deterministic=True,
     ),
+    VerificationProperty(
+        id="VP-06-CHECKLIST-TEST-COVERAGE_COMPLETE",
+        description="All checklist items must explicitly reference at least one test identifier.",
+        scope=VerificationScope.CHECKLIST.value,
+        severity="error",
+        deterministic=True,
+    ),
 ]
 
 
