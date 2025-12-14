@@ -37,7 +37,10 @@ def check_governance_presence(root: str = None, engine_major: int | None = None)
             mode = os.stat(path).st_mode
         except Exception:
             raise RuntimeError(f"governance_artifact_unreadable: {name}")
-        if mode & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH):
+        # Immutability: disallow group/other write permissions. Allow owner write
+        # to accommodate default git checkouts while still preventing shared
+        # writable files on multi-user systems.
+        if mode & (stat.S_IWGRP | stat.S_IWOTH):
             raise RuntimeError(f"governance_artifact_writable: {name}")
         # Version alignment: where present in artifact, ensure major matches
         try:
