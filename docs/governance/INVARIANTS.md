@@ -133,3 +133,11 @@ On `UNKNOWN_FAILURE`:
 - All progress halts.
 - Escalation is mandatory.
 - No speculative fixes are permitted.
+
+---
+
+## Verification Spine
+
+Verification-related invariants and properties are to be enforced by the Verification Spine (see `docs/governance/VERIFICATION_SPINE.md` and `src/shieldcraft/verification`).
+
+This file declares the governance anchor; enforcement logic will be implemented in the Verification Spine and versioned via its governance document.
