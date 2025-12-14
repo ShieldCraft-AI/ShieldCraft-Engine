@@ -26,6 +26,17 @@ No invariant may be enforced implicitly or redundantly.
   Evaluated in: `ChecklistGenerator.build` via `invariants.evaluate_invariant`  
   Enforcement resides in: checklist generation and derived resolution
 
+- Test Attachment Contract (TAC v1)  
+  Authoritative doc: `docs/governance/TEST_ATTACHMENT_CONTRACT.md`  
+  Enforcement point: `shieldcraft.services.validator.tests_attached_validator.verify_tests_attached` (preflight gate)
+
+- tests_attached_opt_in
+  - Enforced when:
+    - `env:SHIELDCRAFT_ENFORCE_TEST_ATTACHMENT`
+    - `spec.metadata.enforce_tests_attached`
+  - Failure class: `PRODUCT_INVARIANT_FAILURE`
+  - Default behavior: non-blocking (opt-in)
+
 - Self-host artifact emission invariants  
   Enforced in: `Engine.run_self_host` using `is_allowed_selfhost_path()`
 

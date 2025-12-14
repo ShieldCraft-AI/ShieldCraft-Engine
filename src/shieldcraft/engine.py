@@ -189,6 +189,36 @@ class Engine:
         except Exception:
             # Observability must not alter behavior if failing
             pass
+        # Enforce Test Attachment Contract (TAC v1) before finishing preflight
+        # This enforcement is opt-in to avoid breaking existing callers; enable
+        # via env var `SHIELDCRAFT_ENFORCE_TEST_ATTACHMENT=1` or by setting
+        # `metadata.enforce_tests_attached` in the spec. Tests that validate
+        # TAC should set the env var explicitly.
+        try:
+            enforce_flag = os.getenv("SHIELDCRAFT_ENFORCE_TEST_ATTACHMENT", "0") == "1"
+            spec_enforce = isinstance(spec, dict) and spec.get("metadata", {}).get("enforce_tests_attached", False)
+            if enforce_flag or spec_enforce:
+                from shieldcraft.services.validator.tests_attached_validator import verify_tests_attached, ProductInvariantFailure
+                # Build a dry-run checklist to inspect test_refs (non-emitting)
+                try:
+                    from shieldcraft.services.ast.builder import ASTBuilder
+                    ast_local = ASTBuilder().build(spec)
+                except Exception:
+                    ast_local = None
+                checklist_preview = None
+                try:
+                    checklist_preview = self.checklist_gen.build(spec, ast=ast_local, dry_run=True, run_test_gate=False, engine=self)
+                except Exception:
+                    # If checklist generation itself fails, surface as preflight failure
+                    raise RuntimeError("checklist_generation_failed")
+                # Now verify TAC
+                verify_tests_attached(checklist_preview)
+        except ProductInvariantFailure:
+            # Re-raise to allow caller to see the structured failure
+            raise
+        except Exception:
+            # Any unexpected check failure is surfaced as a preflight failure
+            raise RuntimeError("tests_attached_check_failed")
         try:
             from shieldcraft.observability import emit_state
             emit_state(self, "preflight", "preflight", "ok")
@@ -315,7 +345,40 @@ class Engine:
         write_canonical_json(f"{plan_dir}/plan.json", plan)
         
         # Generate checklist using AST
-        checklist = self.checklist_gen.build(spec, ast=ast)
+        # Ensure a deterministic run seed is recorded and available to subsystems
+        try:
+            from shieldcraft.verification.seed_manager import generate_seed, snapshot
+            generate_seed(self, "run")
+        except Exception:
+            pass
+
+        checklist = self.checklist_gen.build(spec, ast=ast, engine=self)
+
+        # Attach determinism snapshot for replayability
+        try:
+            from shieldcraft.verification.seed_manager import snapshot
+            det = snapshot(self)
+            checklist["_determinism"] = {"seeds": det, "spec": spec, "ast": ast, "checklist": checklist}
+        except Exception:
+            pass
+        # Evaluate readiness based on verification gates and attach report
+        try:
+            from shieldcraft.verification.readiness_evaluator import evaluate_readiness
+            from shieldcraft.verification.readiness_report import render_readiness
+            readiness = evaluate_readiness(self, spec, checklist)
+            checklist_readiness = readiness
+            checklist["_readiness"] = checklist_readiness
+            checklist["_readiness_report"] = render_readiness(readiness)
+            # Emit observable readiness state
+            try:
+                from shieldcraft.observability import emit_state
+                emit_state(self, "readiness", "readiness", "ok" if readiness.get("ok") else "fail", str(readiness.get("results")))
+            except Exception:
+                pass
+        except Exception:
+            # If readiness evaluation fails, mark as not ready and attach minimal info
+            checklist["_readiness"] = {"ok": False, "results": {"readiness_eval": {"ok": False}}}
+            checklist["_readiness_report"] = "Readiness evaluation failed"
         
         return {"spec": spec, "ast": ast, "checklist": checklist, "plan": plan}
 
@@ -377,7 +440,7 @@ class Engine:
 
             # Build AST and checklist
             ast = self.ast.build(spec)
-            checklist = self.checklist_gen.build(spec, ast=ast)
+            checklist = self.checklist_gen.build(spec, ast=ast, engine=self)
             
             # Filter bootstrap category items
             bootstrap_items = [
