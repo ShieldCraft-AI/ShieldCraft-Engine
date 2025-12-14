@@ -157,6 +157,19 @@ class Engine:
                 pass
             raise
 
+        # Verification spine hook (non-invasive): validate registered verification
+        # properties for well-formedness. This must not alter preflight outcome
+        # unless verification properties are malformed (reported as verification_failed).
+        try:
+            from shieldcraft.verification import registry as _vreg, assertions as _vassert
+            props = _vreg.global_registry().get_all()
+            _vassert.assert_verification_properties(props)
+        except RuntimeError as e:
+            raise RuntimeError("verification_failed") from e
+        except Exception:
+            # Do not change preflight behavior if verification spine is unavailable
+            pass
+
         # Ensure validation recorded deterministically
         if isinstance(spec, dict) and "instructions" in spec:
             fp = compute_spec_fingerprint(spec)
