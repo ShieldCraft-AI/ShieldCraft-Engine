@@ -75,7 +75,7 @@ jobs:
     
     - name: Upload test failure summary
       if: failure()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-failures
         path: artifacts/test_failures/summary.txt
