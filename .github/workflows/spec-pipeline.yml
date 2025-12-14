@@ -27,6 +27,28 @@ jobs:
     - name: Run tests
       run: pytest -q
       continue-on-error: false
+
+    - name: Run self-host tests specifically
+      run: pytest -q tests/selfhost -q
+
+    - name: Ensure critical tests exist
+      run: |
+        python - <<PY
+        import pathlib, sys
+        repo = pathlib.Path('.').resolve()
+        txt = repo.read_text()
+        required = [
+          'test_selfhost_roundtrip_identity',
+          'test_selfhost_closed_loop_determinism',
+          'test_sync_authority_compare',
+          'test_snapshot_detects_change'
+        ]
+        missing = [r for r in required if r not in txt]
+        if missing:
+            print('Missing critical tests:', missing)
+            sys.exit(2)
+        print('Critical tests present')
+        PY
     
     - name: Check generator lockfile version
       run: |

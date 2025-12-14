@@ -96,9 +96,30 @@ def validate_spec_instructions(spec: Dict[str, Any]) -> None:
 	if not isinstance(spec, dict):
 		raise ValidationError(SPEC_NOT_DICT, "spec must be a dict")
 
+	# If either `invariants` or `instructions` is present, require the other to be
+	# present as well to preserve the legacy instruction-style contract. If neither
+	# is present (canonical spec form), skip legacy instruction checks.
 	invariants = spec.get("invariants")
-	if not invariants or not isinstance(invariants, list):
-		raise ValidationError("missing_invariants", "spec must declare a non-empty 'invariants' list", "/invariants")
+	instructions = spec.get("instructions")
+
+	if invariants is None and instructions is None:
+		# Canonical / sections-based spec: nothing more to validate here.
+		return
+
+	# If we reach here, at least one legacy block is present — require both.
+	if invariants is None:
+		raise ValidationError(MISSING_INVARIANTS, "spec must declare a non-empty 'invariants' list", "/invariants")
+	# Allow canonical specs that use `sections` + `invariants` (no legacy
+	# `instructions` block). If `instructions` is missing but `sections` exists
+	# treat this as a canonical spec with invariants and skip requiring
+	# `instructions`.
+	if instructions is None:
+		if "sections" not in spec:
+			raise ValidationError(MISSING_INSTRUCTIONS, "spec must include an 'instructions' list", "/instructions")
+
+	# Validate invariants structure
+	if not isinstance(invariants, list) or len(invariants) == 0:
+		raise ValidationError(MISSING_INVARIANTS, "spec must declare a non-empty 'invariants' list", "/invariants")
 
 	# Invariants ordering must be deterministic; require sorted invariants list.
 	# Support invariants as a list of objects (with `id`) or simple strings.
@@ -110,8 +131,10 @@ def validate_spec_instructions(spec: Dict[str, Any]) -> None:
 	if _invariants_ids(invariants) != sorted(_invariants_ids(invariants)):
 		raise ValidationError(INVARIANTS_NOT_SORTED, "invariants list must be sorted deterministically", "/invariants")
 
-	instructions = spec.get("instructions")
-	if not instructions or not isinstance(instructions, list):
+	# Validate instructions structure (only if present)
+	if instructions is None:
+		return
+	if not isinstance(instructions, list):
 		raise ValidationError(MISSING_INSTRUCTIONS, "spec must include an 'instructions' list", "/instructions")
 
 	ids: Set[str] = set()
@@ -132,3 +155,16 @@ def validate_spec_instructions(spec: Dict[str, Any]) -> None:
 	# No additional soft checks here; this is intentionally minimal and deterministic.
 
 __all__ = ["validate_spec_instructions", "ValidationError"]
+
+
+def validate_instruction_block(spec: Dict[str, Any]) -> None:
+	"""Public, named entrypoint for instruction validation.
+
+	This is the canonical name for validation and should be used by all callers.
+	It preserves backward compatibility with `validate_spec_instructions`.
+	"""
+	return validate_spec_instructions(spec)
+
+
+# Export the new canonical name
+__all__ = ["validate_spec_instructions", "validate_instruction_block", "ValidationError"]

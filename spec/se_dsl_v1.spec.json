@@ -73,7 +73,7 @@
   "invariants": [
     {
       "id": "inv.component_dependencies_exist",
-      "rule": "forall(component.depends_on \u2192 exists(model.components.id))"
+      "rule": "forall(component.depends_on → exists(model.components.id))"
     },
     {
       "id": "inv.no_cycles",
@@ -249,7 +249,7 @@
         {
           "description": "Validate DSL spec against JSON Schema.",
           "id": "spec_ingestion.validate_schema",
-          "ptr": "/sections/spec_ingestion/tasks/0",
+          "ptr": "/sections/0/tasks/0",
           "requires": [
             "model.components",
             "model.types"
@@ -259,7 +259,7 @@
         {
           "description": "Compute canonical spec fingerprint.",
           "id": "spec_ingestion.fingerprint",
-          "ptr": "/sections/spec_ingestion/tasks/1",
+          "ptr": "/sections/0/tasks/1",
           "type": "hash"
         }
       ]
@@ -270,13 +270,13 @@
         {
           "description": "Convert raw spec into canonical AST nodes.",
           "id": "ast_construction.build_nodes",
-          "ptr": "/sections/ast_construction/tasks/0",
+          "ptr": "/sections/1/tasks/0",
           "type": "ast"
         },
         {
-          "description": "Verify 1:1 raw\u2192AST field coverage.",
+          "description": "Verify 1:1 raw→AST field coverage.",
           "id": "ast_construction.check_completeness",
-          "ptr": "/sections/ast_construction/tasks/1",
+          "ptr": "/sections/1/tasks/1",
           "type": "ast"
         }
       ]
@@ -287,31 +287,31 @@
         {
           "description": "Extract raw tasks from AST.",
           "id": "checklist_generation.extract",
-          "ptr": "/sections/checklist_generation/tasks/0",
+          "ptr": "/sections/2/tasks/0",
           "type": "checklist"
         },
         {
           "description": "Apply semantic validation.",
           "id": "checklist_generation.semantic",
-          "ptr": "/sections/checklist_generation/tasks/1",
+          "ptr": "/sections/2/tasks/1",
           "type": "checklist"
         },
         {
           "description": "Validate component and task dependencies.",
           "id": "checklist_generation.dependency",
-          "ptr": "/sections/checklist_generation/tasks/2",
+          "ptr": "/sections/2/tasks/2",
           "type": "checklist"
         },
         {
           "description": "Validate invariants against tasks.",
           "id": "checklist_generation.invariants",
-          "ptr": "/sections/checklist_generation/tasks/3",
+          "ptr": "/sections/2/tasks/3",
           "type": "checklist"
         },
         {
           "description": "Compute rollups and stability hashes.",
           "id": "checklist_generation.rollup",
-          "ptr": "/sections/checklist_generation/tasks/4",
+          "ptr": "/sections/2/tasks/4",
           "type": "checklist"
         }
       ]
@@ -322,13 +322,13 @@
         {
           "description": "Emit modules for each component.",
           "id": "code_generation.emit_modules",
-          "ptr": "/sections/code_generation/tasks/0",
+          "ptr": "/sections/3/tasks/0",
           "type": "codegen"
         },
         {
           "description": "If self_host=true, generate bootstrap modules.",
           "id": "code_generation.emit_bootstrap",
-          "ptr": "/sections/code_generation/tasks/1",
+          "ptr": "/sections/3/tasks/1",
           "type": "codegen"
         }
       ]
@@ -339,13 +339,13 @@
         {
           "description": "Check determinism: fingerprint, task hashes, AST hashes.",
           "id": "governance.determinism",
-          "ptr": "/sections/governance/tasks/0",
+          "ptr": "/sections/4/tasks/0",
           "type": "governance"
         },
         {
           "description": "Construct evidence bundle with provenance.",
           "id": "governance.evidence_bundle",
-          "ptr": "/sections/governance/tasks/1",
+          "ptr": "/sections/4/tasks/1",
           "type": "governance"
         }
       ]
@@ -356,13 +356,13 @@
         {
           "description": "Write final manifest.json with canonical ordering.",
           "id": "manifest.write",
-          "ptr": "/sections/manifest/tasks/0",
+          "ptr": "/sections/5/tasks/0",
           "type": "manifest"
         },
         {
           "description": "Sign manifest with KMS key.",
           "id": "manifest.sign",
-          "ptr": "/sections/manifest/tasks/1",
+          "ptr": "/sections/5/tasks/1",
           "type": "manifest"
         }
       ]

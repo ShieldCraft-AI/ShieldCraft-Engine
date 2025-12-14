@@ -11,6 +11,41 @@ class SpecExtractor:
     
     def extract(self, node, base_ptr="", line_map=None):
         """Extract items with full traceability."""
+        # Backwards-compat: allow being called with an AST node and raw spec as
+        # the second argument (extract(ast, raw_spec)). Detect AST-like objects
+        # (have `walk`) and handle by traversing the AST.
+        if hasattr(node, 'walk'):
+            # If caller passed raw spec as second arg, treat it as a line_map lookup
+            raw = base_ptr if isinstance(base_ptr, dict) else {}
+            items = []
+            for nd in node.walk():
+                ptr = getattr(nd, 'ptr', None)
+                if not ptr:
+                    continue
+                val = None
+                v = getattr(nd, 'value', None)
+                if isinstance(v, dict):
+                    val = v.get('value')
+                    key = v.get('key', '')
+                else:
+                    val = v
+                    key = getattr(v, 'key', '') if hasattr(v, 'key') else ''
+
+                source_section = ptr.split("/")[1] if len(ptr.split("/")) > 1 else "root"
+                source_line = raw.get(ptr, self._compute_line(ptr)) if isinstance(raw, dict) else self._compute_line(ptr)
+
+                items.append({
+                    "ptr": ptr,
+                    "key": key,
+                    "value": val,
+                    "source_pointer": ptr,
+                    "source_section": source_section,
+                    "source_line": source_line
+                })
+
+            self._build_reverse_index(items)
+            return items
+
         if line_map is None:
             line_map = {}
         
@@ -88,3 +123,7 @@ class SpecExtractor:
         """Deterministic line number computation from pointer."""
         # Use hash for deterministic but stable line number
         return (hash(ptr) % 10000) + 1
+
+
+# Backwards-compatible alias
+ChecklistExtractor = SpecExtractor

@@ -8,21 +8,45 @@ def extract_json_pointers(spec, base=""):
     return canonical_extract(spec, base)
 
 
-def ensure_full_pointer_coverage(ast, raw):
+def ensure_full_pointer_coverage(a, b):
     """
-    Ensure all raw spec pointers have corresponding AST nodes.
-    
-    Args:
-        ast: The parsed AST with nodes.
-        raw: The raw spec dictionary.
-        
-    Returns:
-        Report with {missing: [...], ok: [...]}.
+    Dual-mode pointer coverage utility.
+
+    Supports legacy call signature `ensure_full_pointer_coverage(ast, raw)` which
+    returns a simple list of uncovered AST pointers, and the newer signature
+    `ensure_full_pointer_coverage(raw, ast)` which returns a detailed report
+    including counts and coverage percentage.
     """
-    # Derive all pointers from raw spec
+    # Detect which argument is AST vs raw spec
+    def _is_ast(obj):
+        return hasattr(obj, 'walk') or (isinstance(obj, dict) and 'nodes' in obj)
+
+    if _is_ast(a) and not _is_ast(b):
+        # New mode: ast first, raw second -> return detailed report (preferred for preflight)
+        ast = a
+        raw = b
+    else:
+        # Legacy mode: raw first, ast second -> return list of uncovered AST pointers
+        raw = a
+        ast = b
+        raw_pointers = extract_json_pointers(raw)
+
+        ast_pointers = set()
+        if hasattr(ast, 'walk'):
+            for node in ast.walk():
+                if node.ptr:
+                    ast_pointers.add(node.ptr)
+        elif isinstance(ast, dict):
+            for node in ast.get('nodes', []):
+                if isinstance(node, dict) and node.get('ptr'):
+                    ast_pointers.add(node['ptr'])
+
+        # Return list of AST pointers not in raw spec (legacy behavior)
+        uncovered_ast_pointers = sorted(list(ast_pointers - raw_pointers))
+        return uncovered_ast_pointers
+
     all_pointers = extract_json_pointers(raw)
-    
-    # Get all AST node paths
+
     ast_pointers = set()
     if hasattr(ast, 'walk'):
         for node in ast.walk():
@@ -35,18 +59,23 @@ def ensure_full_pointer_coverage(ast, raw):
                 ast_pointers.add(node["ptr"])
             elif hasattr(node, 'ptr') and node.ptr:
                 ast_pointers.add(node.ptr)
-    
+
     # Determine missing and ok
     missing = sorted(list(all_pointers - ast_pointers))
     ok = sorted(list(all_pointers & ast_pointers))
-    
+
+    total = len(all_pointers)
+    ok_count = len(ok)
+    missing_count = len(missing)
+    coverage_percentage = 100.0 if total == 0 else (ok_count / total) * 100.0
+
     return {
         "missing": missing,
         "ok": ok,
-        "count": {
-            "missing": len(missing),
-            "ok": len(ok)
-        }
+        "total_pointers": total,
+        "ok_count": ok_count,
+        "missing_count": missing_count,
+        "coverage_percentage": coverage_percentage
     }
 
 

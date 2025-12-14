@@ -14,7 +14,8 @@ class ChecklistGenerator:
         for idx, item in enumerate(plan, start=1):
             text = f"Implement {item['type']} from {item['ptr']}"
             checklist.append({
-                "id": f"TASK-{idx:04d}",
+                # Use stable 8-char deterministic IDs for tasks
+                "id": __import__('shieldcraft.services.checklist.idgen', fromlist=['stable_id']).stable_id(item['ptr'], text),
                 "ptr": item['ptr'],
                 "text": text,
                 "hash": hashlib.sha256(text.encode()).hexdigest()
@@ -533,15 +534,16 @@ class ChecklistGenerator:
         
         # Walk all nodes in AST
         for node in ast.walk():
-            if node.type == "dict_entry" and isinstance(node.value, dict):
+            if node.type == "dict_entry":
+                # Extract the value regardless of type (object, list, scalar)
                 value_obj = node.value.get("value")
-                if value_obj and isinstance(value_obj, dict):
-                    # Extract task from this node
-                    items.append({
-                        "ptr": node.ptr,
-                        "key": node.value.get("key", ""),
-                        "value": value_obj,
-                        "text": f"Implement {node.ptr}"
-                    })
+                item = {
+                    "ptr": node.ptr,
+                    "key": node.value.get("key", ""),
+                    "value": value_obj,
+                }
+                # Use the generator's render_task to produce deterministic text
+                item["text"] = self.render_task(item)
+                items.append(item)
         
         return items

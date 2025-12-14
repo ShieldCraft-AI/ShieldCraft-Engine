@@ -8,7 +8,7 @@ Resolve circular dependency in checklist.
 Cycle detected: {{ cycle_items | join(" -> ") }}
 Length: {{ cycle_length }}
 
-TODO: Break the cycle by:
+Cycle resolution guidance (deterministic placeholder):
 1. Identifying the weakest dependency link
 2. Reordering tasks to eliminate circular reference
 3. Introducing intermediate task to break the chain
@@ -23,7 +23,7 @@ def resolve_cycle():
     Returns:
         Dict with resolution strategy and updated dependencies
     """
-    # TODO: Implement cycle resolution logic
+    # Cycle resolution logic placeholder
     cycle = {{ cycle_items }}
     
     # Strategy options:

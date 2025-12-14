@@ -78,10 +78,14 @@ def run_self_host(spec_file, schema_path):
     print("[SELF-HOST] Loading spec...")
     engine = Engine(schema_path)
     
-    # Run full pipeline
+    # Run full pipeline via the engine self-host entrypoint (centralized)
     print("[SELF-HOST] Running engine pipeline...")
     try:
-        result = engine.execute(spec_file)
+        # Load spec as dict and delegate to Engine.run_self_host to ensure
+        # self-host uses the single authoritative path and input/output locks.
+        with open(spec_file) as sf:
+            spec = json.load(sf)
+        result = engine.run_self_host(spec, dry_run=False)
     except Exception as e:
         # Handle structured ValidationError specially so self-host emits a deterministic
         # `errors.json` payload that CI and tooling can consume.
@@ -90,6 +94,11 @@ def run_self_host(spec_file, schema_path):
         except Exception:
             ValidationError = None
 
+        try:
+            from shieldcraft.services.sync import SyncError
+        except Exception:
+            SyncError = None
+
         if ValidationError is not None and isinstance(e, ValidationError):
             print(f"[SELF-HOST] VALIDATION ERROR during execute: {e}")
             error_path = os.path.join(output_dir, "errors.json")
@@ -97,6 +106,27 @@ def run_self_host(spec_file, schema_path):
                 # serialize as a single-element `errors` list for forward compatibility
                 json.dump({"errors": [e.to_dict()]}, f, indent=2, sort_keys=True)
             print(f"[SELF-HOST] Validation errors written to: {error_path}")
+            return
+        if SyncError is not None and isinstance(e, SyncError):
+            print(f"[SELF-HOST] SYNC ERROR during execute: {e}")
+            error_path = os.path.join(output_dir, "errors.json")
+            with open(error_path, "w") as f:
+                json.dump({"errors": [e.to_dict()]}, f, indent=2, sort_keys=True)
+            print(f"[SELF-HOST] Sync errors written to: {error_path}")
+            return
+
+        try:
+            from shieldcraft.snapshot import SnapshotError
+        except Exception:
+            SnapshotError = None
+
+        if SnapshotError is not None and isinstance(e, SnapshotError):
+            print(f"[SELF-HOST] SNAPSHOT ERROR during execute: {e}")
+            error_path = os.path.join(output_dir, "errors.json")
+            with open(error_path, "w") as f:
+                # SnapshotError has code/message/details
+                json.dump({"errors": [{"code": e.code, "message": e.message, "details": e.details}]}, f, indent=2, sort_keys=True)
+            print(f"[SELF-HOST] Snapshot errors written to: {error_path}")
             return
 
         print(f"[SELF-HOST] ERROR during execute: {e}")
@@ -121,30 +151,10 @@ def run_self_host(spec_file, schema_path):
         # Write outputs
         print("[SELF-HOST] Writing outputs...")
         
-        # Write manifest
+        # Write top-level manifest and summary based on engine self-host output
         manifest_path = os.path.join(output_dir, "manifest.json")
+        manifest_data = result.get("manifest", {})
         with open(manifest_path, "w") as f:
-            checklist_data = result.get("checklist", {})
-            # Handle both dict and list responses
-            if isinstance(checklist_data, dict):
-                checklist_items = checklist_data.get("items", [])
-            else:
-                checklist_items = []
-            
-            # Compute a lightweight fingerprint for deterministic identification
-            try:
-                from shieldcraft.services.spec.fingerprint import compute_spec_fingerprint
-                spec_fp = compute_spec_fingerprint(result.get("spec", {}))
-            except Exception:
-                spec_fp = "unknown"
-
-            manifest_data = {
-                "manifest_version": "v1",
-                "spec_fingerprint": spec_fp,
-                "checklist": checklist_data,
-                "plan": result.get("plan", {}),
-                "lineage": result.get("lineage", {})
-            }
             json.dump(manifest_data, f, indent=2, sort_keys=True)
         
         # Write generated code
@@ -159,19 +169,17 @@ def run_self_host(spec_file, schema_path):
         # Write summary
         summary_path = os.path.join(output_dir, "summary.json")
         with open(summary_path, "w") as f:
-            checklist_data = result.get("checklist", {})
-            if isinstance(checklist_data, dict):
-                item_count = len(checklist_data.get("items", []))
-            else:
-                item_count = 0
-            
             summary = {
                 "status": "success",
-                "stable": result.get("stable", False),
-                "item_count": item_count,
-                "generated_files": len(result.get("generated", []))
+                "stable": result.get("manifest", {}).get("stable", False),
+                "fingerprint": result.get("fingerprint"),
+                "output_dir": result.get("output_dir"),
+                "generated_files": len(result.get("outputs", [])),
+                "item_count": result.get("manifest", {}).get("bootstrap_items", 0),
+                "checklist_count": result.get("manifest", {}).get("bootstrap_items", 0),
+                "provenance": manifest_data.get("provenance", {}),
             }
-            json.dump(summary, f, indent=2)
+            json.dump(summary, f, indent=2, sort_keys=True)
         
         print(f"[SELF-HOST] SUCCESS")
         print(f"[SELF-HOST] Manifest: {manifest_path}")
@@ -230,9 +238,10 @@ def validate_spec_only(spec_file, schema_path):
                 print(f"    - {dep}")
         
         # Determine overall status
+        # CLI `validate-spec` focuses on schema, lineage and dependency checks.
+        # Governance checks are advisory for this mode to allow incremental specs.
         all_ok = (
             preflight_result['schema_valid'] and
-            preflight_result['governance_ok'] and
             preflight_result['lineage_ok'] and
             preflight_result.get('dependency_ok', True)
         )

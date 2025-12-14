@@ -10,8 +10,14 @@ class FilePlan:
     """
 
     def build_file_plan(self, checklist):
+        # Support both legacy list-of-items and new dict-with-items formats
+        if isinstance(checklist, dict) and "items" in checklist:
+            items = checklist["items"]
+        else:
+            items = checklist
+
         tasks = []
-        for item in checklist:
+        for item in items:
             h = hashlib.sha256(item["id"].encode()).hexdigest()[:16]
             path = f"src/generated/{h}.py"
             tasks.append({

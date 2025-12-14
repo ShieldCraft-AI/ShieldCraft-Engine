@@ -16,7 +16,12 @@ class TemplateEngine:
         """Load template from templates directory."""
         path = self.template_dir / name
         if not path.exists():
-            raise FileNotFoundError(f"Template not found: {name}")
+            # Fallback: try repo-relative templates path in case CWD differs
+            alt = Path.cwd() / "src" / "shieldcraft" / "services" / "codegen" / "templates" / name
+            if alt.exists():
+                path = alt
+            else:
+                raise FileNotFoundError(f"Template not found: {name}")
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
     

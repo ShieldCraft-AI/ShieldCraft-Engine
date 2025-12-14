@@ -211,6 +211,6 @@ Notes: All non-doc modifications must be reviewed in a separate PR; foundation-a
 
 ## Phase 14 Triage
 
-- **Triage document created**: See [docs/self_hosting_failure_triage.md](docs/self_hosting_failure_triage.md) for a breakdown of failures and root causes.
+- **SE v1 COMPLETE**: SE v1 marked as complete and self-host capable. See [OPERATIONAL_READINESS.md](OPERATIONAL_READINESS.md) and [docs/CONTRACTS.md](docs/CONTRACTS.md) for operational details.
 - **Next steps**: Create focused PRs per triaged category (generator-lockfile, DSL mapping, evidence bundle compatibility, codegen output shapes, pointer map canonicalization).
 

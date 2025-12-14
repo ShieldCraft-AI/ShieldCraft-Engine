@@ -7,9 +7,13 @@ class EvidenceBundle:
         self.det = det
         self.prov = prov
 
-    def build(self, *, checklist, invariants, graph, provenance, output_dir="evidence"):
+    def build(self, *, checklist, provenance, invariants=None, graph=None, output_dir="evidence"):
         out = pathlib.Path(output_dir)
         out.mkdir(parents=True, exist_ok=True)
+        if invariants is None:
+            invariants = []
+        if graph is None:
+            graph = []
         
         # Canonicalize all inputs
         checklist_canonical = self.det.canonicalize(checklist)

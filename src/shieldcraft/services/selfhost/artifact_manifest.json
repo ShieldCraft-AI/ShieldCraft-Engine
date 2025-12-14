@@ -1,0 +1,15 @@
+{
+  "allowed_prefixes": [
+    "bootstrap/",
+    "modules/",
+    "fixes/",
+    "cycles/",
+    "integration/"
+  ],
+  "allowed_files": [
+    "bootstrap_manifest.json",
+    "manifest.json",
+    "summary.json",
+    "errors.json"
+  ]
+}

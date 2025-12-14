@@ -1,0 +1,30 @@
+name: Self-Build Verification
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  selfbuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install
+        run: |
+          pip install -e .
+
+      - name: Run self-build
+        run: |
+          python - <<PY
+from src.shieldcraft.engine import Engine
+e = Engine('src/shieldcraft/dsl/schema/se_dsl.schema.json')
+e.run_self_build('spec/se_dsl_v1.spec.json', dry_run=False)
+print('Self-build completed')
+PY

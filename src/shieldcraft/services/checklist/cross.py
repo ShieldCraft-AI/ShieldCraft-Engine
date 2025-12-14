@@ -60,4 +60,11 @@ def cross_section_checks(spec, items=None):
                             "reason": "dependency must come before dependent"
                         })
     
-    return {"tasks": tasks, "violations": violations}
+    # Legacy consumers expect a simple list of generated tasks
+    # If caller provided `items`, return detailed structure including violations
+    if items:
+        return {"tasks": tasks, "violations": violations}
+
+    # Legacy callers who expect a simple list of tasks will call without
+    # the `items` parameter; return the list in that case.
+    return tasks

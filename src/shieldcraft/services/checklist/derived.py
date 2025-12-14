@@ -115,6 +115,22 @@ def infer_tasks(item):
             "source_node_type": parent_node_type,
             "meta": {"parent_id": base_id, "derived_type": "bootstrap_impl"}
         })
+        # Add verification task for bootstrap components
+        verify_payload = {"type": "verify", "ptr": ptr}
+        derived.append({
+            "id": _make_deterministic_id(base_id, "bootstrap_verify", verify_payload),
+            "ptr": f"{ptr}/verify",
+            "text": "Verify bootstrap component",
+            "type": "bootstrap_verify",
+            "category": "bootstrap",
+            "classification": "bootstrap",
+            "severity": "low",
+            "source_pointer": parent_spec_ptr,
+            "source_section": item.get("source_section", "unknown"),
+            "lineage_id": parent_lineage_id,
+            "source_node_type": parent_node_type,
+            "meta": {"parent_id": base_id, "derived_type": "bootstrap_verify"}
+        })
     
     # Missing dependency derived tasks
     if item_type == "fix-dependency" or "depends_on" in item or "dependencies" in item:
