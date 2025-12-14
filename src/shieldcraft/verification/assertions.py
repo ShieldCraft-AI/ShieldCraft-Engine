@@ -2,7 +2,7 @@ from typing import Iterable
 from .properties import VerificationProperty
 
 
-_ALLOWED_SEVERITIES = {"low", "medium", "high", "critical"}
+_ALLOWED_SEVERITIES = {"low", "medium", "high", "critical", "error"}
 
 
 def assert_verification_properties(properties: Iterable[VerificationProperty]) -> None:

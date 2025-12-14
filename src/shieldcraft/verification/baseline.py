@@ -32,6 +32,13 @@ BASELINE_PROPERTIES = [
         severity="medium",
         deterministic=True,
     ),
+    VerificationProperty(
+        id="VP-05-SPEC-CHECKLIST-TRACE_COMPLETE",
+        description="All checklist items must have explicit, valid spec pointers (spec_pointer).",
+        scope=VerificationScope.CHECKLIST.value,
+        severity="error",
+        deterministic=True,
+    ),
 ]
 
 
