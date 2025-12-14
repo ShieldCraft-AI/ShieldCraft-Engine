@@ -1,6 +1,7 @@
 from ..spec.pointer_auditor import extract_json_pointers
 import json
 from pathlib import Path
+from shieldcraft.verification.test_coverage import check_checklist_test_coverage
 
 
 def verify_generation_contract(spec, checklist_items, uncovered_ptrs):
@@ -33,6 +34,10 @@ def verify_generation_contract(spec, checklist_items, uncovered_ptrs):
         if it["ptr"] not in ptrs:
             violations.append(f"Checklist item references nonexistent pointer: {it['id']} → {it['ptr']}")
     
+    # Checklist test coverage: report items missing explicit test references
+    cov_viol = check_checklist_test_coverage(checklist_items)
+    for v in cov_viol:
+        violations.append(f"missing_test_refs: {v.get('id')} -> {v.get('ptr')}")
     # Lockfile enforcement: check generator version
     lockfile_path = Path(__file__).parent.parent.parent.parent.parent / "generators" / "lockfile.json"
     if lockfile_path.exists():

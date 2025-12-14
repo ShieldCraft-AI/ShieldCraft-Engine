@@ -1,0 +1,307 @@
+system:
+  name: repository_intelligence_scanner
+  version: 1.0.0
+  classification: decision_grade_repository_analysis
+  authority_level: senior_reviewer_equivalent
+  intended_audience:
+    - technical_leads
+    - senior_engineers
+    - founders
+    - due_diligence_reviewers
+    - automation_engineers
+
+  core_promise: >
+    Produce an evidence-backed, deterministic, decision-grade assessment
+    of a software repository’s real condition, change safety, and risk posture,
+    equivalent in quality and restraint to a senior human reviewer,
+    without executing application logic or relying on subjective interpretation.
+
+  non_promise: >
+    The system does not guarantee correctness of business logic,
+    security vulnerability completeness, or fitness for purpose.
+    It guarantees clarity, bounded judgment, and decision support.
+
+principles:
+  epistemic:
+    - only_claim_what_is_observable
+    - distinguish_evidence_from_judgment
+    - prefer_silence_over_noise
+    - uncertainty_must_be_explicit
+    - confidence_requires_justification
+
+  behavioral:
+    - never_guess_intent
+    - never_optimize_for_output_volume
+    - never_mask_unknowns
+    - never_fail_stop
+    - never_require_manual_intervention
+
+  trust:
+    - deterministic_outputs_required
+    - reproducibility_mandatory
+    - conservative_bias_on_ambiguity
+    - explicit_limits_of_inference
+
+operating_constraints:
+  execution:
+    mode: offline
+    network_access: forbidden
+    external_services: forbidden
+    repository_modification: forbidden
+    execute_application_code: forbidden
+
+  determinism:
+    required: true
+    guarantees:
+      - identical_input_produces_identical_output
+      - canonical_file_traversal
+      - canonical_sorting_of_all_outputs
+      - no_timestamps
+      - no_random_values
+      - stable_hashes_required
+    verification:
+      repeated_runs: 2
+      hash_algorithm: sha256
+      mismatch_action: invalidate_run
+
+  failure_handling:
+    philosophy: fail_soft_never_fail_stop
+    unexpected_conditions:
+      action:
+        - isolate_failure
+        - continue_analysis
+        - downgrade_confidence
+        - emit_explicit_warning
+
+parallelism:
+  model:
+    strategy: bounded_parallelism
+    worker_pool:
+      type: adaptive
+      max_workers: cpu_count_minus_one
+    guarantees:
+      - output_order_independent_of_execution_order
+      - parallel_tasks_must_be_pure
+      - shared_state_forbidden
+
+repository_input:
+  type: local_directory
+  access: read_only
+  discovery:
+    root_detection:
+      strategy:
+        - git_root_preferred
+        - filesystem_fallback
+    canonical_ordering:
+      method: bytewise_path_sort
+
+language_support:
+  detection:
+    method:
+      - file_extension_analysis
+      - build_file_analysis
+      - import_signature_analysis
+    confidence_required: true
+
+  adapters:
+    required_interface:
+      - ast_extraction
+      - dependency_graph_builder
+      - test_discovery
+      - documentation_extraction
+      - idiom_detection
+    self_healing:
+      behavior:
+        - partial_adapter_failure_allowed
+        - unsupported_constructs_marked_unknown
+        - language_confidence_downgraded
+
+analysis_pipeline:
+  stages:
+    - repository_discovery
+    - structural_modeling
+    - static_semantic_analysis
+    - test_signal_analysis
+    - governance_signal_analysis
+    - intent_classification
+    - misleading_signal_detection
+    - safe_change_surface_modeling
+    - risk_and_gap_synthesis
+    - decision_artifact_generation
+    - determinism_verification
+
+stage_definitions:
+  repository_discovery:
+    outputs:
+      - repository_fingerprint
+      - detected_languages
+      - detected_frameworks
+      - build_and_config_artifacts
+    failure_behavior: continue_with_warning
+
+  structural_modeling:
+    responsibilities:
+      - directory_topology_graph
+      - module_boundary_detection
+      - dependency_directionality
+      - cyclic_dependency_detection
+    outputs:
+      - structure_graph
+      - boundary_confidence
+
+  static_semantic_analysis:
+    responsibilities:
+      - symbol_extraction
+      - public_api_surface_detection
+      - complexity_hotspots
+      - documentation_presence
+    outputs:
+      - semantic_map
+      - complexity_summary
+
+  test_signal_analysis:
+    scope:
+      - test_presence
+      - test_alignment_with_code
+      - isolation_signals
+    outputs:
+      - test_signal_strength
+      - test_gap_summary
+
+  governance_signal_analysis:
+    signals:
+      - ci_configuration
+      - versioning_strategy
+      - changelog_presence
+      - migration_artifacts
+    outputs:
+      - governance_maturity_profile
+
+  intent_classification:
+    constraints:
+      - intent_must_be_inferred_only_from_observable_signals
+      - no_psychological_inference
+    classifications:
+      - prototype
+      - productized_service
+      - internal_tool
+      - legacy_system
+      - platform_core
+    justification_required: true
+
+  misleading_signal_detection:
+    purpose: >
+      Identify where common heuristics would overestimate or underestimate
+      system quality or safety.
+    outputs:
+      - misleading_strengths
+      - misleading_weaknesses
+
+  safe_change_surface_modeling:
+    definition: >
+      A decision-support artifact identifying where change can be applied
+      with acceptable risk under current conditions.
+    rules:
+      - absence_is_valid_outcome
+      - must_include_recommended_first_action
+      - must_state_preconditions_if_empty
+    outputs:
+      - safe_change_surface
+
+  risk_and_gap_synthesis:
+    gap_types:
+      - structural
+      - testing
+      - governance
+      - integration
+      - knowledge_risk
+    prioritization:
+      method: impact_over_effort
+    outputs:
+      - prioritized_gap_list
+
+  decision_artifact_generation:
+    artifacts:
+      - executive_verdict
+      - first_action_recommendation
+      - what_not_to_fix
+      - pressure_scenarios_90_day
+    constraints:
+      - must_be_actionable
+      - must_be_bounded
+      - must_be_human_readable
+
+output_contract:
+  primary_report:
+    format: markdown
+    tone: senior_human_reviewer
+    verbosity_rules:
+      - silence_allowed
+      - brevity_preferred
+      - severity_drives_length
+
+    sections:
+      executive_summary:
+        required: true
+        max_length_paragraphs: 2
+
+      system_characterization:
+        required: true
+
+      evidence_highlights:
+        required: true
+
+      misleading_signals:
+        required: true
+
+      safe_to_change_surface:
+        required: true
+
+      prioritized_risks_and_gaps:
+        required: true
+
+      what_not_to_fix:
+        required: true
+
+      conditional_90_day_pressures:
+        required: true
+
+      confidence_and_limits:
+        required: true
+
+  machine_readable_output:
+    format: json
+    deterministic: true
+    canonical_sorting: required
+    hash_embedded: true
+
+confidence_model:
+  levels:
+    - HIGH
+    - MEDIUM
+    - LOW
+  assignment_rules:
+    - confidence_must_be_justified
+    - uncertainty_must_be_visible
+
+silence_rules:
+  allowed:
+    - no_major_findings
+    - no_action_recommended
+  explicit_verdicts:
+    - "No material issues detected under current assumptions."
+
+quality_bar:
+  minimum_standard: unfairly_good
+  rejection_conditions:
+    - generic_advice
+    - vanity_metrics
+    - unjustified_opinions
+    - excessive verbosity
+
+success_criteria:
+  - deterministic_verification_passed
+  - output_understandable_without_tool_knowledge
+  - actionable_next_step_present
+  - restraint_demonstrated
+  - trust_maintained

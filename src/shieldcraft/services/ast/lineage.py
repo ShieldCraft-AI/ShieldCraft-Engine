@@ -40,6 +40,30 @@ def get_lineage_map(ast):
     return dict(sorted(lineage_map.items()))
 
 
+def get_spec_id_map(ast):
+    """
+    Build pointer → spec_id map.
+
+    Returns: dict mapping pointers to spec_ids
+    """
+    spec_map = {}
+
+    for node in ast.walk():
+        # Only consider clause-level nodes for closure: sections or nodes with explicit 'id'
+        raw_val = getattr(node, "value", None)
+        node_has_id = False
+        if isinstance(raw_val, dict):
+            # dict_entry nodes store the payload under 'value'
+            inner = raw_val.get("value") if "value" in raw_val else raw_val
+            if isinstance(inner, dict) and "id" in inner:
+                node_has_id = True
+
+        if node.ptr and getattr(node, "spec_id", None) and (node.type == "section" or node_has_id):
+            spec_map[node.ptr] = node.spec_id
+
+    return dict(sorted(spec_map.items()))
+
+
 def verify_lineage_chain(ast):
     """
     Verify lineage chain integrity.

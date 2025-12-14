@@ -46,6 +46,13 @@ BASELINE_PROPERTIES = [
         severity="error",
         deterministic=True,
     ),
+    VerificationProperty(
+        id="VP-07-SPEC-CHECKLIST-TEST-ARTIFACT_CLOSED",
+        description="Spec → Checklist → Test → Artifact chains must be closed with no orphans.",
+        scope=VerificationScope.CHECKLIST.value,
+        severity="error",
+        deterministic=True,
+    ),
 ]
 
 

@@ -122,7 +122,7 @@ def _validate_event_schema(event: dict) -> None:
         t = prop.get("type")
         if t == "string" and not isinstance(v, str):
             raise RuntimeError(f"persona_event_invalid_type:{k}")
-        if k == "capability" and v not in ["annotate", "veto"]:
+        if k == "capability" and v not in ["annotate", "veto", "decision"]:
             raise RuntimeError("persona_event_invalid_capability")
 
 
