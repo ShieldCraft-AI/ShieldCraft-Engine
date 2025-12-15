@@ -1,307 +1,344 @@
-system:
-  name: repository_intelligence_scanner
-  version: 1.0.0
-  classification: decision_grade_repository_analysis
-  authority_level: senior_reviewer_equivalent
-  intended_audience:
-    - technical_leads
-    - senior_engineers
-    - founders
-    - due_diligence_reviewers
-    - automation_engineers
+THE LITMUS ENGINE
+A Deterministic Repository Review System for Decision Safety
 
-  core_promise: >
-    Produce an evidence-backed, deterministic, decision-grade assessment
-    of a software repository’s real condition, change safety, and risk posture,
-    equivalent in quality and restraint to a senior human reviewer,
-    without executing application logic or relying on subjective interpretation.
+Tagline (internal):
+A senior reviewer that knows when not to speak.
 
-  non_promise: >
-    The system does not guarantee correctness of business logic,
-    security vulnerability completeness, or fitness for purpose.
-    It guarantees clarity, bounded judgment, and decision support.
+0. Brutal Framing (Read This First)
+Who this is for
 
-principles:
-  epistemic:
-    - only_claim_what_is_observable
-    - distinguish_evidence_from_judgment
-    - prefer_silence_over_noise
-    - uncertainty_must_be_explicit
-    - confidence_requires_justification
+Engineers inheriting unfamiliar or legacy systems
 
-  behavioral:
-    - never_guess_intent
-    - never_optimize_for_output_volume
-    - never_mask_unknowns
-    - never_fail_stop
-    - never_require_manual_intervention
+Tech leads deciding where to start safely
 
-  trust:
-    - deterministic_outputs_required
-    - reproducibility_mandatory
-    - conservative_bias_on_ambiguity
-    - explicit_limits_of_inference
+Architects assessing change risk before committing effort
 
-operating_constraints:
-  execution:
-    mode: offline
-    network_access: forbidden
-    external_services: forbidden
-    repository_modification: forbidden
-    execute_application_code: forbidden
+Teams that want fewer mistakes, not more analysis
 
-  determinism:
-    required: true
-    guarantees:
-      - identical_input_produces_identical_output
-      - canonical_file_traversal
-      - canonical_sorting_of_all_outputs
-      - no_timestamps
-      - no_random_values
-      - stable_hashes_required
-    verification:
-      repeated_runs: 2
-      hash_algorithm: sha256
-      mismatch_action: invalidate_run
+Who this is not for
 
-  failure_handling:
-    philosophy: fail_soft_never_fail_stop
-    unexpected_conditions:
-      action:
-        - isolate_failure
-        - continue_analysis
-        - downgrade_confidence
-        - emit_explicit_warning
+Code style enforcement
 
-parallelism:
-  model:
-    strategy: bounded_parallelism
-    worker_pool:
-      type: adaptive
-      max_workers: cpu_count_minus_one
-    guarantees:
-      - output_order_independent_of_execution_order
-      - parallel_tasks_must_be_pure
-      - shared_state_forbidden
+Refactoring automation
 
-repository_input:
-  type: local_directory
-  access: read_only
-  discovery:
-    root_detection:
-      strategy:
-        - git_root_preferred
-        - filesystem_fallback
-    canonical_ordering:
-      method: bytewise_path_sort
+“Find all issues” scanning
 
-language_support:
-  detection:
-    method:
-      - file_extension_analysis
-      - build_file_analysis
-      - import_signature_analysis
-    confidence_required: true
+Junior-level static analysis replacement
 
-  adapters:
-    required_interface:
-      - ast_extraction
-      - dependency_graph_builder
-      - test_discovery
-      - documentation_extraction
-      - idiom_detection
-    self_healing:
-      behavior:
-        - partial_adapter_failure_allowed
-        - unsupported_constructs_marked_unknown
-        - language_confidence_downgraded
+Tools that maximize findings or activity
 
-analysis_pipeline:
-  stages:
-    - repository_discovery
-    - structural_modeling
-    - static_semantic_analysis
-    - test_signal_analysis
-    - governance_signal_analysis
-    - intent_classification
-    - misleading_signal_detection
-    - safe_change_surface_modeling
-    - risk_and_gap_synthesis
-    - decision_artifact_generation
-    - determinism_verification
+If your goal is speed through confidence, this is the wrong tool.
+If your goal is speed through restraint, this is exactly the tool.
 
-stage_definitions:
-  repository_discovery:
-    outputs:
-      - repository_fingerprint
-      - detected_languages
-      - detected_frameworks
-      - build_and_config_artifacts
-    failure_behavior: continue_with_warning
+1. Why This Exists (Against Existing Tools)
 
-  structural_modeling:
-    responsibilities:
-      - directory_topology_graph
-      - module_boundary_detection
-      - dependency_directionality
-      - cyclic_dependency_detection
-    outputs:
-      - structure_graph
-      - boundary_confidence
+Most repository tools fail in the same way:
 
-  static_semantic_analysis:
-    responsibilities:
-      - symbol_extraction
-      - public_api_surface_detection
-      - complexity_hotspots
-      - documentation_presence
-    outputs:
-      - semantic_map
-      - complexity_summary
+They overproduce signals
 
-  test_signal_analysis:
-    scope:
-      - test_presence
-      - test_alignment_with_code
-      - isolation_signals
-    outputs:
-      - test_signal_strength
-      - test_gap_summary
+They conflate presence with importance
 
-  governance_signal_analysis:
-    signals:
-      - ci_configuration
-      - versioning_strategy
-      - changelog_presence
-      - migration_artifacts
-    outputs:
-      - governance_maturity_profile
+They sound confident where evidence is thin
 
-  intent_classification:
-    constraints:
-      - intent_must_be_inferred_only_from_observable_signals
-      - no_psychological_inference
-    classifications:
-      - prototype
-      - productized_service
-      - internal_tool
-      - legacy_system
-      - platform_core
-    justification_required: true
+They encourage premature action
 
-  misleading_signal_detection:
-    purpose: >
-      Identify where common heuristics would overestimate or underestimate
-      system quality or safety.
-    outputs:
-      - misleading_strengths
-      - misleading_weaknesses
+Linters, SAST tools, and static analyzers answer:
 
-  safe_change_surface_modeling:
-    definition: >
-      A decision-support artifact identifying where change can be applied
-      with acceptable risk under current conditions.
-    rules:
-      - absence_is_valid_outcome
-      - must_include_recommended_first_action
-      - must_state_preconditions_if_empty
-    outputs:
-      - safe_change_surface
+“What can I complain about?”
 
-  risk_and_gap_synthesis:
-    gap_types:
-      - structural
-      - testing
-      - governance
-      - integration
-      - knowledge_risk
-    prioritization:
-      method: impact_over_effort
-    outputs:
-      - prioritized_gap_list
+The Litmus Engine answers:
 
-  decision_artifact_generation:
-    artifacts:
-      - executive_verdict
-      - first_action_recommendation
-      - what_not_to_fix
-      - pressure_scenarios_90_day
-    constraints:
-      - must_be_actionable
-      - must_be_bounded
-      - must_be_human_readable
+“What would be irresponsible to touch right now?”
 
-output_contract:
-  primary_report:
-    format: markdown
-    tone: senior_human_reviewer
-    verbosity_rules:
-      - silence_allowed
-      - brevity_preferred
-      - severity_drives_length
+This tool exists because false confidence is more dangerous than missing information.
 
-    sections:
-      executive_summary:
-        required: true
-        max_length_paragraphs: 2
+2. Core Objective
 
-      system_characterization:
-        required: true
+Prevent harmful decisions in unfamiliar codebases by producing authoritative, restraint-oriented guidance grounded exclusively in observable evidence.
 
-      evidence_highlights:
-        required: true
+The engine must explicitly answer:
 
-      misleading_signals:
-        required: true
+Where pressure can safely be applied
 
-      safe_to_change_surface:
-        required: true
+Where pressure must not be applied
 
-      prioritized_risks_and_gaps:
-        required: true
+What is currently unknowable
 
-      what_not_to_fix:
-        required: true
+What looks risky but is not
 
-      conditional_90_day_pressures:
-        required: true
+Silence is a success state.
 
-      confidence_and_limits:
-        required: true
+3. Proof of Seriousness (Non-Optional)
 
-  machine_readable_output:
-    format: json
-    deterministic: true
-    canonical_sorting: required
-    hash_embedded: true
+This repository must include the following from day one:
 
-confidence_model:
-  levels:
-    - HIGH
-    - MEDIUM
-    - LOW
-  assignment_rules:
-    - confidence_must_be_justified
-    - uncertainty_must_be_visible
+3.1 Deterministic Golden Snapshot
 
-silence_rules:
-  allowed:
-    - no_major_findings
-    - no_action_recommended
-  explicit_verdicts:
-    - "No material issues detected under current assumptions."
+A sample repository (or reduced fixture)
 
-quality_bar:
-  minimum_standard: unfairly_good
-  rejection_conditions:
-    - generic_advice
-    - vanity_metrics
-    - unjustified_opinions
-    - excessive verbosity
+A canonical output JSON
 
-success_criteria:
-  - deterministic_verification_passed
-  - output_understandable_without_tool_knowledge
-  - actionable_next_step_present
-  - restraint_demonstrated
-  - trust_maintained
+A canonical SHA-256 hash
+
+“Running Litmus against commit X must always produce hash Y.”
+
+3.2 Refusal Example
+
+A documented case where the engine refuses to issue guidance, with explanation.
+
+Example:
+
+“Critical migration logic exists without tests. No safe change surface can be established.”
+
+3.3 Misleading Signal Example
+
+A documented case where a naïve tool would overreact — and Litmus explicitly does not.
+
+4. Foundational Invariants (Hard Requirements)
+4.1 Determinism (Absolute)
+
+Identical input → identical output
+
+No timestamps, randomness, environment leakage
+
+Canonical traversal and ordering
+
+Verifiable canonical hash emitted
+
+4.2 Observable Signals Only
+
+Allowed inputs:
+
+Structure
+
+Configuration
+
+Tests
+
+Dependencies
+
+Versioning artifacts
+
+Disallowed:
+
+Guessing intent from names or comments
+
+Sentiment or heuristic psychology
+
+4.3 Restraint Is Mandatory
+
+Findings are severity-gated
+
+Low-risk repos may produce <1 page output
+
+“Nothing notable” is valid
+
+Output verbosity is bounded
+
+5. Trust Contract (Explicit)
+
+For every major conclusion, Litmus must include one of:
+
+Why this conclusion is reliable
+
+Why it is bounded
+
+Why a less sophisticated tool would mislead here
+
+This is not optional.
+This is how trust is earned.
+
+6. Intent Modeling (Bounded, Falsifiable)
+
+Litmus does not infer motivation.
+It classifies architectural posture.
+
+6.1 Allowed Signals
+
+Boundary enforcement
+
+Governance strictness
+
+Longevity handling (migrations, deprecations)
+
+Investment asymmetry
+
+6.2 Evolutionary Archetypes (Examples)
+
+These must be concrete and memorable:
+
+The Pressure Cooker
+High change, low governance, tight coupling
+
+The Museum
+Stable, low change, high risk to disturb
+
+The Construction Site
+Actively evolving with guardrails
+
+The Patchwork
+Uneven maturity across domains
+
+Each classification must include:
+
+Evidence
+
+Confidence level
+
+Expiration conditions
+
+7. Safe-to-Change Surface (Primary Artifact)
+7.1 Definition
+
+A permission model, not a score.
+
+Answers:
+
+“Where can pressure be applied right now without unacceptable risk?”
+
+7.2 Required Properties
+
+Explicit safe zones
+
+Explicit no-touch zones
+
+Expiration logic
+
+Evidence references
+
+7.3 Mandatory First Move
+
+Litmus must always provide one of:
+
+A safe first action
+
+An explicit statement that no safe move exists
+
+Absence of a safe surface is a valid finding.
+
+8. What Not to Fix (First-Class Output)
+
+Litmus must explicitly identify:
+
+Benign issues
+
+Areas that look risky but are currently stable
+
+Optimizations that would be negative ROI
+
+Each includes:
+
+Why it is not an issue
+
+When it would become one
+
+This demonstrates senior restraint.
+
+9. Uncertainty & Refusal Model
+9.1 Visible Uncertainty
+
+Uncertainty is:
+
+Localized
+
+Explained
+
+Calm
+
+9.2 Mandatory Refusal Conditions
+
+Litmus must refuse when:
+
+Critical paths lack tests or contracts
+
+Blast radius cannot be bounded
+
+Configuration is contradictory
+
+Refusal is a successful outcome.
+
+10. Multi-Language as Blast-Radius Control
+
+One primary language per scan
+
+Secondary languages analyzed structurally only
+
+Semantic analysis never guesses across boundaries
+
+This prevents false authority and overreach.
+
+11. Output Contract (Human-Grade)
+11.1 Executive Summary (≤1 page)
+
+Must answer:
+
+Is it safe to act?
+
+Where?
+
+Where not?
+
+What is unknowable?
+
+No vanity metrics.
+
+11.2 Decision Artifacts
+
+Safe-to-Change Surface
+
+No-Touch Zones
+
+Misleading Signals
+
+First Recommended Action
+
+11.3 Evidence Appendix
+
+Evidence references only
+
+No speculative commentary
+
+12. Tone & Voice Constraints
+
+Calm
+
+Direct
+
+Senior
+
+No hype
+
+No AI voice
+
+Reads like a VP-level technical memo
+
+13. Deterministic Silence Requirement
+
+Maximum verbosity thresholds
+
+Severity-gated output volume
+
+Explicit “Nothing notable” verdicts allowed
+
+Brevity is enforced, not emergent.
+
+14. Final Litmus Test (Non-Negotiable)
+
+A senior engineer reading the output should think:
+
+“This is exactly what I would have said —
+and I trust it because it knows when not to speak.”
+
+If this fails, the implementation is incorrect.
+
+15. Why This Is Unreasonably Good
+
+It prevents damage instead of producing noise
+
+It encodes senior judgment, not heuristics
+
+It refuses when evidence is insufficient
+
+It is deterministic, auditable, and calm
+
+It optimizes for decision safety, not activity

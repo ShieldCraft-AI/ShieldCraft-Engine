@@ -6,6 +6,7 @@ import json
 import pathlib
 import logging
 from shieldcraft.dsl.canonical_loader import load_canonical_spec
+from shieldcraft.services.spec.ingestion import ingest_spec
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,12 @@ def load_spec(path):
     AUTHORITY: Enforces dsl_version == canonical_v1_frozen.
     """
     file_path = pathlib.Path(path)
-    data = json.loads(file_path.read_text())
+    data = ingest_spec(path)
+
+    # If ingestion did not produce a structured mapping/list, return verbatim
+    # (treat as legacy or raw text). Loader will handle legacy detection.
+    if not isinstance(data, dict):
+        return data
     
     # Enforce DSL version from top-level or metadata spec_format when explicitly present.
     # If neither is present, treat as a legacy spec and return raw data (no hard failure).

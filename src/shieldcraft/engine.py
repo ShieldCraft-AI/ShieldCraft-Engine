@@ -237,7 +237,9 @@ class Engine:
         accidental bypasses.
         """
         if not isinstance(spec, dict):
-            return
+            # Ensure non-dict specs surface as structured validation failures
+            from shieldcraft.services.validator import ValidationError, SPEC_NOT_DICT
+            raise ValidationError(SPEC_NOT_DICT, "spec must be a dict")
 
         # Verify repo sync first (non-bypassable) for all runs.
         # Use the authoritative sync decision point so we have a single

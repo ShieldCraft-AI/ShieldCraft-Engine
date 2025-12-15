@@ -91,10 +91,10 @@ def run_self_host(spec_file, schema_path):
     # Run full pipeline via the engine self-host entrypoint (centralized)
     print("[SELF-HOST] Running engine pipeline...")
     try:
-        # Load spec as dict and delegate to Engine.run_self_host to ensure
-        # self-host uses the single authoritative path and input/output locks.
-        with open(spec_file) as sf:
-            spec = json.load(sf)
+        # Load spec via canonical ingestion helper so non-JSON specs
+        # (YAML/TOML/raw) reach the engine for deterministic validation.
+        from shieldcraft.services.spec.ingestion import ingest_spec
+        spec = ingest_spec(spec_file)
         result = engine.run_self_host(spec, dry_run=False)
     except Exception as e:
         # Handle structured ValidationError specially so self-host emits a deterministic
