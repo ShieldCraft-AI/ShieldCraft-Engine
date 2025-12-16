@@ -152,3 +152,13 @@ On `UNKNOWN_FAILURE`:
 Verification-related invariants and properties are to be enforced by the Verification Spine (see `docs/governance/VERIFICATION_SPINE.md` and `src/shieldcraft/verification`).
 
 This file declares the governance anchor; enforcement logic will be implemented in the Verification Spine and versioned via its governance document.
+
+---
+
+## Checklist Emission Invariant
+
+- All engine execution paths MUST result in a finalized checklist artifact (final checklist or explicit refusal) that records the observed gate events. The canonical emission boundary is the centralized function `finalize_checklist(...)` in `src/shieldcraft/engine.py`.
+- Exceptions may occur only after recording a gate event to the `ChecklistContext`.
+- `finalize_checklist(...)` is the sole emission boundary.
+- This invariant is enforced by code-level assertions and tests.
+

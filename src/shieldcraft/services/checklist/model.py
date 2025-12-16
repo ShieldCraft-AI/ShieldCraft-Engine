@@ -17,7 +17,23 @@ class ChecklistModel:
     def normalize_item(self, item):
         # Require explicit traceability: prefer explicit 'spec_pointer'.
         if "spec_pointer" not in item and "ptr" not in item:
-            raise RuntimeError("missing_spec_pointer")
+            # Record validation event and synthesize a spec_pointer instead of raising
+            try:
+                from shieldcraft.services.checklist.context import record_event_global
+                try:
+                    record_event_global("G21_CHECKLIST_MODEL_VALIDATION_ERRORS", "generation", "BLOCKER", message="missing spec pointer")
+                except Exception:
+                    pass
+            except Exception:
+                pass
+            # Synthesize a fallback pointer and mark the item as invalid
+            item.setdefault("ptr", "/")
+            item["spec_pointer"] = item["ptr"]
+            item.setdefault("meta", {})
+            item["meta"].setdefault("validation_errors", []).append("missing_spec_pointer")
+            item["severity"] = "high"
+            item["quality_status"] = "INVALID"
+            return item
         # Canonicalize: if spec_pointer is missing but ptr exists, set spec_pointer deterministically
         if "spec_pointer" not in item and "ptr" in item:
             item["spec_pointer"] = item["ptr"]
@@ -29,17 +45,55 @@ class ChecklistModel:
         
         # Enforce item.id as string
         if "id" in item and not isinstance(item["id"], str):
-            raise TypeError(f"Item id must be string, got {type(item['id'])}")
+            try:
+                from shieldcraft.services.checklist.context import record_event_global
+                try:
+                    record_event_global("G21_CHECKLIST_MODEL_VALIDATION_ERRORS", "generation", "BLOCKER", message="item id not string")
+                except Exception:
+                    pass
+            except Exception:
+                pass
+            # Convert id to string and mark validation note (do not raise)
+            item["id"] = str(item.get("id"))
+            item.setdefault("meta", {})
+            item["meta"].setdefault("validation_errors", []).append("item_id_not_string")
+            item["severity"] = "high"
+            item["quality_status"] = "INVALID"
         
         # Enforce item.type in allowed set
         if "type" in item and item["type"] not in self.ALLOWED_TYPES:
-            raise ValueError(f"Item type '{item['type']}' not in allowed set: {self.ALLOWED_TYPES}")
+            try:
+                from shieldcraft.services.checklist.context import record_event_global
+                try:
+                    record_event_global("G21_CHECKLIST_MODEL_VALIDATION_ERRORS", "generation", "BLOCKER", message="item type not allowed", evidence={"type": item.get('type')})
+                except Exception:
+                    pass
+            except Exception:
+                pass
+            # Replace invalid type with 'task' fallback and mark invalid (do not raise)
+            item.setdefault("meta", {})
+            item["meta"].setdefault("validation_errors", []).append(f"item_type_not_allowed:{item.get('type')}")
+            item["severity"] = "high"
+            item["quality_status"] = "INVALID"
+            item["type"] = "task"
         
         # Enforce deterministic meta fields
         if "meta" not in item:
             item["meta"] = {}
         if not isinstance(item["meta"], dict):
-            raise TypeError(f"Item meta must be dict, got {type(item['meta'])}")
+            try:
+                from shieldcraft.services.checklist.context import record_event_global
+                try:
+                    record_event_global("G21_CHECKLIST_MODEL_VALIDATION_ERRORS", "generation", "BLOCKER", message="item meta not dict")
+                except Exception:
+                    pass
+            except Exception:
+                pass
+            # Coerce meta to dict and mark validation error (do not raise)
+            item["meta"] = {"coerced_meta": True}
+            item["meta"].setdefault("validation_errors", []).append("item_meta_not_dict")
+            item["severity"] = "high"
+            item["quality_status"] = "INVALID"
         
         # Ensure unified schema fields
         if "category" not in item:

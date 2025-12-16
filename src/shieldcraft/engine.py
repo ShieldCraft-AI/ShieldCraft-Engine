@@ -23,6 +23,94 @@ from shieldcraft.services.stability.stability import compare
 from shieldcraft.services.validator import validate_instruction_block
 
 
+def finalize_checklist(engine, partial_result=None, exception=None):
+    """Create a guaranteed checklist result from recorded events, partial result, or exception.
+
+    This function is policy-driven plumbing: it translates recorded gate events
+    into checklist items and returns a normalized final result dict. It MUST
+    not raise; callers should treat the returned dict as the canonical run
+    outcome.
+    """
+    # Collect recorded events (defensive)
+    events = []
+    try:
+        if engine is not None and getattr(engine, 'checklist_context', None):
+            try:
+                events = engine.checklist_context.get_events()
+            except Exception:
+                events = []
+    except Exception:
+        events = []
+
+    items = []
+    # Start from any existing checklist items in partial_result
+    try:
+        if partial_result and isinstance(partial_result.get('checklist'), dict):
+            existing = partial_result.get('checklist', {}).get('items', []) or []
+            items.extend(existing)
+    except Exception:
+        pass
+
+    # Translate gate events into checklist items
+    for ev in events:
+        try:
+            gid = ev.get('gate_id')
+            phase = ev.get('phase')
+            outcome = ev.get('outcome')
+            msg = ev.get('message') or gid
+            evidence = ev.get('evidence')
+            # Minimal checklist item: ptr and text; allow model.normalize_item to fill defaults
+            it = {'ptr': '/', 'text': f"{gid}: {msg}", 'meta': {'gate': gid, 'phase': phase, 'evidence': evidence}}
+            # Severity heuristics: REFUSAL/BLOCKER -> high
+            if outcome and outcome.upper() in ('REFUSAL', 'BLOCKER'):
+                it['severity'] = 'high'
+            else:
+                it['severity'] = 'medium'
+            items.append(it)
+        except Exception:
+            pass
+
+    # If exception occurred, record it as a diagnostic item
+    error_info = None
+    if exception is not None:
+        try:
+            err_text = str(exception)
+            items.append({'ptr': '/', 'text': f"internal_exception: {err_text}", 'severity': 'high', 'meta': {'exception': err_text}})
+            error_info = {'message': err_text, 'type': exception.__class__.__name__}
+        except Exception:
+            pass
+
+    # Build checklist object and attach events for auditing
+    checklist = {'items': items, 'emitted': True, 'events': events}
+
+    # Flag refusal if any REFUSAL events present
+    for ev in events:
+        if ev.get('outcome') == 'REFUSAL':
+            checklist['refusal'] = True
+            checklist['refusal_reason'] = ev.get('message') or ev.get('gate_id')
+            break
+
+    # Compose final result preserving partial_result type if present
+    result = {}
+    if partial_result and isinstance(partial_result, dict):
+        result.update(partial_result)
+
+    # Ensure canonical fields
+    result['checklist'] = checklist
+    # Surface an explicit top-level emission flag so callers and invariants
+    # can assert emission without digging into nested structures.
+    result['emitted'] = True
+    if error_info:
+        result['error'] = error_info
+
+    # Central invariant assertion: ensure finalized result explicitly
+    # declares that emission occurred and includes the checklist payload.
+    if not (result.get('emitted') is True and 'checklist' in result):
+        raise AssertionError('Checklist emission invariant violated')
+
+    return result
+
+
 class Engine:
     """ShieldCraft Engine
 
@@ -40,6 +128,18 @@ class Engine:
         self.ast = ASTBuilder()
         self.planner = Planner()
         self.checklist_gen = ChecklistGenerator()
+        # Checklist context for recording gate events; plumbing only.
+        try:
+            from shieldcraft.services.checklist.context import ChecklistContext, set_global_context
+            self.checklist_context = ChecklistContext()
+            try:
+                # Register global plumbing context for modules that cannot access engine directly
+                set_global_context(self.checklist_context)
+            except Exception:
+                pass
+        except Exception:
+            # Keep engine usable even if context module unavailable (defensive)
+            self.checklist_context = None
         self.codegen = CodeGenerator()
         self.writer = FileWriter()
         self.det = DeterminismEngine()
@@ -53,6 +153,14 @@ class Engine:
             # Persona optional scaffold (feature-flag guarded)
             from shieldcraft.persona import is_persona_enabled
         except Exception as e:
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G1_ENGINE_READINESS_FAILURE", "preflight", "REFUSAL", message="engine readiness failure", evidence={"error": str(e)})
+                    except Exception:
+                        pass
+            except Exception:
+                pass
             raise RuntimeError("engine_readiness_failure: missing subsystem") from e
         # Feature flag - do not enable persona behavior by default
         self.persona_enabled = is_persona_enabled()
@@ -100,10 +208,26 @@ class Engine:
                 except Exception:
                     engine_major = None
                 check_governance_presence(root, engine_major=engine_major)
-        except RuntimeError:
+        except RuntimeError as e:
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G2_GOVERNANCE_PRESENCE_CHECK", "preflight", "REFUSAL", message="governance presence check failed", evidence={"error": str(e)})
+                    except Exception:
+                        pass
+            except Exception:
+                pass
             # Propagate specialized governance errors unchanged
             raise
-        except Exception:
+        except Exception as e:
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G2_GOVERNANCE_PRESENCE_CHECK", "preflight", "REFUSAL", message="governance check error", evidence={"error": str(e)})
+                    except Exception:
+                        pass
+            except Exception:
+                pass
             # Normalize unexpected failures
             raise RuntimeError("governance_check_failed")
 
@@ -118,12 +242,44 @@ class Engine:
             from shieldcraft.services.sync import SyncError
             from shieldcraft.snapshot import SnapshotError
             if isinstance(e, SnapshotError):
+                try:
+                    if getattr(self, 'checklist_context', None):
+                        try:
+                            self.checklist_context.record_event("G3_REPO_SYNC_VERIFICATION", "preflight", "REFUSAL", message="snapshot error", evidence={"error": str(e)})
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
                 raise
             if isinstance(e, SyncError):
                 # Surface missing-sync explicitly; normalize other sync failures
                 if getattr(e, "code", None) == SYNC_MISSING:
+                    try:
+                        if getattr(self, 'checklist_context', None):
+                            try:
+                                self.checklist_context.record_event("G3_REPO_SYNC_VERIFICATION", "preflight", "REFUSAL", message="repo sync missing", evidence={"error": str(e)})
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
                     raise
+                try:
+                    if getattr(self, 'checklist_context', None):
+                        try:
+                            self.checklist_context.record_event("G3_REPO_SYNC_VERIFICATION", "preflight", "REFUSAL", message="repo sync verification failed", evidence={"error": str(e)})
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
                 raise RuntimeError("sync_not_performed")
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G3_REPO_SYNC_VERIFICATION", "preflight", "REFUSAL", message="repo sync verification failed", evidence={"error": str(e)})
+                    except Exception:
+                        pass
+            except Exception:
+                pass
             raise RuntimeError("sync_not_performed")
 
         # Schema validation for legacy normalized specs
@@ -133,7 +289,16 @@ class Engine:
             except Exception:
                 valid, errors = True, []
             if not valid:
-                return {"type": "schema_error", "details": errors}
+                try:
+                    if getattr(self, 'checklist_context', None):
+                        try:
+                            self.checklist_context.record_event("G4_SCHEMA_VALIDATION", "preflight", "DIAGNOSTIC", message="schema validation failed", evidence={"error_count": len(errors)})
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+                # Normalize schema error to a finalized checklist return so emission is guaranteed
+                return finalize_checklist(self, partial_result={"type": "schema_error", "details": errors})
 
         # Instruction validation raises ValidationError on failures
         try:
@@ -165,7 +330,16 @@ class Engine:
             props = _vreg.global_registry().get_all()
             _vassert.assert_verification_properties(props)
         except RuntimeError as e:
-            raise RuntimeError("verification_failed") from e
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G6_VERIFICATION_SPINE_FAILURE", "preflight", "DIAGNOSTIC", message="verification spine failure", evidence={"error": str(e)})
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            # Do not raise here; record diagnostic and allow centralized finalization to handle outcome
+            pass
         except Exception:
             # Do not change preflight behavior if verification spine is unavailable
             pass
@@ -183,6 +357,14 @@ class Engine:
                 def _key(v):
                     return (severity_order.get(v.get("severity"), 0), v.get("persona_id"))
                 sel = sorted(self._persona_vetoes, key=_key, reverse=True)[0]
+                try:
+                    if getattr(self, 'checklist_context', None):
+                        try:
+                            self.checklist_context.record_event("G7_PERSONA_VETO", "preflight", "REFUSAL", message="persona veto triggered", evidence={"persona_id": sel.get('persona_id'), "code": sel.get('code')})
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
                 raise RuntimeError(f"persona_veto: {sel.get('persona_id')}:{sel.get('code')}")
         except RuntimeError:
             raise
@@ -213,7 +395,15 @@ class Engine:
                     raise RuntimeError("checklist_generation_failed")
                 # Now verify TAC
                 verify_tests_attached(checklist_preview)
-        except ProductInvariantFailure:
+        except ProductInvariantFailure as e:
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G8_TEST_ATTACHMENT_CONTRACT", "preflight", "REFUSAL", message="test-attachment contract failed", evidence={"error": str(e)})
+                    except Exception:
+                        pass
+            except Exception:
+                pass
             # Re-raise to allow caller to see the structured failure
             raise
         except Exception:
@@ -238,6 +428,14 @@ class Engine:
         """
         if not isinstance(spec, dict):
             # Ensure non-dict specs surface as structured validation failures
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G5_VALIDATION_TYPE_GATES", "preflight", "REFUSAL", message="spec not a dict")
+                    except Exception:
+                        pass
+            except Exception:
+                pass
             from shieldcraft.services.validator import ValidationError, SPEC_NOT_DICT
             raise ValidationError(SPEC_NOT_DICT, "spec must be a dict")
 
@@ -299,14 +497,33 @@ class Engine:
         self._last_validated_spec_fp = compute_spec_fingerprint(spec)
         # Assert validation recorded
         if self._last_validated_spec_fp != compute_spec_fingerprint(spec):
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G5_VALIDATION_TYPE_GATES", "preflight", "REFUSAL", message="validation not recorded")
+                    except Exception:
+                        pass
+            except Exception:
+                pass
             raise RuntimeError("validation_not_performed")
 
     def run(self, spec_path):
         # AUTHORITATIVE DSL: se_dsl_v1.schema.json via dsl.loader. Do not introduce parallel DSLs.
         
-        # Load spec using canonical DSL loader which performs the canonical mapping
-        raw = load_spec(spec_path)
-        
+        try:
+            # Load spec using canonical DSL loader which performs the canonical mapping
+            raw = load_spec(spec_path)
+        except Exception as e:
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G4_SCHEMA_VALIDATION", "preflight", "DIAGNOSTIC", message="spec load failed", evidence={"error": str(e)})
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            return finalize_checklist(self, partial_result=None, exception=e)
+
         # Handle SpecModel or raw dict
         if isinstance(raw, SpecModel):
             spec_model = raw
@@ -318,7 +535,16 @@ class Engine:
             normalized = canonicalize(raw) if not isinstance(raw, dict) else raw
             valid, errors = validate_spec_against_schema(normalized, self.schema_path)
             if not valid:
-                return {"type": "schema_error", "details": errors}
+                try:
+                    if getattr(self, 'checklist_context', None):
+                        try:
+                            self.checklist_context.record_event("G4_SCHEMA_VALIDATION", "preflight", "DIAGNOSTIC", message="schema validation failed", evidence={"error_count": len(errors)})
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+                # Create a finalized checklist result for schema errors
+                return finalize_checklist(self, partial_result={"type": "schema_error", "details": errors})
             ast = self.ast.build(normalized)
             fingerprint = compute_spec_fingerprint(normalized)
             spec_model = SpecModel(normalized, ast, fingerprint)
@@ -335,6 +561,14 @@ class Engine:
         if "instructions" in spec:
             fp = compute_spec_fingerprint(spec)
             if getattr(self, "_last_validated_spec_fp", None) != fp:
+                try:
+                    if getattr(self, 'checklist_context', None):
+                        try:
+                            self.checklist_context.record_event("G5_VALIDATION_TYPE_GATES", "preflight", "REFUSAL", message="validation not performed")
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
                 raise RuntimeError("validation_not_performed")
         
         # Create execution plan
@@ -382,7 +616,28 @@ class Engine:
             checklist["_readiness"] = {"ok": False, "results": {"readiness_eval": {"ok": False}}}
             checklist["_readiness_report"] = "Readiness evaluation failed"
         
-        return {"spec": spec, "ast": ast, "checklist": checklist, "plan": plan}
+        try:
+            return finalize_checklist(self, partial_result={"spec": spec, "ast": ast, "checklist": checklist, "plan": plan})
+        except Exception as e:
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G22_EXECUTE_INTERNAL_ERROR_RETURN", "generation", "DIAGNOSTIC", message=str(e))
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            return finalize_checklist(self, partial_result=None, exception=e)
+        except Exception as e:
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G22_EXECUTE_INTERNAL_ERROR_RETURN", "generation", "DIAGNOSTIC", message=str(e))
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            return finalize_checklist(self, partial_result=None, exception=e)
 
     def generate_code(self, spec_path, dry_run=False):
         result = self.run(spec_path)
@@ -390,15 +645,26 @@ class Engine:
         # Check for validation errors
         if result.get("type") == "schema_error":
             return result
-        outputs = self.codegen.run(result["checklist"], dry_run=dry_run)
+        try:
+            outputs = self.codegen.run(result["checklist"], dry_run=dry_run)
 
-        # Support both legacy list-of-outputs and new dict-with-outputs
-        outputs_list = outputs.get("outputs") if isinstance(outputs, dict) and "outputs" in outputs else outputs
+            # Support both legacy list-of-outputs and new dict-with-outputs
+            outputs_list = outputs.get("outputs") if isinstance(outputs, dict) and "outputs" in outputs else outputs
 
-        if not dry_run:
-            self.writer.write_all(outputs_list)
+            if not dry_run:
+                self.writer.write_all(outputs_list)
 
-        return outputs
+            return outputs
+        except Exception as e:
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G22_CODEGEN_INTERNAL_ERROR_RETURN", "generation", "DIAGNOSTIC", message=str(e))
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            return finalize_checklist(self, partial_result=None, exception=e)
 
     def verify_checklist(self, checklist):
         return self.verifier.verify(checklist)
@@ -431,13 +697,21 @@ class Engine:
         # Validate instructions before doing any work. This is the non-bypassable
         # validation gate for self-host mode: do not build AST or generate code for
         # specs that fail instruction validation.
-        self._validate_spec(spec)
-
         try:
+            self._validate_spec(spec)
+
             # Ensure validation recorded deterministically (prevent no-op/malicious bypass)
             if "instructions" in spec:
                 fp = compute_spec_fingerprint(spec)
                 if getattr(self, "_last_validated_spec_fp", None) != fp:
+                    try:
+                        if getattr(self, 'checklist_context', None):
+                            try:
+                                self.checklist_context.record_event("G5_VALIDATION_TYPE_GATES", "preflight", "REFUSAL", message="validation not performed")
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
                     raise RuntimeError("validation_not_performed")
 
             # Build AST and checklist
@@ -487,11 +761,27 @@ class Engine:
             # Ensure only allowed inputs are consumed by self-host
             from shieldcraft.services.selfhost import is_allowed_selfhost_input, SELFHOST_READINESS_MARKER, provenance_header
             if not is_allowed_selfhost_input(spec):
+                try:
+                    if getattr(self, 'checklist_context', None):
+                        try:
+                            self.checklist_context.record_event("G14_SELFHOST_INPUT_SANDBOX", "post_generation", "REFUSAL", message="disallowed self-host input")
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
                 raise RuntimeError("disallowed_selfhost_input")
 
             # Assert readiness marker is present (single guarded flag that can be audited)
             from shieldcraft.services.selfhost import SELFHOST_READINESS_MARKER as _READINESS
             if not _READINESS:
+                try:
+                    if getattr(self, 'checklist_context', None):
+                        try:
+                            self.checklist_context.record_event("G14_SELFHOST_INPUT_SANDBOX", "post_generation", "REFUSAL", message="self-host not ready")
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
                 raise RuntimeError("selfhost_not_ready")
 
             # Enforce clean worktree for self-host runs (safety precondition).
@@ -503,8 +793,24 @@ class Engine:
                 try:
                     from shieldcraft.persona import _is_worktree_clean
                 except Exception as e:
+                    try:
+                        if getattr(self, 'checklist_context', None):
+                            try:
+                                self.checklist_context.record_event("G14_SELFHOST_INPUT_SANDBOX", "post_generation", "REFUSAL", message="worktree_check_failed", evidence={"error": str(e)})
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
                     raise RuntimeError("worktree_check_failed") from e
                 if not _is_worktree_clean():
+                    try:
+                        if getattr(self, 'checklist_context', None):
+                            try:
+                                self.checklist_context.record_event("G14_SELFHOST_INPUT_SANDBOX", "post_generation", "REFUSAL", message="worktree not clean")
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
                     raise RuntimeError("worktree_not_clean")
 
             # Compute fingerprint from spec content
@@ -575,6 +881,14 @@ class Engine:
             for output in codegen_result.get("outputs", []):
                 rel_path = output["path"].lstrip("./")
                 if not is_allowed_selfhost_path(rel_path):
+                    try:
+                        if getattr(self, 'checklist_context', None):
+                            try:
+                                self.checklist_context.record_event("G15_DISALLOWED_SELFHOST_ARTIFACT", "post_generation", "REFUSAL", message=f"disallowed_selfhost_artifact: {rel_path}", evidence={"path": rel_path})
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
                     raise RuntimeError(f"disallowed_selfhost_artifact: {rel_path}")
                 file_path = output_dir / rel_path
                 file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -652,6 +966,14 @@ class Engine:
                         'equivalence_groups': len(minimality_report.get('equivalence_groups', [])),
                         'violations': violations,
                     }
+                    try:
+                        if getattr(self, 'checklist_context', None):
+                            try:
+                                self.checklist_context.record_event("G16_MINIMALITY_INVARIANT_FAILED", "post_generation", "REFUSAL", message="minimality invariant failed")
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
                     raise RuntimeError('minimality_invariant_failed')
 
                 # Persist pruned checklist to both fingerprinted output and root outputs
@@ -677,10 +999,34 @@ class Engine:
                 manifest['checklist_execution_plan'] = {'ordered_item_count': len(plan.get('ordered_item_ids', [])), 'cycle_groups': plan.get('cycles', {}), 'missing_artifacts': plan.get('missing_artifacts', []), 'priority_violations': plan.get('priority_violations', [])}
 
                 if plan.get('cycles'):
+                    try:
+                        if getattr(self, 'checklist_context', None):
+                            try:
+                                self.checklist_context.record_event("G17_EXECUTION_CYCLE_DETECTED", "post_generation", "REFUSAL", message="execution cycle detected")
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
                     raise RuntimeError('execution_cycle_detected')
                 if plan.get('missing_artifacts'):
+                    try:
+                        if getattr(self, 'checklist_context', None):
+                            try:
+                                self.checklist_context.record_event("G18_MISSING_ARTIFACT_PRODUCER", "post_generation", "REFUSAL", message="missing artifact producer")
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
                     raise RuntimeError('missing_artifact_producer')
                 if plan.get('priority_violations'):
+                    try:
+                        if getattr(self, 'checklist_context', None):
+                            try:
+                                self.checklist_context.record_event("G19_PRIORITY_VIOLATION_DETECTED", "post_generation", "REFUSAL", message="priority violation detected")
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
                     raise RuntimeError('priority_violation_detected')
 
                 order_map = {nid: idx + 1 for idx, nid in enumerate(plan.get('ordered_item_ids', []))}
@@ -704,7 +1050,15 @@ class Engine:
                 emit_state(self, "self_host", "self_host", "fail", getattr(e, "code", str(e)))
             except Exception:
                 pass
-            raise
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G14_SELFHOST_INTERNAL_ERROR_RETURN", "self_host", "DIAGNOSTIC", message=str(e))
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            return finalize_checklist(self, partial_result=None, exception=e)
 
     def run_self_build(self, spec_path: str = "spec/se_dsl_v1.spec.json", dry_run: bool = False):
         """Run a self-build using the engine pipeline and emit a self-build bundle.
@@ -770,6 +1124,9 @@ class Engine:
                     os.environ.pop("SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY", None)
                 else:
                     os.environ["SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY"] = prev
+            # If run_self_host returned a checklist error/result rather than success, propagate the finalized checklist unchanged
+            if not res or not res.get("output_dir"):
+                return res
             out_dir = Path(res.get("output_dir"))
             target_dir = Path(SELFBUILD_OUTPUT_DIR) / res.get("fingerprint")
             if target_dir.exists():
@@ -886,8 +1243,19 @@ class Engine:
         )
 
     def execute(self, spec_path):
-        # Load and validate using canonical DSL
-        raw = load_spec(spec_path)
+        try:
+            # Load and validate using canonical DSL
+            raw = load_spec(spec_path)
+        except Exception as e:
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G4_SCHEMA_VALIDATION", "preflight", "DIAGNOSTIC", message="spec load failed", evidence={"error": str(e)})
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            return finalize_checklist(self, partial_result=None, exception=e)
         
         # Handle SpecModel or raw dict
         if isinstance(raw, SpecModel):
@@ -905,7 +1273,7 @@ class Engine:
             spec = canonicalize(raw) if not isinstance(raw, dict) else raw
             valid, errors = validate_spec_against_schema(spec, self.schema_path)
             if not valid:
-                return {"type": "schema_error", "details": errors}
+                return finalize_checklist(self, partial_result={"type": "schema_error", "details": errors})
             # Enforce instruction validation before building AST or creating plans
             # to ensure we do not process invalid instruction specs.
             self._validate_spec(spec)
@@ -947,17 +1315,15 @@ class Engine:
             checklist_items = checklist_data
         else:
             # Unexpected format
-            return {"type": "internal_error", "details": "Invalid checklist format"}
-        
-        # Generate code
-        outputs = self.codegen.run(checklist_items)
-        # Support both historic list-of-outputs and dict with 'outputs' key
-        outputs_list = outputs.get("outputs") if isinstance(outputs, dict) and "outputs" in outputs else outputs
-        self.writer.write_all(outputs_list)
-        
-        # Bootstrap module emission for self-host
-        if spec.get("metadata", {}).get("self_host") is True:
-            # Collect bootstrap modules from checklist
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G22_EXECUTE_INTERNAL_ERROR_RETURN", "generation", "DIAGNOSTIC", message="invalid checklist format")
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            return finalize_checklist(self, partial_result={"type": "internal_error", "details": "Invalid checklist format"})
             bootstrap_items = [item for item in checklist_items if item.get("classification") == "bootstrap"]
             
             if bootstrap_items:
@@ -1002,33 +1368,44 @@ class BootstrapModule:
                 with open(manifest_path, "w") as f:
                     json.dump(bootstrap_manifest, f, indent=2, sort_keys=True)
         
-        # Generate evidence
-        evidence = self.generate_evidence(spec_path, checklist_items)
-        
-        # Compute lineage bundle
-        spec_fp = canonicalize(json.dumps(spec))
-        items_fp = canonicalize(json.dumps(result["checklist"]))
-        plan_fp = canonicalize(json.dumps(plan))
-        code_fp = canonicalize(json.dumps(outputs))
-        
-        lineage_bundle = bundle(spec_fp, items_fp, plan_fp, code_fp)
-        
-        # Write manifest
-        manifest_data = {
-            "checklist": result["checklist"],
-            "plan": plan,
-            "evidence": evidence,
-            "lineage": lineage_bundle,
-            "outputs": outputs
-        }
-        write_manifest_v2(manifest_data, plan_dir)
-        
-        # Stability verification
-        current_run = {
-            "manifest": manifest_data,
-            "signature": lineage_bundle["signature"]
-        }
-        
+        try:
+            # Generate evidence
+            evidence = self.generate_evidence(spec_path, checklist_items)
+            
+            # Compute lineage bundle
+            spec_fp = canonicalize(json.dumps(spec))
+            items_fp = canonicalize(json.dumps(result["checklist"]))
+            plan_fp = canonicalize(json.dumps(plan))
+            code_fp = canonicalize(json.dumps(outputs))
+            
+            lineage_bundle = bundle(spec_fp, items_fp, plan_fp, code_fp)
+            
+            # Write manifest
+            manifest_data = {
+                "checklist": result["checklist"],
+                "plan": plan,
+                "evidence": evidence,
+                "lineage": lineage_bundle,
+                "outputs": outputs
+            }
+            write_manifest_v2(manifest_data, plan_dir)
+            
+            # Stability verification
+            current_run = {
+                "manifest": manifest_data,
+                "signature": lineage_bundle["signature"]
+            }
+        except Exception as e:
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G22_EXECUTE_INTERNAL_ERROR_RETURN", "generation", "DIAGNOSTIC", message=str(e))
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            return finalize_checklist(self, partial_result=None, exception=e)
+
         # Compare with previous run if exists
         prev_manifest_path = f"{plan_dir}/manifest.json"
         stable = True

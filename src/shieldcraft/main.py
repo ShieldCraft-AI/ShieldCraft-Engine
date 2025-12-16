@@ -166,6 +166,22 @@ def run_self_host(spec_file, schema_path):
             if 'pre_scan' not in locals():
                 pre_scan = []
             result = engine.run_self_host(spec, dry_run=False)
+            # If engine returned a finalized checklist indicating refusal or error,
+            # write a refusal_report or errors.json so CLI consumers see the artifact
+            try:
+                if isinstance(result, dict) and 'checklist' in result:
+                    cl = result.get('checklist', {})
+                    if cl.get('refusal') or result.get('error'):
+                        # Emit a refusal report for tooling to consume
+                        try:
+                            rr_path = os.path.join(output_dir, "refusal_report.json")
+                            with open(rr_path, "w") as f:
+                                json.dump(result, f, indent=2, sort_keys=True)
+                        except Exception:
+                            pass
+                        return
+            except Exception:
+                pass
     except Exception as e:
         # Handle structured ValidationError specially so self-host emits a deterministic
         # `errors.json` payload that CI and tooling can consume.
@@ -837,6 +853,14 @@ def run_self_host(spec_file, schema_path):
             has_cd = os.path.exists(cd)
             has_rr = os.path.exists(rr)
             if not (has_cd ^ has_rr):
+                try:
+                    if getattr(engine, 'checklist_context', None):
+                        try:
+                            engine.checklist_context.record_event("G15_DISALLOWED_SELFHOST_ARTIFACT", "post_generation", "REFUSAL", message="primary artifact invariant violated")
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
                 raise RuntimeError("primary_artifact_invariant_violation: exactly one of checklist_draft.json or refusal_report.json must be present")
             # If checklist exists and contains zero items, emit a silence justification
             if has_cd:
@@ -1004,16 +1028,48 @@ def run_self_host(spec_file, schema_path):
                 p0_violations = [iid for iid in low_ids if (id_to_pr.get(iid) or '').upper().startswith('P0')]
                 ratio = (low_count / total) if total else 0.0
                 if p0_violations:
+                    try:
+                        if getattr(engine, 'checklist_context', None):
+                            try:
+                                engine.checklist_context.record_event("G20_QUALITY_GATE_FAILED", "post_generation", "REFUSAL", message="quality gate failed: p0 violations")
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
                     raise RuntimeError('quality_gate_failed')
                 if total == 0:
                     # No checklist items -> fail quality for prose-only specs
+                    try:
+                        if getattr(engine, 'checklist_context', None):
+                            try:
+                                engine.checklist_context.record_event("G20_QUALITY_GATE_FAILED", "post_generation", "REFUSAL", message="quality gate failed: zero items")
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
                     raise RuntimeError('quality_gate_failed')
                 # Allow some low-signal noise; fail only if >10% of items
                 if ratio > 0.10:
+                    try:
+                        if getattr(engine, 'checklist_context', None):
+                            try:
+                                engine.checklist_context.record_event("G20_QUALITY_GATE_FAILED", "post_generation", "REFUSAL", message="quality gate failed: low-signal ratio")
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
                     raise RuntimeError('quality_gate_failed')
                 # Fail if all items are inferred from prose (even if not low confidence)
                 inferred_all = sum(1 for it in (items or []) if it.get('inferred_from_prose'))
                 if total > 0 and inferred_all == total:
+                    try:
+                        if getattr(engine, 'checklist_context', None):
+                            try:
+                                engine.checklist_context.record_event("G20_QUALITY_GATE_FAILED", "post_generation", "REFUSAL", message="quality gate failed: all items inferred from prose")
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
                     raise RuntimeError('quality_gate_failed')
             except RuntimeError:
                 # Persist quality summary before propagating
@@ -1633,6 +1689,14 @@ def run_self_host(spec_file, schema_path):
             has_cd = os.path.exists(cd)
             has_rr = os.path.exists(rr)
             if not (has_cd ^ has_rr):
+                try:
+                    if getattr(engine, 'checklist_context', None):
+                        try:
+                            engine.checklist_context.record_event("G15_DISALLOWED_SELFHOST_ARTIFACT", "post_generation", "REFUSAL", message="primary artifact invariant violated")
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
                 raise RuntimeError("primary_artifact_invariant_violation: exactly one of checklist_draft.json or refusal_report.json must be present")
             if has_cd:
                 try:
