@@ -1,3 +1,4 @@
+
 ## Contracts and Model Requirements
 
 This document describes required model shape and contract expectations.
