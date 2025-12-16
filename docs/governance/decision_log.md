@@ -139,3 +139,4 @@ Authoritative decisions made on 2025-12-13 (Phase 13 kickoff). All decisions rec
   - Supporting operational documents reference the canonical core and legacy materials are archived as historical references (`docs/persona/legacy/`).
   - A documented inventory, gaps report, and simplification summary accompany the consolidation (`docs/governance/PERSONA_DOCUMENT_INVENTORY.md`, `PERSONA_PROTOCOL_GAPS.md`, `PERSONA_PROTOCOL_SIMPLIFICATION_SUMMARY.md`).
 - Rationale: Reduce documentation surface, make persona expectations explicit and auditable, and preserve historical artifacts for traceability; no runtime behavior was changed in Phase 7.
+- See: `docs/governance/PHASE_8_CLOSURE.md` (Phase 8 closure recorded).

@@ -765,7 +765,19 @@ class Engine:
         except Exception:
             pass
 
-        checklist = self.checklist_gen.build(spec, ast=ast, engine=self)
+        try:
+            checklist = self.checklist_gen.build(spec, ast=ast, engine=self)
+        except Exception as e:
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G22_EXECUTE_INTERNAL_ERROR_RETURN", "generation", "DIAGNOSTIC", message=str(e))
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            # Ensure we finalize the run and return an emitted checklist artifact
+            return finalize_checklist(self, partial_result=None, exception=e)
 
         # Attach determinism snapshot for replayability
         try:

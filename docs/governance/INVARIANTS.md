@@ -190,3 +190,16 @@ This file declares the governance anchor; enforcement logic will be implemented 
   - Persona outputs are compressed into a `checklist.persona_summary` structure for deterministic auditability; compression does not change primary checklist outcome semantics.
 - Enforcement: These invariants are enforced by documentation, deterministic routing, persona metadata, persona event compression implemented in `finalize_checklist`, and the consolidated canonical protocol documentation (Phase 7).
 
+## Spec-to-Checklist Compiler Invariant (Phase 8)
+
+- Statement: The Spec → Checklist compilation subsystem (authoritative entrypoint: `ChecklistGenerator.build` in `src/shieldcraft/services/checklist/generator.py`) is an auditable, deterministic, first-class subsystem. It MUST always return a serializable checklist result object (possibly marked invalid), and it MUST record gating events to the `ChecklistContext` so that `finalize_checklist(...)` can derive the canonical outcome.
+
+- Requirements (testable):
+  - Every compiler entrypoint MUST return an emitted result object containing at minimum `items` (no silent non-emission).
+  - No unrecorded raise may escape the compiler boundary such that `finalize_checklist(...)` is not invoked by the caller; engine entrypoints (e.g., `Engine.run`) MUST catch compiler errors, record a diagnostic gate event, and return a finalized checklist artifact.
+  - All recorded gate events emitted during compilation MUST appear in the finalized checklist artifact (as `events` and corresponding checklist items) to ensure auditability.
+
+- Enforcement: Verified by unit tests (regression guards) and documented compiler contracts (`SPEC_TO_CHECKLIST_COMPILER.md`, `SPEC_INPUT_CLASSIFICATION.md`, `COMPILATION_PHASE_MODEL.md`, `COMPILER_FAILURE_NORMALIZATION.md`).
+
+- Lock: This invariant is locked by Phase 8 and may not be changed except via a governance phase update.
+
