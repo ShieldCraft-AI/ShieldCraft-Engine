@@ -118,3 +118,14 @@ Authoritative decisions made on 2025-12-13 (Phase 13 kickoff). All decisions rec
   - Semantic stability assertion added to ensure deterministic, byte-stable output for identical inputs.
   - No persona, schema, or gate-ID changes were made; all logic was centralized in `finalize_checklist`.
 - Rationale: Lock semantic meanings to prevent regressions and ensure deterministic artifact semantics; changes to semantics require governance approval and a new implementation phase.
+
+
+## Phase 6 Closed — Persona Arbitration Simplified
+- Decision: RECORD
+- Summary (facts-only): Phase 6 (Persona Arbitration Simplification) is complete. Persona authority, routing, and event compression have been introduced as defensive, deterministic, metadata-only changes and documentation. Persona outputs remain auditable evidence and do not, by themselves, alter canonical checklist semantics.
+- Explicit state:
+  - A Persona Authority Model (DECISIVE|ADVISORY|ANNOTATIVE) has been introduced as metadata; persona dataclasses now carry an optional `authority` attribute.
+  - Deterministic, static persona routing (configurable) is available via `src/shieldcraft/persona/routing.py`; discovery falls back to `scope` when routing is not configured.
+  - Persona events are compressed into a deterministic `checklist.persona_summary` structure for auditability; primary persona cause is selected deterministically and traceably.
+  - Marked legacy persona protocol artifacts for deprecation and archived legacy docs as informational only.
+- Rationale: Simplify persona arbitration while preserving auditability, determinism, and decision authority; future runtime enforcement of authority classes will be gated by governance decisions.

@@ -183,6 +183,53 @@ def finalize_checklist(engine, partial_result=None, exception=None):
     # Enforce semantic invariants now that roles are assigned
     _assert_semantic_invariants(checklist, primary_outcome, gate_outcomes)
 
+    # Persona event compression: summarize persona outputs deterministically
+    try:
+        persona_events = list(getattr(engine, '_persona_events', []) or [])
+        if persona_events:
+            # Map persona capability to nominal outcome for selection precedence
+            def _capability_to_outcome(cap):
+                if cap == 'veto':
+                    return 'REFUSAL'
+                # annotations/decisions are diagnostics/evidence
+                return 'DIAGNOSTIC'
+
+            # Build list with derived outcomes and preserve order
+            pes = []
+            for idx, pe in enumerate(persona_events):
+                outcome = _capability_to_outcome(pe.get('capability'))
+                pes.append({
+                    'persona_id': pe.get('persona_id'),
+                    'capability': pe.get('capability'),
+                    'phase': pe.get('phase'),
+                    'payload_ref': pe.get('payload_ref'),
+                    'severity': pe.get('severity'),
+                    'derived_outcome': outcome,
+                    'index': idx,
+                })
+
+            # Select primary persona cause by precedence and deterministic tie-break
+            prim = None
+            if any(p.get('derived_outcome') == 'REFUSAL' for p in pes):
+                candidates = [p for p in pes if p.get('derived_outcome') == 'REFUSAL']
+            elif any(p.get('derived_outcome') == 'DIAGNOSTIC' for p in pes):
+                candidates = [p for p in pes if p.get('derived_outcome') == 'DIAGNOSTIC']
+            else:
+                candidates = pes
+
+            if candidates:
+                # deterministic selection: lowest persona_id, then earliest index
+                prim = sorted(candidates, key=lambda p: (p.get('persona_id') or '', p.get('index')))[0]
+
+            checklist['persona_summary'] = {
+                'primary_persona': prim.get('persona_id') if prim else None,
+                'primary_capability': prim.get('capability') if prim else None,
+                'events': pes,
+            }
+    except Exception:
+        # Persona auditing must not interfere with finalization
+        pass
+
     # Expose primary outcome at the top-level result as required by the
     # Checklist Semantics Contract (Phase 5).
     result_primary_outcome = primary_outcome

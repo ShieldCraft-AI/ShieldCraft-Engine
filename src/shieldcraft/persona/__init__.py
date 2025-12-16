@@ -72,6 +72,8 @@ class Persona:
     scope: List[str] = field(default_factory=list)
     allowed_actions: List[str] = field(default_factory=list)
     constraints: Dict[str, Any] = field(default_factory=dict)
+    # Optional authority classification for Phase 6 (DECISIVE|ADVISORY|ANNOTATIVE)
+    authority: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -82,6 +84,7 @@ class PersonaContext:
     scope: List[str]
     allowed_actions: List[str]
     constraints: Dict[str, Any]
+    authority: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -91,6 +94,7 @@ class PersonaContext:
             "scope": list(self.scope) if self.scope is not None else [],
             "allowed_actions": list(self.allowed_actions) if self.allowed_actions is not None else [],
             "constraints": dict(self.constraints) if self.constraints is not None else {},
+            "authority": self.authority,
         }
 
     def to_canonical_json(self) -> str:
@@ -287,6 +291,7 @@ def load_persona(path: str) -> Persona:
         scope=data.get("scope", []),
         allowed_actions=data.get("allowed_actions", []),
         constraints=data.get("constraints", {}),
+        authority=data.get("authority"),
     )
 
 

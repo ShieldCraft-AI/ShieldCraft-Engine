@@ -180,3 +180,13 @@ This file declares the governance anchor; enforcement logic will be implemented 
 
 - Semantic Outcome Lock: The canonical semantics (primary outcome derivation, item roles, and invariants) are locked under Phase 5 and may not be altered except via an explicit governance phase update. Changes to semantic meaning require a recorded governance decision and a corresponding implementation phase.
 
+## Persona Arbitration Invariant (Phase 6)
+
+- Statement: Persona authority and routing MUST be explicit, deterministic, and auditable. Persona outputs are evidence and may be compressed into a single primary persona cause for audit, but persona outputs MUST NOT arbitrarily change canonical checklist semantics without a governance decision.
+- Rules:
+  - Personas MAY declare an optional `authority` of one of: `DECISIVE`, `ADVISORY`, `ANNOTATIVE` (metadata only in Phase 6).
+  - Routing of persona invocation MUST be static and derived from the explicit routing table in `src/shieldcraft/persona/routing.py` (if configured); otherwise persona discovery falls back to `scope` rules.
+  - Persona events are recorded atomically and deterministically in `artifacts/persona_events_v1.json` and hashed for integrity.
+  - Persona outputs are compressed into a `checklist.persona_summary` structure for deterministic auditability; compression does not change primary checklist outcome semantics.
+- Enforcement: These invariants are enforced by documentation, deterministic routing, persona metadata, and persona event compression implemented in `finalize_checklist` (Phase 6).
+
