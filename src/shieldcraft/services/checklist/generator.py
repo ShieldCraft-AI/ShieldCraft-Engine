@@ -93,14 +93,33 @@ class ChecklistGenerator:
             ast_builder = ASTBuilder()
             ast = ast_builder.build(spec)
 
+        # Make checklist context available to generator via engine (plumbing only)
+        context = None
+        if engine is not None:
+            context = getattr(engine, 'checklist_context', None)
+
         # Run speculative spec fuzzing gate to detect ambiguity/contradiction
         if run_fuzz:
             try:
                 from shieldcraft.services.validator.spec_gate import enforce_spec_fuzz_stability
                 enforce_spec_fuzz_stability(spec, self)
-            except RuntimeError:
-                # Halt generation immediately on detected spec failures
-                raise
+            except RuntimeError as e:
+                # Do not raise: record event and return a partial invalid result so engine can finalize
+                try:
+                    if context:
+                        try:
+                            context.record_event("G9_GENERATOR_RUN_FUZZ_GATE", "generation", "BLOCKER", message="spec fuzz stability failed", evidence={"error": str(e)})
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+                # Return a partial result indicating invalid generation
+                return {
+                    "valid": False,
+                    "reason": "spec_fuzz_stability_failed",
+                    "items": [],
+                    "preflight": {},
+                }
             except Exception:
                 # Non-fatal: if fuzzing/gate unavailable, continue
                 pass
@@ -132,8 +151,18 @@ class ChecklistGenerator:
                         item["lineage_id"] = f"interpreted:{item.get('id')}"
                         item["source_node_type"] = "interpreted"
                 else:
-                    # Fail if missing lineage_id
-                    raise ValueError(f"Missing lineage_id for item at pointer: {ptr}")
+                    # Missing lineage id: record a diagnostic event and attach synthetic lineage id (do not raise)
+                    try:
+                        if context:
+                            try:
+                                context.record_event("G10_GENERATOR_PREP_MISSING", "generation", "DIAGNOSTIC", message=f"Missing lineage_id for item at pointer: {ptr}")
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
+                    # Attach a synthetic lineage id to allow generation to continue
+                    item["lineage_id"] = f"missing_lineage:{ptr}"
+                    item["source_node_type"] = item.get("source_node_type") or "unknown"
         
         # Add constraint tasks
         constraint_items = propagate_constraints(spec)
@@ -416,9 +445,22 @@ class ChecklistGenerator:
             try:
                 from shieldcraft.services.validator.test_gate import enforce_tests_attached
                 enforce_tests_attached(decorated)
-            except RuntimeError:
-                # Halt generation immediately if tests missing or invalid
-                raise
+            except RuntimeError as e:
+                # Do not raise: record event and return a partial invalid result so engine can finalize
+                try:
+                    if context:
+                        try:
+                            context.record_event("G11_RUN_TEST_GATE", "generation", "BLOCKER", message="tests missing or invalid", evidence={"error": str(e)})
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+                return {
+                    "valid": False,
+                    "reason": "tests_missing_or_invalid",
+                    "items": decorated,
+                    "preflight": preflight,
+                }
             except Exception:
                 # Non-fatal: if test gate unavailable, continue
                 pass
@@ -447,7 +489,15 @@ class ChecklistGenerator:
                                     item[sk] = sv
                 # Enforce vetoes if any persona emitted a veto
                 enforce_persona_veto(engine)
-        except RuntimeError:
+        except RuntimeError as e:
+            try:
+                if context:
+                    try:
+                        context.record_event("G12_PERSONA_VETO_ENFORCEMENT", "generation", "REFUSAL", message="persona veto at generator", evidence={"error": str(e)})
+                    except Exception:
+                        pass
+            except Exception:
+                pass
             raise
         except Exception:
             # Do not let persona evaluation failures break checklist generation
@@ -608,6 +658,14 @@ class ChecklistGenerator:
                         result["_determinism"] = {"seeds": snapshot(engine), "spec": spec, "ast_summary": ast_fp, "checklist": result}
                     except Exception:
                         result["_determinism"] = {"seeds": snapshot(engine), "spec": spec, "ast_summary": None, "checklist": result}
+            except Exception:
+                pass
+            try:
+                if engine is not None and getattr(engine, 'checklist_context', None):
+                    try:
+                        engine.checklist_context.record_event("G13_GENERATION_CONTRACT_FAILED", "generation", "BLOCKER", message="generation contract failed")
+                    except Exception:
+                        pass
             except Exception:
                 pass
             return result
