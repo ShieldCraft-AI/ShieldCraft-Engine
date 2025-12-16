@@ -178,3 +178,5 @@ This file declares the governance anchor; enforcement logic will be implemented 
   - `DIAGNOSTIC_ONLY` outcome MUST NOT contain `BLOCKER` or `REFUSAL` items.
 - Enforcement: These invariants are enforced by code-level assertions inside `finalize_checklist` and protected by deterministic, unit-tested behavior.
 
+- Semantic Outcome Lock: The canonical semantics (primary outcome derivation, item roles, and invariants) are locked under Phase 5 and may not be altered except via an explicit governance phase update. Changes to semantic meaning require a recorded governance decision and a corresponding implementation phase.
+
