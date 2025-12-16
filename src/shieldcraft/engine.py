@@ -96,18 +96,20 @@ def finalize_checklist(engine, partial_result=None, exception=None):
     #  - BLOCKED if no REFUSAL and any event.outcome == 'BLOCKER'
     #  - DIAGNOSTIC_ONLY if only DIAGNOSTIC events are present
     #  - SUCCESS if zero events or only informational/non-diagnostic events
+    # Enforce strict global precedence: REFUSAL > BLOCKED > DIAGNOSTIC_ONLY > SUCCESS
     outcomes = [((ev.get('outcome') or '').upper()) for ev in events]
     primary_outcome = None
+    # REFUSAL precedence
     if any(o == 'REFUSAL' for o in outcomes):
         primary_outcome = 'REFUSAL'
+    # BLOCKED precedence
     elif any(o == 'BLOCKER' for o in outcomes):
         primary_outcome = 'BLOCKED'
-    elif not events:
-        primary_outcome = 'SUCCESS'
-    elif all(o == 'DIAGNOSTIC' for o in outcomes if o):
+    # DIAGNOSTIC_ONLY if all events (non-empty) are DIAGNOSTIC
+    elif events and all((o == 'DIAGNOSTIC') for o in outcomes if o):
         primary_outcome = 'DIAGNOSTIC_ONLY'
+    # SUCCESS if no events or events are informational/non-diagnostic
     else:
-        # If events exist but are not purely DIAGNOSTIC, treat as SUCCESS per rules
         primary_outcome = 'SUCCESS'
 
     checklist['primary_outcome'] = primary_outcome
@@ -118,13 +120,19 @@ def finalize_checklist(engine, partial_result=None, exception=None):
     # Assign deterministic semantic roles to checklist items (exactly one role each).
     # Roles: PRIMARY_CAUSE, CONTRIBUTING_BLOCKER, SECONDARY_DIAGNOSTIC, INFORMATIONAL
     # Only assign a PRIMARY_CAUSE when primary_outcome != 'SUCCESS'. Determination
-    # is based on matching items' meta.gate to recorded events of the decisive type.
+    # follows strict tie-breaking rules:
+    # 1) Highest-precedence outcome (already selected)
+    # 2) Lowest gate_id lexicographically
+    # 3) Earliest event occurrence (first seen in events list)
     gate_outcomes = {}
-    for ev in events:
+    gate_first_index = {}
+    for idx, ev in enumerate(events):
         g = ev.get('gate_id')
         o = (ev.get('outcome') or '').upper()
         if g:
             gate_outcomes.setdefault(g, set()).add(o)
+            if g not in gate_first_index:
+                gate_first_index[g] = idx
 
     # Map primary_outcome back to the decisive event outcome label
     decisive_label = None
@@ -136,40 +144,40 @@ def finalize_checklist(engine, partial_result=None, exception=None):
         decisive_label = 'DIAGNOSTIC'
 
     items = checklist.get('items', []) or []
-    # Helper deterministic key
-    def _item_key(it):
-        meta = it.get('meta', {}) or {}
-        return (meta.get('gate') or '', meta.get('phase') or '', it.get('text') or '')
 
     primary_item = None
     if primary_outcome != 'SUCCESS' and items:
-        candidate_gates = sorted([g for g, outs in gate_outcomes.items() if decisive_label in outs]) if decisive_label else []
-        candidate_items = [it for it in items if (it.get('meta') or {}).get('gate') in candidate_gates]
-        if candidate_items:
-            primary_item = min(candidate_items, key=_item_key)
+        # Candidate gates that contributed the decisive outcome
+        candidate_gates = [g for g, outs in gate_outcomes.items() if decisive_label in outs]
+        if candidate_gates:
+            # Choose gate by lowest lexicographic id
+            selected_gate = min(candidate_gates)
+            # Find candidate items matching the selected_gate
+            candidate_items = [it for it in items if (it.get('meta') or {}).get('gate') == selected_gate]
+            if candidate_items:
+                # Choose the earliest item that matches the gate (deterministic)
+                def _item_event_index(it):
+                    g = (it.get('meta') or {}).get('gate')
+                    return gate_first_index.get(g, 0)
+                primary_item = min(candidate_items, key=lambda it: (_item_event_index(it), it.get('text') or ''))
         else:
-            # fallback: pick a deterministic item from all items
-            primary_item = min(items, key=_item_key)
+            # Fallback: pick deterministic item among all items
+            primary_item = min(items, key=lambda it: ((it.get('meta') or {}).get('gate') or '', it.get('text') or ''))
 
-    # Assign roles
+    # Assign roles deterministically
     for it in items:
         it['role'] = None
         if primary_item is not None and it is primary_item:
             it['role'] = 'PRIMARY_CAUSE'
             continue
         gate = (it.get('meta') or {}).get('gate')
-        gate_out = set()
-        if gate:
-            gate_out = gate_outcomes.get(gate, set())
-        # CONTRIBUTING_BLOCKER if gate was BLOCKER and not primary
+        gate_out = gate_outcomes.get(gate, set()) if gate else set()
         if 'BLOCKER' in gate_out:
             it['role'] = 'CONTRIBUTING_BLOCKER'
             continue
-        # SECONDARY_DIAGNOSTIC when diagnostic and primary outcome is not DIAGNOSTIC_ONLY
         if 'DIAGNOSTIC' in gate_out and primary_outcome != 'DIAGNOSTIC_ONLY':
             it['role'] = 'SECONDARY_DIAGNOSTIC'
             continue
-        # Default informational
         it['role'] = 'INFORMATIONAL'
 
     # Enforce semantic invariants now that roles are assigned
