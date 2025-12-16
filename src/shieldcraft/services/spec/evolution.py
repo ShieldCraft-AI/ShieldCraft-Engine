@@ -1,5 +1,8 @@
 """
 Spec evolution tracker - compares old and new spec versions.
+
+Deterministic, stable outputs include pointer-level diffs and a
+semantic section-level summary for authoring guidance.
 """
 
 import json
@@ -45,12 +48,41 @@ def compute_evolution(old_spec, new_spec):
         "total_new": len(new_pointers)
     }
     
+    # Include semantic section-level changes (added/removed/filled)
+    try:
+        from shieldcraft.services.spec.analysis import classify_dsl_sections
+        old_sections = classify_dsl_sections(old_spec or {}, "src/shieldcraft/dsl/schema/se_dsl.schema.json") if old_spec else {}
+        new_sections = classify_dsl_sections(new_spec or {}, "src/shieldcraft/dsl/schema/se_dsl.schema.json")
+
+        semantic_sections_changed = {}
+        keys = sorted(set(list(old_sections.keys()) + list(new_sections.keys())))
+        for k in keys:
+            old = old_sections.get(k, {})
+            new = new_sections.get(k, {})
+            # Determine status
+            if not old and new:
+                status = "added"
+            elif old and not new:
+                status = "removed"
+            elif old and new:
+                # Consider filled when empty -> non-empty
+                if old.get("empty") and not new.get("empty"):
+                    status = "filled"
+                else:
+                    status = "unchanged"
+            else:
+                status = "unchanged"
+            semantic_sections_changed[k] = {"status": status, "old": old, "new": new}
+    except Exception:
+        semantic_sections_changed = {}
+
     return {
         "added": added,
         "removed": removed,
         "changed": changed,
         "unchanged": truly_unchanged,
-        "summary": summary
+        "summary": summary,
+        "semantic_sections_changed": semantic_sections_changed,
     }
 
 

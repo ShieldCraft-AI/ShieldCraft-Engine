@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Suppressed Signal Report",
+  "type": "object",
+  "required": ["suppressed"],
+  "properties": {
+    "suppressed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category": {"type": "string"},
+          "source_excerpt_hash": {"type": ["string", "null"]},
+          "text_excerpt": {"type": "string"},
+          "mapped_item_id": {"type": ["string", "null"]},
+          "reason_not_emitted": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

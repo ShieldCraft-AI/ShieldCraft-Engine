@@ -1,0 +1,21 @@
+THE LITMUS ENGINE
+
+5.3 Enforced Restraint
+
+The system must enforce restraint: Severity-gated output.
+Every run must provide a canonical decision artifact and a SHA-256 hash.
+
+6. Trust Contract
+
+Every major conclusion must include at least one of:
+- Why the conclusion is reliable
+- Why it is explicitly bounded
+- Why a less disciplined tool would mislead here
+
+10.1 Visible Uncertainty
+
+Uncertainty must be: Localized
+
+10.2 Mandatory Refusal Conditions
+
+The system must refuse when critical paths lack tests or contracts.

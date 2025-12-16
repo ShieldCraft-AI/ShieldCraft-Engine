@@ -117,6 +117,22 @@ def write_manifest(product_id, result):
         "metrics": spec_metrics,
         "pointer_coverage_summary": pointer_coverage_summary
     }
+    # Include checklist preview summary for quick inspection
+    try:
+        checklist_items = items or []
+        data["checklist_preview_items"] = len(checklist_items)
+        summary = []
+        for it in checklist_items[:5]:
+            summary.append({
+                "id": it.get("id"),
+                "claim": it.get("claim") or it.get("text") or it.get("description")
+            })
+        # Keep this as a preview-specific summary to avoid clashing with
+        # higher-level guidance-produced `checklist_summary` structure.
+        data["checklist_preview_summary"] = summary
+    except Exception:
+        # Non-fatal: do not block manifest emission
+        pass
     # Enforce persona guard before writing any artifacts
     try:
         from shieldcraft.services.governance.persona_guard import enforce_manifest_emission_ok

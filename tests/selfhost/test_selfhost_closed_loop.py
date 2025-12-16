@@ -118,7 +118,7 @@ def test_selfhost_provenance_headers_included(monkeypatch, tmp_path):
 def test_engine_selfhost_rejects_disallowed_inputs(monkeypatch, tmp_path):
     from shieldcraft.engine import Engine
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
-    bad_spec = {"metadata": {"self_host": True}, "weird": "not_allowed"}
+    bad_spec = {"metadata": {"self_host": True}, "weird": "not_allowed", "sections": [{"id": "core"}], "model": {"version": "1.0"}}
     try:
         engine.run_self_host(bad_spec, dry_run=True)
         assert False, "Expected disallowed_selfhost_input"

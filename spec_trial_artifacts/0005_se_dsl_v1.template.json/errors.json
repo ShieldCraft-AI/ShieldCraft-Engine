@@ -1,0 +1,20 @@
+{
+  "errors": [
+    {
+      "code": "sections_empty",
+      "details": {
+        "expected": "non-empty array",
+        "governance_source": {
+          "description": "Sections are recommended for author ergonomics",
+          "enforcement": "soft",
+          "file": "docs/CONTRACTS.md",
+          "file_hash": "41a2737d658693c60cb949f66051137e791e3cf7594fb4df54fefd6114e0c307",
+          "section": "Sections and layout"
+        },
+        "rationale": "Sections is required by schema and empty in normalized skeleton"
+      },
+      "location": "/sections",
+      "message": "spec must declare a non-empty 'sections' array"
+    }
+  ]
+}

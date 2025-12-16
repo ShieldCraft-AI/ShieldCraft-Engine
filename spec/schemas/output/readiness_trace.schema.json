@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Readiness Trace",
+  "type": "object",
+  "required": ["trace"],
+  "properties": {
+    "trace": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "blocking": {"type": "boolean"},
+          "item_ids": {"type": "array", "items": {"type": "string"}},
+          "report": {"type": ["string", "null"]}
+        },
+        "required": ["blocking", "item_ids"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

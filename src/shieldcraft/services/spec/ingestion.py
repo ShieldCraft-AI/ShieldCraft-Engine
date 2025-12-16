@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import pathlib
 from typing import Any
+from shieldcraft.services.spec.normalization import build_minimal_dsl_skeleton
 
 def ingest_spec(path: str) -> Any:
     """Ingest a spec file at `path`.
@@ -36,40 +37,62 @@ def ingest_spec(path: str) -> Any:
 
     text = raw_bytes.decode("utf-8", errors="replace")
 
+    source_format = "unknown"
+
     # Try JSON
     try:
         obj = json.loads(text)
-        return obj
+        source_format = "json"
+        if isinstance(obj, dict):
+            # If this is already a DSL-shaped dict (contains DSL top-level keys),
+            # return it unchanged; otherwise promote into a minimal DSL skeleton
+            if "model" in obj and "sections" in obj:
+                return obj
+            return build_minimal_dsl_skeleton(obj, "json")
+        # wrap lists or other JSON values below
+        parsed = obj
     except Exception:
-        pass
+        parsed = None
 
     # Try YAML (if available)
-    try:
-        import yaml
-
+    if parsed is None:
         try:
-            obj = yaml.safe_load(text)
-            return obj
+            import yaml
+
+            try:
+                obj = yaml.safe_load(text)
+                source_format = "yaml"
+                if isinstance(obj, dict):
+                    if "model" in obj and "sections" in obj:
+                        return obj
+                    return build_minimal_dsl_skeleton(obj, "yaml")
+                parsed = obj
+            except Exception:
+                parsed = None
         except Exception:
-            pass
-    except Exception:
-        # PyYAML not available; skip
-        pass
+            parsed = None
 
     # Try TOML (stdlib tomllib on py3.11+) if available
-    try:
+    if parsed is None:
         try:
-            import tomllib as _tomllib
-        except Exception:
-            _tomllib = None
-        if _tomllib is not None:
             try:
-                obj = _tomllib.loads(text)
-                return obj
+                import tomllib as _tomllib
             except Exception:
-                pass
-    except Exception:
-        pass
+                _tomllib = None
+            if _tomllib is not None:
+                try:
+                    obj = _tomllib.loads(text)
+                    source_format = "toml"
+                    if isinstance(obj, dict):
+                        if "model" in obj and "sections" in obj:
+                            return obj
+                        return build_minimal_dsl_skeleton(obj, "toml")
+                    parsed = obj
+                except Exception:
+                    parsed = None
+        except Exception:
+            parsed = None
 
-    # No structured parse succeeded; return raw text
-    return text
+    # Build deterministic DSL-shaped skeleton when no dict was produced
+    raw_input = parsed if parsed is not None else text
+    return build_minimal_dsl_skeleton(raw_input, source_format if source_format != "unknown" else "text")

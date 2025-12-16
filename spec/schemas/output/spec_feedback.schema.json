@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Spec Feedback",
+  "type": "object",
+  "properties": {
+    "missing_sections": {"type": "array", "items": {"type": "string"}},
+    "weakly_specified_intents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "confidence": {"type": "string"},
+          "inferred_from_prose": {"type": "boolean"}
+        },
+        "required": ["id"],
+        "additionalProperties": false
+      }
+    },
+    "suggested_next_edits": {"type": "array", "items": {"type": "string"}},
+    "remediation_hints_count": {"type": "integer"}
+  },
+  "additionalProperties": false
+}

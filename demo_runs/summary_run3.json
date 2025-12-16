@@ -1,0 +1,282 @@
+{
+  "artifact_contract_summary": {
+    "conditional": [],
+    "guaranteed": [],
+    "unavailable": []
+  },
+  "conversion_path": {
+    "blocking_requirements": [
+      {
+        "code": "sections_empty",
+        "suggestion": "Add the required DSL sections (e.g., metadata, model, instructions)."
+      }
+    ],
+    "current_state": "CONVERTIBLE",
+    "estimated_effort": "low",
+    "next_state": "STRUCTURED"
+  },
+  "conversion_state": "CONVERTIBLE",
+  "conversion_tier": "convertible",
+  "dsl_section_classification": {
+    "codegen_targets": {
+      "classification": "structural",
+      "empty": true,
+      "instruction_valid_when_removed": true,
+      "present": false,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    },
+    "execution": {
+      "classification": "structural",
+      "empty": true,
+      "instruction_valid_when_removed": true,
+      "present": false,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    },
+    "instructions": {
+      "classification": "structural",
+      "empty": true,
+      "instruction_valid_when_removed": true,
+      "present": false,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    },
+    "invariants": {
+      "classification": "structural",
+      "empty": true,
+      "instruction_valid_when_removed": true,
+      "present": false,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    },
+    "metadata": {
+      "classification": "structural",
+      "empty": false,
+      "instruction_valid_when_removed": true,
+      "present": true,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    },
+    "model": {
+      "classification": "structural",
+      "empty": true,
+      "instruction_valid_when_removed": true,
+      "present": true,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    },
+    "pointer_map": {
+      "classification": "structural",
+      "empty": true,
+      "instruction_valid_when_removed": true,
+      "present": false,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    },
+    "sections": {
+      "classification": "structural",
+      "empty": true,
+      "instruction_valid_when_removed": true,
+      "present": true,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    }
+  },
+  "errors": [
+    {
+      "code": "sections_empty",
+      "details": {
+        "expected": "non-empty array",
+        "governance_source": {
+          "description": "Sections are recommended for author ergonomics",
+          "enforcement": "soft",
+          "file": "docs/CONTRACTS.md",
+          "file_hash": "41a2737d658693c60cb949f66051137e791e3cf7594fb4df54fefd6114e0c307",
+          "section": "Sections and layout"
+        },
+        "rationale": "Sections is required by schema and empty in normalized skeleton"
+      },
+      "location": "/sections",
+      "message": "spec must declare a non-empty 'sections' array"
+    }
+  ],
+  "execution_preview": null,
+  "governance_enforcements": [],
+  "previous_state": null,
+  "progress_summary": {
+    "current_state": "CONVERTIBLE",
+    "delta": "no_prior",
+    "previous_state": null,
+    "reasons": [
+      "sections_empty"
+    ]
+  },
+  "readiness_reason": "blocked_by_invalid_spec",
+  "readiness_status": "not_evaluated",
+  "semantic_strictness_policy": {
+    "active_levels": [
+      1
+    ],
+    "enforced_sections": [
+      {
+        "code": "sections_empty",
+        "rationale": "Sections is required by schema and empty in normalized skeleton",
+        "section": "sections"
+      }
+    ]
+  },
+  "spec_evolution": {
+    "added": [
+      "/metadata",
+      "/metadata/normalized",
+      "/metadata/product_id",
+      "/metadata/source_format",
+      "/metadata/source_material",
+      "/metadata/spec_format",
+      "/metadata/spec_version",
+      "/model",
+      "/sections"
+    ],
+    "changed": [],
+    "removed": [],
+    "semantic_sections_changed": {
+      "codegen_targets": {
+        "new": {
+          "classification": "structural",
+          "empty": true,
+          "instruction_valid_when_removed": true,
+          "present": false,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      },
+      "execution": {
+        "new": {
+          "classification": "structural",
+          "empty": true,
+          "instruction_valid_when_removed": true,
+          "present": false,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      },
+      "instructions": {
+        "new": {
+          "classification": "structural",
+          "empty": true,
+          "instruction_valid_when_removed": true,
+          "present": false,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      },
+      "invariants": {
+        "new": {
+          "classification": "structural",
+          "empty": true,
+          "instruction_valid_when_removed": true,
+          "present": false,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      },
+      "metadata": {
+        "new": {
+          "classification": "structural",
+          "empty": false,
+          "instruction_valid_when_removed": true,
+          "present": true,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      },
+      "model": {
+        "new": {
+          "classification": "structural",
+          "empty": true,
+          "instruction_valid_when_removed": true,
+          "present": true,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      },
+      "pointer_map": {
+        "new": {
+          "classification": "structural",
+          "empty": true,
+          "instruction_valid_when_removed": true,
+          "present": false,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      },
+      "sections": {
+        "new": {
+          "classification": "structural",
+          "empty": true,
+          "instruction_valid_when_removed": true,
+          "present": true,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      }
+    },
+    "summary": {
+      "added_count": 9,
+      "changed_count": 0,
+      "removed_count": 0,
+      "total_new": 9,
+      "total_old": 0,
+      "unchanged_count": 0
+    },
+    "unchanged": []
+  },
+  "state_reason": "sections_empty",
+  "status": "fail",
+  "validity_status": "fail",
+  "what_is_missing_next": [
+    {
+      "code": "sections_empty",
+      "details": {
+        "expected": "non-empty array",
+        "governance_source": {
+          "description": "Sections are recommended for author ergonomics",
+          "enforcement": "soft",
+          "file": "docs/CONTRACTS.md",
+          "file_hash": "41a2737d658693c60cb949f66051137e791e3cf7594fb4df54fefd6114e0c307",
+          "section": "Sections and layout"
+        },
+        "rationale": "Sections is required by schema and empty in normalized skeleton"
+      },
+      "location": "/sections",
+      "message": "spec must declare a non-empty 'sections' array"
+    }
+  ],
+  "what_was_produced": [
+    "errors.json",
+    "summary.json",
+    "manifest.json"
+  ],
+  "what_was_skipped": [
+    "bootstrap",
+    "generated_code",
+    "executable_artifacts"
+  ]
+}

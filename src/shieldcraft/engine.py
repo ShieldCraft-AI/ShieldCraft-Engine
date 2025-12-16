@@ -622,6 +622,76 @@ class Engine:
             except Exception:
                 pass
 
+            # Post-processing: enforce minimality and execution-plan invariants
+            try:
+                # Prefer persisted canonical requirements if available, else extract from spec
+                try:
+                    reqs = json.load(open(os.path.join(output_dir, 'requirements.json'))).get('requirements', [])
+                except Exception:
+                    try:
+                        reqs = json.load(open(os.path.join('.selfhost_outputs', 'requirements.json'))).get('requirements', [])
+                    except Exception:
+                        from shieldcraft.interpretation.requirements import extract_requirements
+                        rtxt = spec.get('metadata', {}).get('source_material') or spec.get('raw_input') or json.dumps(spec, sort_keys=True)
+                        # ensure string input for extractor
+                        if not isinstance(rtxt, str):
+                            import json as _json
+                            rtxt = _json.dumps(rtxt, sort_keys=True)
+                        reqs = extract_requirements(rtxt)
+                # Use in-memory checklist when available (deterministic), fallback to persisted
+                items = checklist.get('items', []) or json.load(open(os.path.join('.selfhost_outputs', 'checklist.json'))).get('items', [])
+                valid_items = [it for it in items if it.get('quality_status') != 'INVALID']
+
+                # Collapse redundant items deterministically and fail on invariant violations
+                from shieldcraft.checklist.equivalence import detect_and_collapse
+                pruned_items, minimality_report = detect_and_collapse(valid_items, reqs)
+                violations = [p for p in minimality_report.get('proof_of_minimality', []) if not p.get('necessary')]
+                if violations:
+                    manifest['checklist_minimality_summary'] = {
+                        'removed_count': minimality_report.get('removed_count', 0),
+                        'equivalence_groups': len(minimality_report.get('equivalence_groups', [])),
+                        'violations': violations,
+                    }
+                    raise RuntimeError('minimality_invariant_failed')
+
+                # Persist pruned checklist to both fingerprinted output and root outputs
+                with open(os.path.join(output_dir, 'checklist.json'), 'w', encoding='utf8') as _cf:
+                    json.dump({'items': pruned_items}, _cf, indent=2, sort_keys=True)
+                with open(os.path.join('.selfhost_outputs', 'checklist.json'), 'w', encoding='utf8') as _cfroot:
+                    json.dump({'items': pruned_items}, _cfroot, indent=2, sort_keys=True)
+
+                # Build execution plan and enforce executability
+                from shieldcraft.checklist.dependencies import infer_item_dependencies
+                from shieldcraft.checklist.execution_graph import build_execution_plan
+                from shieldcraft.requirements.coverage import compute_coverage
+
+                covers = compute_coverage(reqs, pruned_items)
+                # persist sequence artifact (build_sequence writes to outdir)
+                try:
+                    from shieldcraft.checklist.dependencies import build_sequence
+                    build_sequence(pruned_items, infer_item_dependencies(reqs, covers), outdir='.selfhost_outputs')
+                except Exception:
+                    pass
+                inferred = infer_item_dependencies(reqs, covers)
+                plan = build_execution_plan(pruned_items, inferred)
+                manifest['checklist_execution_plan'] = {'ordered_item_count': len(plan.get('ordered_item_ids', [])), 'cycle_groups': plan.get('cycles', {}), 'missing_artifacts': plan.get('missing_artifacts', []), 'priority_violations': plan.get('priority_violations', [])}
+
+                if plan.get('cycles'):
+                    raise RuntimeError('execution_cycle_detected')
+                if plan.get('missing_artifacts'):
+                    raise RuntimeError('missing_artifact_producer')
+                if plan.get('priority_violations'):
+                    raise RuntimeError('priority_violation_detected')
+
+                order_map = {nid: idx + 1 for idx, nid in enumerate(plan.get('ordered_item_ids', []))}
+                for it in pruned_items:
+                    it['execution_order'] = order_map.get(it.get('id'))
+                with open(os.path.join(output_dir, 'checklist.json'), 'w', encoding='utf8') as _cf2:
+                    json.dump({'items': pruned_items}, _cf2, indent=2, sort_keys=True)
+            except Exception:
+                # Propagate fatal errors to caller
+                raise
+
             return {
                 "fingerprint": fingerprint,
                 "output_dir": str(output_dir),

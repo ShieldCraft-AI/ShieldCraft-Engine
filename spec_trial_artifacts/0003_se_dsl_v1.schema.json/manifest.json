@@ -1,0 +1,304 @@
+{
+  "conversion_state": "CONVERTIBLE",
+  "conversion_tier": "convertible",
+  "partial": true,
+  "spec_metadata": {
+    "normalized": true,
+    "product_id": "unknown",
+    "source_format": "json",
+    "source_material": {
+      "$id": "https://shieldcraft.ai/schemas/se_dsl_v1.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "change_policy": "breaking changes require new schema version",
+      "dsl_status": "frozen",
+      "properties": {
+        "artifact_contract": {
+          "properties": {
+            "artifacts": {
+              "type": "array"
+            },
+            "canonical_hash_algorithm": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "canonical_hash_algorithm"
+          ],
+          "type": "object"
+        },
+        "build_contract": {
+          "properties": {
+            "entrypoints": {
+              "items": {
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "path": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "path"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "output_formats": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "entrypoints",
+            "output_formats"
+          ],
+          "type": "object"
+        },
+        "capabilities": {
+          "type": "object"
+        },
+        "ci_contract": {
+          "properties": {
+            "required_jobs": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "definitions": {
+          "checklist_item": {
+            "properties": {
+              "test_refs": {
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array"
+              }
+            },
+            "required": [
+              "test_refs"
+            ],
+            "type": "object"
+          }
+        },
+        "determinism": {
+          "properties": {
+            "canonical_json": {
+              "type": "boolean"
+            },
+            "float_precision": {
+              "type": "number"
+            },
+            "snapshot_runs": {
+              "type": "integer"
+            },
+            "timestamp_format": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "canonical_json",
+            "float_precision",
+            "snapshot_runs"
+          ],
+          "type": "object"
+        },
+        "domain_model": {
+          "properties": {
+            "entities": {
+              "items": {
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "dsl_version": {
+          "description": "DSL version - must be exactly canonical_v1_frozen",
+          "enum": [
+            "canonical_v1_frozen"
+          ],
+          "type": "string"
+        },
+        "error_contract": {
+          "properties": {
+            "canonical_error_fields": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "schema": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "schema",
+            "canonical_error_fields"
+          ],
+          "type": "object"
+        },
+        "evidence_bundle": {
+          "properties": {
+            "schema": {
+              "type": "string"
+            },
+            "signature_algorithm": {
+              "type": "string"
+            },
+            "signing_required": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schema",
+            "signing_required"
+          ],
+          "type": "object"
+        },
+        "generation_mappings": {
+          "properties": {
+            "trace": {
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
+        "metadata": {
+          "properties": {
+            "canonical_spec_hash": {
+              "type": "string"
+            },
+            "created_at_utc": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "generator_version": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string"
+            },
+            "owner": {
+              "type": "string"
+            },
+            "product_id": {
+              "pattern": "^[a-z0-9_]+$",
+              "type": "string"
+            },
+            "product_name": {
+              "type": "string"
+            },
+            "spec_version": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "product_id",
+            "product_name",
+            "spec_version",
+            "created_at_utc",
+            "owner",
+            "generator_version"
+          ],
+          "type": "object"
+        },
+        "schema_contract": {
+          "properties": {
+            "input_schemas": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "output_schemas": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "validation_required": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "validation_required"
+          ],
+          "type": "object"
+        },
+        "state_machine": {
+          "properties": {
+            "states": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "transitions": {
+              "items": {
+                "properties": {
+                  "from": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string"
+                  },
+                  "to": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "from",
+                  "to"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "dsl_version",
+        "metadata",
+        "build_contract",
+        "error_contract",
+        "evidence_bundle",
+        "domain_model",
+        "capabilities",
+        "state_machine",
+        "determinism",
+        "schema_contract",
+        "artifact_contract",
+        "ci_contract",
+        "generation_mappings",
+        "observability",
+        "security"
+      ],
+      "type": "object"
+    },
+    "spec_format": "canonical_json_v1",
+    "spec_version": "0.0"
+  },
+  "state_reason": "sections_empty"
+}

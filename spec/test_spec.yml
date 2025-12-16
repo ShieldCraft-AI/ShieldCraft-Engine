@@ -1,251 +1,354 @@
 THE LITMUS ENGINE
-A Deterministic Repository Review System for Decision Safety
 
-Tagline (internal):
+Deterministic Governance for Safe First Decisions
+
+Internal tagline:
 A senior reviewer that knows when not to speak.
 
-0. Brutal Framing (Read This First)
-Who this is for
+0. What This Is
+
+THE LITMUS ENGINE is a zero-trust governance layer for code.
+
+It is a deterministic engine that resolves structural information asymmetry before any change is committed.
+
+Litmus exists to answer one question, decisively and safely:
+
+What would be irresponsible to touch right now?
+
+This repository contains an operational system that:
+
+Consumes a repository snapshot
+
+Produces signed, auditable decision artifacts
+
+Explicitly defines where action is safe, unsafe, or impossible
+
+Refuses to speak when evidence is insufficient
+
+If this repository exists without artifacts, it is incorrect.
+
+Incorrectness should be obvious without reading documentation.
+
+1. Brutal Framing
+Who This Is For
 
 Engineers inheriting unfamiliar or legacy systems
 
-Tech leads deciding where to start safely
+Technical leads deciding where to apply pressure safely
 
-Architects assessing change risk before committing effort
+Architects accountable for migration, refactor, or audit risk
 
-Teams that want fewer mistakes, not more analysis
+Due diligence reviewers assessing change exposure
 
-Who this is not for
+Teams optimizing for fewer irreversible mistakes
+
+Who This Is Not For
 
 Code style enforcement
 
-Refactoring automation
+Automated refactoring
 
-“Find all issues” scanning
+Exhaustive issue discovery
 
-Junior-level static analysis replacement
+Metrics that reward activity
 
-Tools that maximize findings or activity
+Tools that maximize findings
+
+Non-Negotiable Design Constraint
+
+Litmus enforces a deliberate architectural trade-off:
+
+Precision over Exhaustivity.
+
+It will sacrifice discovering N low-severity issues to achieve full confidence at the boundary of the Safe-to-Change Surface.
 
 If your goal is speed through confidence, this is the wrong tool.
-If your goal is speed through restraint, this is exactly the tool.
+If your goal is speed through restraint, this is the tool.
 
-1. Why This Exists (Against Existing Tools)
+2. Why This Exists
 
-Most repository tools fail in the same way:
+Most repository tools are optimized for exhaustive signal production.
 
-They overproduce signals
+They:
 
-They conflate presence with importance
+Detect presence, not consequence
 
-They sound confident where evidence is thin
+Conflate detection with importance
 
-They encourage premature action
+Sound confident where evidence is thin
 
-Linters, SAST tools, and static analyzers answer:
+Encourage premature action
 
-“What can I complain about?”
+Litmus is optimized for actionable signal suppression.
 
-The Litmus Engine answers:
+False confidence causes more damage than missing information.
+The most dangerous failure mode in unfamiliar systems is the wrong first change.
 
-“What would be irresponsible to touch right now?”
+Litmus exists to prevent that class of failure.
 
-This tool exists because false confidence is more dangerous than missing information.
+3. Execution Boundary (Unavoidable)
 
-2. Core Objective
+Litmus is not a library and not a suggestion engine.
 
-Prevent harmful decisions in unfamiliar codebases by producing authoritative, restraint-oriented guidance grounded exclusively in observable evidence.
+It has a fixed execution boundary:
 
-The engine must explicitly answer:
+Runs as a deterministic analysis step
 
-Where pressure can safely be applied
+Consumes a repository snapshot
 
-Where pressure must not be applied
+Produces signed decision artifacts
 
-What is currently unknowable
+Advisory by default
 
-What looks risky but is not
+Blocking only when explicitly configured
 
-Silence is a success state.
+Blocking is a governance choice.
+Litmus is strict only when strictness is justified.
 
-3. Proof of Seriousness (Non-Optional)
+4. Proof of Seriousness (Structural, Not Aspirational)
 
-This repository must include the following from day one:
+The repository structure must make the following unavoidable.
 
-3.1 Deterministic Golden Snapshot
+4.1 Governance Signature
 
-A sample repository (or reduced fixture)
+Every run emits a canonical decision artifact and a SHA-256 hash.
 
-A canonical output JSON
+This hash is the Litmus Governance Signature.
 
-A canonical SHA-256 hash
+It binds guidance to the exact input state and makes the output auditable, reproducible, and non-repudiable.
 
-“Running Litmus against commit X must always produce hash Y.”
+Identical input must always produce the same signature.
 
-3.2 Refusal Example
+Missing or unstable signatures indicate failure.
 
-A documented case where the engine refuses to issue guidance, with explanation.
+4.2 Refusal as a First-Class Artifact
 
-Example:
+The repository must contain a documented refusal case.
 
-“Critical migration logic exists without tests. No safe change surface can be established.”
+Example condition:
 
-3.3 Misleading Signal Example
+Critical migration logic exists without tests or contracts.
+No safe change surface can be established.
 
-A documented case where a naïve tool would overreact — and Litmus explicitly does not.
+Refusal is a successful outcome.
 
-4. Foundational Invariants (Hard Requirements)
-4.1 Determinism (Absolute)
+The system must demonstrate more rigor around refusal than around detection.
 
-Identical input → identical output
+4.3 Misleading Signal Restraint
 
-No timestamps, randomness, environment leakage
+The repository must contain a case where:
+
+A naïve tool would escalate
+
+Litmus explicitly does not
+
+The restraint is evidence-anchored
+
+Restraint is treated as a capability, not an omission.
+
+5. Foundational Invariants
+5.1 Absolute Determinism
+
+No timestamps
+
+No randomness
+
+No environment leakage
 
 Canonical traversal and ordering
 
-Verifiable canonical hash emitted
+Verifiable governance signature
 
-4.2 Observable Signals Only
+Determinism failures must look like broken builds, not TODOs.
 
-Allowed inputs:
+5.2 Observable Evidence Only
 
-Structure
+Permitted signals:
 
-Configuration
+Structure and boundaries
 
-Tests
+Configuration and contracts
 
-Dependencies
+Tests and coverage
 
-Versioning artifacts
+Dependency topology
 
-Disallowed:
+Versioning and migration artifacts
 
-Guessing intent from names or comments
+Forbidden signals:
 
-Sentiment or heuristic psychology
+Naming interpretation
 
-4.3 Restraint Is Mandatory
+Comment sentiment
 
-Findings are severity-gated
+Heuristic psychology
 
-Low-risk repos may produce <1 page output
+Runtime speculation
+
+5.3 Enforced Restraint
+
+Severity-gated output
+
+Explicit verbosity ceilings
 
 “Nothing notable” is valid
 
-Output verbosity is bounded
+Silence is a required outcome
 
-5. Trust Contract (Explicit)
+Silence requires confidence, not laziness.
 
-For every major conclusion, Litmus must include one of:
+6. Trust Contract
 
-Why this conclusion is reliable
+Every major conclusion must include at least one of:
 
-Why it is bounded
+Why the conclusion is reliable
 
-Why a less sophisticated tool would mislead here
+Why it is explicitly bounded
 
-This is not optional.
-This is how trust is earned.
+Why a less disciplined tool would mislead here
 
-6. Intent Modeling (Bounded, Falsifiable)
+Trust is earned by exposing limits.
+
+7. Intent Modeling (Architectural Posture)
 
 Litmus does not infer motivation.
 It classifies architectural posture.
 
-6.1 Allowed Signals
+7.1 Permitted Signals
 
 Boundary enforcement
 
 Governance strictness
 
-Longevity handling (migrations, deprecations)
+Migration and deprecation handling
 
 Investment asymmetry
 
-6.2 Evolutionary Archetypes (Examples)
+7.2 Evolutionary Archetypes
 
-These must be concrete and memorable:
+Each posture includes evidence, confidence, and expiration logic.
+
+Examples:
 
 The Pressure Cooker
-High change, low governance, tight coupling
+Posture: High-Velocity Instability
 
 The Museum
-Stable, low change, high risk to disturb
+Posture: Stagnant Entropy Hazard
 
 The Construction Site
-Actively evolving with guardrails
+Posture: Guarded Evolution
 
 The Patchwork
-Uneven maturity across domains
+Posture: Uneven Maturity
 
-Each classification must include:
+7.3 Calibration Effect
 
-Evidence
+Posture classification applies a calibration multiplier to severity gating.
 
-Confidence level
+Identical findings carry different weight depending on posture.
 
-Expiration conditions
+Posture is the first risk filter.
 
-7. Safe-to-Change Surface (Primary Artifact)
-7.1 Definition
+8. Safe-to-Change Surface (Primary Artifact)
+8.1 Conceptual Model
 
-A permission model, not a score.
+The Safe-to-Change Surface is a risk-aversion boundary model, not a score.
 
-Answers:
+It is derived from two parameters:
 
-“Where can pressure be applied right now without unacceptable risk?”
+The file set 
+𝐹
+F
 
-7.2 Required Properties
+The maximum tolerable risk threshold 
+𝜏
+τ
+
+8.2 Formal Definition
+
+The Safe-to-Change Surface 
+𝐹
+𝑆
+⊂
+𝐹
+F
+S
+	​
+
+⊂F is defined by the condition:
+
+𝐵
+(
+𝑓
+)
+≤
+𝜏
+B(f)≤τ
+
+No-Touch Zones are the complement set 
+𝐹
+∖
+𝐹
+𝑆
+F∖F
+S
+	​
+
+.
+
+8.3 Required Properties
 
 Explicit safe zones
 
 Explicit no-touch zones
 
-Expiration logic
-
 Evidence references
 
-7.3 Mandatory First Move
+Expiration logic
 
-Litmus must always provide one of:
+8.4 Mandatory First Move
 
-A safe first action
+Every run must provide one of:
+
+A concrete safe first action
 
 An explicit statement that no safe move exists
 
-Absence of a safe surface is a valid finding.
+Absence of a safe surface is itself a finding.
 
-8. What Not to Fix (First-Class Output)
+9. Strategic De-Prioritization Artifact
 
-Litmus must explicitly identify:
+Litmus must identify Negative ROI Optimization candidates.
 
-Benign issues
+Definition:
 
-Areas that look risky but are currently stable
+Issues where the Cost of Change exceeds the Cost of Failure by an order of magnitude, based on observable invariants such as age, stability, and dependency isolation.
 
-Optimizations that would be negative ROI
+This artifact explicitly answers:
 
-Each includes:
+What not to fix
 
-Why it is not an issue
+Why it is benign
 
-When it would become one
+When it would stop being benign
 
-This demonstrates senior restraint.
+This is enforced, not optional.
 
-9. Uncertainty & Refusal Model
-9.1 Visible Uncertainty
+10. Uncertainty and Refusal
+10.1 Visible Uncertainty
 
-Uncertainty is:
+Uncertainty must be:
 
 Localized
 
-Explained
-
 Calm
 
-9.2 Mandatory Refusal Conditions
+Explicitly bounded
+
+No absolutes where evidence is partial.
+
+10.2 Mandatory Refusal Conditions
 
 Litmus must refuse when:
 
@@ -255,34 +358,40 @@ Blast radius cannot be bounded
 
 Configuration is contradictory
 
-Refusal is a successful outcome.
+Refusal is success.
 
-10. Multi-Language as Blast-Radius Control
+11. Multi-Language Boundary Control
 
-One primary language per scan
+One primary language per run
 
 Secondary languages analyzed structurally only
 
-Semantic analysis never guesses across boundaries
+No semantic inference across boundaries
 
-This prevents false authority and overreach.
+This prevents false authority.
 
-11. Output Contract (Human-Grade)
-11.1 Executive Summary (≤1 page)
+12. Output Contract
+12.1 Executive Summary
+
+Constraints:
+
+One page maximum
+
+Zero subjective adjectives
+
+Every statement traceable to evidence
 
 Must answer:
 
-Is it safe to act?
+Is it safe to act
 
-Where?
+Where
 
-Where not?
+Where not
 
-What is unknowable?
+What is unknowable
 
-No vanity metrics.
-
-11.2 Decision Artifacts
+12.2 Decision Artifacts
 
 Safe-to-Change Surface
 
@@ -290,15 +399,17 @@ No-Touch Zones
 
 Misleading Signals
 
-First Recommended Action
+First Recommended Action or Explicit Refusal
 
-11.3 Evidence Appendix
+12.3 Evidence Appendix
 
 Evidence references only
 
-No speculative commentary
+No commentary
 
-12. Tone & Voice Constraints
+No speculation
+
+13. Tone and Voice
 
 Calm
 
@@ -310,35 +421,45 @@ No hype
 
 No AI voice
 
-Reads like a VP-level technical memo
+Reads like a VP-level technical memo.
 
-13. Deterministic Silence Requirement
+14. Deterministic Silence Requirement
 
-Maximum verbosity thresholds
-
-Severity-gated output volume
+Severity-gated verbosity
 
 Explicit “Nothing notable” verdicts allowed
 
-Brevity is enforced, not emergent.
+Brevity enforced structurally
 
-14. Final Litmus Test (Non-Negotiable)
+15. Definition of Senior Judgment
+
+In this system, senior judgment is defined as:
+
+Correctly modeling second-order consequences and prioritizing structural integrity over feature velocity.
+
+Litmus supports this judgment.
+It does not replace it.
+
+16. Final Litmus Test
 
 A senior engineer reading the output should think:
 
-“This is exactly what I would have said —
-and I trust it because it knows when not to speak.”
+“This is exactly what I would have said.
+And I trust it because it knows when not to speak.”
 
 If this fails, the implementation is incorrect.
 
-15. Why This Is Unreasonably Good
+17. Why This Exists as a Narrow System
 
 It prevents damage instead of producing noise
 
-It encodes senior judgment, not heuristics
+It treats restraint as a capability
 
-It refuses when evidence is insufficient
+It makes refusal executable
 
 It is deterministic, auditable, and calm
 
-It optimizes for decision safety, not activity
+It optimizes for safe first decisions
+
+The narrowness is not a limitation.
+It is the point.

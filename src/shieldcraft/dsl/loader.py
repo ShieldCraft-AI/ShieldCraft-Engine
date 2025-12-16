@@ -24,10 +24,10 @@ def load_spec(path):
     file_path = pathlib.Path(path)
     data = ingest_spec(path)
 
-    # If ingestion did not produce a structured mapping/list, return verbatim
-    # (treat as legacy or raw text). Loader will handle legacy detection.
+    # Ensure loader always returns a dict; ingestion guarantees this envelope
     if not isinstance(data, dict):
-        return data
+        # As a defensive fallback, wrap into the canonical envelope
+        data = {"metadata": {"source_format": "unknown", "normalized": True}, "raw_input": data}
     
     # Enforce DSL version from top-level or metadata spec_format when explicitly present.
     # If neither is present, treat as a legacy spec and return raw data (no hard failure).
@@ -42,6 +42,15 @@ def load_spec(path):
             )
     elif spec_format:
         if spec_format == 'canonical_json_v1':
+            # If this spec was produced by the ingestion normalization
+            # (metadata.normalized == True) it is not a true canonical
+            # file on disk; treat it as a legacy/normalized payload and
+            # do not attempt to re-load the file as canonical JSON which
+            # could bypass schema checks for missing required fields.
+            if data.get('metadata', {}).get('normalized'):
+                # Return the normalized DSL-shaped payload for downstream
+                # schema validation to run deterministically.
+                return data
             dsl_version = 'canonical_v1_frozen'
         else:
             # Non-canonical spec_format specified: treat as explicit mismatch.

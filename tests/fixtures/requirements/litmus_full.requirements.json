@@ -1,0 +1,42 @@
+[
+  {
+    "id": "16991aa37712",
+    "type": "MUST",
+    "scope": "/section/5.3",
+    "text": "The system must enforce restraint: Severity-gated output.",
+    "norm": "the system must enforce restraint: severity-gated output",
+    "ptr": "/section/5.3",
+    "hash": "1d3895592590",
+    "line": 5
+  },
+  {
+    "id": "f9108374381a",
+    "type": "MUST",
+    "scope": "/section/5.3",
+    "text": "Every run must provide a canonical decision artifact and a SHA-256 hash.",
+    "norm": "every run must provide a canonical decision artifact and a sha-256 hash",
+    "ptr": "/section/5.3",
+    "hash": "25b33ef432d4",
+    "line": 6
+  },
+  {
+    "id": "ef856ed5065d",
+    "type": "MUST",
+    "scope": "/section/10.1",
+    "text": "Uncertainty must be: Localized",
+    "norm": "uncertainty must be: localized",
+    "ptr": "/section/10.1",
+    "hash": "6965c08a7ba4",
+    "line": 17
+  },
+  {
+    "id": "6258dc972503",
+    "type": "MUST",
+    "scope": "/section/10.2",
+    "text": "The system must refuse when critical paths lack tests or contracts.",
+    "norm": "the system must refuse when critical paths lack tests or contracts",
+    "ptr": "/section/10.2",
+    "hash": "301982bc75f8",
+    "line": 21
+  }
+]

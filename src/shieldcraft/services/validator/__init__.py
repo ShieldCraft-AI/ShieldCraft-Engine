@@ -6,7 +6,13 @@ Contract (summary):
 - A valid instruction spec must include an `instructions` list; each instruction must include `id` and `type`.
 - Instruction `id` values must be unique.
 - Ambient state is forbidden: instruction payloads MUST NOT contain runtime keys such as
-  `timestamp`, `now`, `random`, `rand`, `seed`, or `time`.
+	`timestamp`, `now`, `random`, `rand`, `seed`, or `time`.
+
+Validity vs Readiness:
+- Validity: this module determines whether the spec is structurally and semantically
+	valid for engine processing (instruction-level invariants and strictness policy).
+- Readiness: operational checks (tests attached, determinism replay, persona vetoes)
+	are evaluated separately by the readiness evaluator. A spec may be valid yet not ready.
 
 Determinism: Validation is deterministic (pure function of `spec`). On violation, validation fails hard
 by raising `ValueError` with a clear message identifying the violation.
@@ -40,9 +46,20 @@ class ValidationError(ValueError):
 		self.code = code
 		self.message = message
 		self.location = location
+		self.details = None
+
+	def __init__(self, code: str, message: str, location: str | None = None, details: dict | None = None):
+		super().__init__(f"{code.replace('_', ' ')}: {message}")
+		self.code = code
+		self.message = message
+		self.location = location
+		self.details = details
 
 	def to_dict(self):
-		return {"code": self.code, "message": self.message, "location": self.location}
+		out = {"code": self.code, "message": self.message, "location": self.location}
+		if getattr(self, "details", None) is not None:
+			out["details"] = self.details
+		return out
 
 
 # Frozen set of canonical validation error codes (do not generate dynamic codes)
@@ -54,6 +71,9 @@ INSTRUCTION_MISSING_FIELDS = "instruction_missing_fields"
 DUPLICATE_INSTRUCTION_ID = "duplicate_instruction_id"
 AMBIENT_STATE = "ambient_state"
 SPEC_NOT_DICT = "spec_not_dict"
+SECTIONS_EMPTY = "sections_empty"
+MODEL_EMPTY = "model_empty"
+INVARIANTS_EMPTY = "invariants_empty"
 
 VALIDATION_ERROR_CODES = (
 	MISSING_INVARIANTS,
@@ -64,6 +84,9 @@ VALIDATION_ERROR_CODES = (
 	DUPLICATE_INSTRUCTION_ID,
 	AMBIENT_STATE,
 	SPEC_NOT_DICT,
+	SECTIONS_EMPTY,
+	MODEL_EMPTY,
+	INVARIANTS_EMPTY,
 )
 
 

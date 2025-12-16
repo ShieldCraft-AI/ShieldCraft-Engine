@@ -34,6 +34,21 @@ def test_engine_refuses_on_disallowed_input():
     assert "disallowed_selfhost_input" in str(e.value)
 
 
+def test_engine_accepts_normalized_ingestion_envelope(monkeypatch):
+    """Ensure the deterministic ingestion envelope (metadata+raw_input) is accepted."""
+    from shieldcraft.engine import Engine
+    engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
+    # Ensure repo sync and worktree checks pass so we reach the self-host input gate
+    monkeypatch.setattr("shieldcraft.services.sync.verify_repo_state_authoritative", lambda root: {"ok": True, "sha256": "abc"})
+    monkeypatch.setattr("shieldcraft.persona._is_worktree_clean", lambda: True)
+
+    envelope = {"metadata": {"normalized": True, "source_format": "yaml"}, "raw_input": "some text"}
+    # The envelope should be accepted; dry_run returns a preview dict
+    res = engine.run_self_host(envelope, dry_run=True)
+    assert isinstance(res, dict)
+    assert "manifest" in res
+
+
 def test_engine_refuses_on_persona_veto(monkeypatch):
     from shieldcraft.engine import Engine
     from shieldcraft.persona import PersonaContext, emit_veto

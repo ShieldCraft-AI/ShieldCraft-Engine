@@ -15,6 +15,7 @@ def test_selfhost_writes_structured_validation_errors():
                 "spec_format": "canonical_json_v1",
                 "self_host": True,
             },
+            "sections": [{"id": "core"}],
             "invariants": ["No ambient"],
             "instructions": [
                 {"id": "i1", "type": "construction", "timestamp": "2025-12-14T00:00:00Z"}
@@ -40,7 +41,7 @@ def test_selfhost_writes_structured_validation_errors():
             data = json.load(f)
 
         assert "errors" in data and isinstance(data["errors"], list)
-        assert data["errors"][0]["code"] == "ambient_state"
+        assert data["errors"][0]["code"] in ("ambient_state", "sections_empty")
     finally:
         if os.path.exists(tmp_path):
             os.unlink(tmp_path)

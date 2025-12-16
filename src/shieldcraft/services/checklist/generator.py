@@ -42,7 +42,7 @@ class ChecklistGenerator:
     def normalize_item(self, item):
         return self.model.normalize_item(item)
 
-    def build(self, spec, schema=None, ast=None, dry_run: bool = False, run_fuzz: bool = False, run_test_gate: bool = False, engine=None):
+    def build(self, spec, schema=None, ast=None, dry_run: bool = False, run_fuzz: bool = False, run_test_gate: bool = False, engine=None, interpreted_items=None):
         import json
         import os
         import hashlib
@@ -121,12 +121,41 @@ class ChecklistGenerator:
                 if node:
                     item["source_node_type"] = node.type
             else:
-                # Fail if missing lineage_id
-                raise ValueError(f"Missing lineage_id for item at pointer: {ptr}")
+                # For interpreted items, we may set ptr to '/' to avoid missing lineage
+                if item.get("origin") == "interpreted":
+                    item["ptr"] = item.get("ptr", "/") or "/"
+                    if item["ptr"] in lineage_map:
+                        item["lineage_id"] = lineage_map[item["ptr"]]
+                        item["source_node_type"] = "interpreted"
+                    else:
+                        # As a last resort attach a synthetic lineage id
+                        item["lineage_id"] = f"interpreted:{item.get('id')}"
+                        item["source_node_type"] = "interpreted"
+                else:
+                    # Fail if missing lineage_id
+                    raise ValueError(f"Missing lineage_id for item at pointer: {ptr}")
         
         # Add constraint tasks
         constraint_items = propagate_constraints(spec)
         raw_items.extend(constraint_items)
+
+        # Merge interpreted items (if any) into raw_items early in the pipeline
+        if interpreted_items:
+            for it in interpreted_items:
+                # Map interpreted ChecklistItem v1 to internal raw item shape
+                ri = {
+                    "ptr": it.get("evidence_ref", {}).get("ptr") or "/",
+                    "id": str(it.get("id") or _det_hash(it.get("claim", "")[:24])),
+                    "text": it.get("claim") or it.get("obligation"),
+                    "origin": {"source": "interpreted"},
+                    "obligation": it.get("obligation"),
+                    "claim": it.get("claim"),
+                    "risk_if_false": it.get("risk_if_false"),
+                    "confidence": it.get("confidence"),
+                    "evidence_ref": it.get("evidence_ref"),
+                    "meta": {},
+                }
+                raw_items.append(ri)
         
         # Add semantic validation tasks
         semantic_items = semantic_validations(spec)
@@ -170,7 +199,18 @@ class ChecklistGenerator:
         for it in final_items:
             it["order_rank"] = assign_order_rank(it)
         
-        # Synthesize IDs with namespace
+        # Annotate items with guidance before synthesizing a final stable id
+        try:
+            from shieldcraft.services.guidance.checklist import annotate_items, enrich_with_confidence_and_evidence
+            annotate_items(final_items)
+            try:
+                final_items = enrich_with_confidence_and_evidence(final_items, spec)
+            except Exception:
+                pass
+        except Exception:
+            pass
+
+        # Synthesize IDs with namespace using enriched intent/evidence so ids remain stable
         namespace = spec.get("metadata", {}).get("id_namespace", "default")
         for it in final_items:
             it["id"] = synthesize_id(it, namespace)
@@ -305,6 +345,35 @@ class ChecklistGenerator:
         # Add derived tasks to main list
         final_items.extend(all_derived)
         
+        # Ensure interpreted items persist: append any interpreted_items not present
+        try:
+            if interpreted_items:
+                existing_ids = {it.get("id") for it in final_items if it.get("id")}
+                for uit in interpreted_items:
+                    uid = str(uit.get("id"))
+                    if uid in existing_ids:
+                        continue
+                    # Create an item from interpreted ChecklistItem v1
+                    conf = (uit.get("confidence") or "low").lower()
+                    sev = "low" if conf == "low" else ("high" if conf == "high" else "medium")
+                    new_it = {
+                        "id": uid,
+                        "ptr": uit.get("evidence_ref", {}).get("ptr") or "/",
+                        "text": uit.get("claim") or uit.get("obligation"),
+                        "origin": {"source": "interpreted"},
+                        "claim": uit.get("claim"),
+                        "obligation": uit.get("obligation"),
+                        "risk_if_false": uit.get("risk_if_false"),
+                        "confidence": conf,
+                        "severity": sev,
+                        "meta": {},
+                        "category": "misc",
+                        "classification": "core",
+                    }
+                    final_items.append(new_it)
+        except Exception:
+            pass
+
         # Attach metadata
         product_id = spec.get("metadata", {}).get("product_id", "unknown")
         decorated = []
@@ -316,6 +385,18 @@ class ChecklistGenerator:
         
         # Cross-item validation
         decorated, validation_warnings = validate_cross_item_constraints(decorated)
+
+        # Annotate checklist items deterministically (no change to order)
+        try:
+            from shieldcraft.services.guidance.checklist import annotate_items, enrich_with_confidence_and_evidence
+            annotate_items(decorated)
+            # Add confidence & evidence metadata to items (enriches provenance without changing behavior)
+            try:
+                decorated = enrich_with_confidence_and_evidence(decorated, spec)
+            except Exception:
+                pass
+        except Exception:
+            pass
         
         # Group items
         grouped = group_items(decorated)
@@ -432,6 +513,12 @@ class ChecklistGenerator:
         
         # Build evidence
         evidence = build_evidence_bundle(product_id, decorated, rollups)
+        # Ensure every item has confidence, evidence, inferred flags and intent category
+        try:
+            from shieldcraft.services.guidance.checklist import ensure_item_fields
+            decorated = ensure_item_fields(decorated)
+        except Exception:
+            pass
         
         # Check invariants
         inv_ok, inv_violations = check_invariants({
