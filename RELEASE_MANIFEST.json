@@ -2,7 +2,7 @@
   "artifacts": [
     {
       "path": "src/shieldcraft/observability/__init__.py",
-      "sha256": "0dd1049f6ca9bb20cbbae92b02571426f81429fc4bbce84c714f7592cce686b6"
+      "sha256": "4e7c6d6ee8a124adbf88dbb952a2b2dca2134961cf160b98882be01bab03c403"
     },
     {
       "path": "src/shieldcraft/persona/__init__.py",
@@ -10,7 +10,7 @@
     },
     {
       "path": "src/shieldcraft/persona/persona_event_v1.schema.json",
-      "sha256": "5ae47a563d0679f08a20f8d371e36bd0f4069a8396e38a9c7f8ca07f1763484f"
+      "sha256": "0bc40af4652094fffc1e382c23aa419b322b9bed737a7f5b3cf38a399ab7951a"
     },
     {
       "path": "src/shieldcraft/persona/persona_v1.schema.json",

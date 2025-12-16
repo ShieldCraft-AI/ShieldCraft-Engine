@@ -6,6 +6,7 @@ import json
 import pathlib
 import logging
 from shieldcraft.dsl.canonical_loader import load_canonical_spec
+from shieldcraft.services.spec.ingestion import ingest_spec
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,12 @@ def load_spec(path):
     AUTHORITY: Enforces dsl_version == canonical_v1_frozen.
     """
     file_path = pathlib.Path(path)
-    data = json.loads(file_path.read_text())
+    data = ingest_spec(path)
+
+    # Ensure loader always returns a dict; ingestion guarantees this envelope
+    if not isinstance(data, dict):
+        # As a defensive fallback, wrap into the canonical envelope
+        data = {"metadata": {"source_format": "unknown", "normalized": True}, "raw_input": data}
     
     # Enforce DSL version from top-level or metadata spec_format when explicitly present.
     # If neither is present, treat as a legacy spec and return raw data (no hard failure).
@@ -36,6 +42,15 @@ def load_spec(path):
             )
     elif spec_format:
         if spec_format == 'canonical_json_v1':
+            # If this spec was produced by the ingestion normalization
+            # (metadata.normalized == True) it is not a true canonical
+            # file on disk; treat it as a legacy/normalized payload and
+            # do not attempt to re-load the file as canonical JSON which
+            # could bypass schema checks for missing required fields.
+            if data.get('metadata', {}).get('normalized'):
+                # Return the normalized DSL-shaped payload for downstream
+                # schema validation to run deterministically.
+                return data
             dsl_version = 'canonical_v1_frozen'
         else:
             # Non-canonical spec_format specified: treat as explicit mismatch.

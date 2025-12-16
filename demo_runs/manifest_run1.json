@@ -1,0 +1,1035 @@
+{
+  "checklist_preview": [
+    {
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "misc",
+      "classification": "core",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "0bc7730654d4",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "normalized"
+          ],
+          "chain_hash": "13f51f2bc689d35c"
+        },
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ]
+      },
+      "order_rank": [
+        3,
+        "core",
+        13,
+        "/_order/agent",
+        "Tasks in agent must execute after arch"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/_order/agent",
+      "relevance_reason": "routine",
+      "severity": "low",
+      "spec_pointer": "/_order/agent",
+      "test_refs": [],
+      "text": "Tasks in agent must execute after arch",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": {
+        "after": "arch",
+        "before": "agent"
+      }
+    },
+    {
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "api",
+      "classification": "api",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "c0f29a10c5d3",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "normalized"
+          ],
+          "chain_hash": "13f51f2bc689d35c"
+        },
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ]
+      },
+      "order_rank": [
+        3,
+        "api",
+        11,
+        "/_order/api",
+        "Tasks in api must execute after agent"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/_order/api",
+      "relevance_reason": "routine",
+      "severity": "low",
+      "spec_pointer": "/_order/api",
+      "test_refs": [],
+      "text": "Tasks in api must execute after agent",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": {
+        "after": "agent",
+        "before": "api"
+      }
+    },
+    {
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "misc",
+      "classification": "core",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "b7dba8479166",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "normalized"
+          ],
+          "chain_hash": "13f51f2bc689d35c"
+        },
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ]
+      },
+      "order_rank": [
+        3,
+        "core",
+        12,
+        "/_order/arch",
+        "Tasks in arch must execute after meta"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/_order/arch",
+      "relevance_reason": "routine",
+      "severity": "low",
+      "spec_pointer": "/_order/arch",
+      "test_refs": [],
+      "text": "Tasks in arch must execute after meta",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": {
+        "after": "meta",
+        "before": "arch"
+      }
+    },
+    {
+      "_cat": "arch",
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "arch",
+      "classification": "core",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "0644c653efcd",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "normalized"
+          ],
+          "chain_hash": "13f51f2bc689d35c"
+        },
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ]
+      },
+      "order_rank": [
+        3,
+        "core",
+        13,
+        "/architecture",
+        "architecture depends on metadata"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/architecture",
+      "relevance_reason": "routine",
+      "severity": "low",
+      "spec_pointer": "/architecture",
+      "test_refs": [],
+      "text": "architecture depends on metadata",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": {
+        "from": "metadata",
+        "to": "architecture"
+      }
+    },
+    {
+      "_cat": "meta",
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "meta",
+      "classification": "metadata",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "ba08491b615b",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "key": "metadata",
+      "lineage_id": "8d24a38fa9cb92e4327b452d961b0c49ded7aef2dfdc0684f8348e9f9b6e4eed",
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        },
+        "candidate_tests": [
+          "test::checklist/test_derived.py::test_infer_tasks_missing_metadata",
+          "test::ci/test_spec_pipeline_smoke.py::test_spec_metadata_completeness",
+          "test::generated/verification_spine/test_ba08491b615b.py::test_ba08491b615b"
+        ]
+      },
+      "order_rank": [
+        1,
+        "metadata",
+        9,
+        "/metadata",
+        "Implement object at /metadata"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/metadata",
+      "relevance_reason": "routine",
+      "severity": "high",
+      "source_node_type": "dict_entry",
+      "spec_pointer": "/metadata",
+      "test_refs": [],
+      "text": "Implement object at /metadata",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": {
+        "normalized": true,
+        "product_id": "unknown",
+        "source_format": "text",
+        "source_material": "THE LITMUS ENGINE\nA Deterministic Repository Review System for Decision Safety\n\nTagline (internal):\nA senior reviewer that knows when not to speak.\n\n0. Brutal Framing (Read This First)\nWho this is for\n\nEngineers inheriting unfamiliar or legacy systems\n\nTech leads deciding where to start safely\n\nArchitects assessing change risk before committing effort\n\nTeams that want fewer mistakes, not more analysis\n\nWho this is not for\n\nCode style enforcement\n\nRefactoring automation\n\n\u201cFind all issues\u201d scanning\n\nJunior-level static analysis replacement\n\nTools that maximize findings or activity\n\nIf your goal is speed through confidence, this is the wrong tool.\nIf your goal is speed through restraint, this is exactly the tool.\n\n1. Why This Exists (Against Existing Tools)\n\nMost repository tools fail in the same way:\n\nThey overproduce signals\n\nThey conflate presence with importance\n\nThey sound confident where evidence is thin\n\nThey encourage premature action\n\nLinters, SAST tools, and static analyzers answer:\n\n\u201cWhat can I complain about?\u201d\n\nThe Litmus Engine answers:\n\n\u201cWhat would be irresponsible to touch right now?\u201d\n\nThis tool exists because false confidence is more dangerous than missing information.\n\n2. Core Objective\n\nPrevent harmful decisions in unfamiliar codebases by producing authoritative, restraint-oriented guidance grounded exclusively in observable evidence.\n\nThe engine must explicitly answer:\n\nWhere pressure can safely be applied\n\nWhere pressure must not be applied\n\nWhat is currently unknowable\n\nWhat looks risky but is not\n\nSilence is a success state.\n\n3. Proof of Seriousness (Non-Optional)\n\nThis repository must include the following from day one:\n\n3.1 Deterministic Golden Snapshot\n\nA sample repository (or reduced fixture)\n\nA canonical output JSON\n\nA canonical SHA-256 hash\n\n\u201cRunning Litmus against commit X must always produce hash Y.\u201d\n\n3.2 Refusal Example\n\nA documented case where the engine refuses to issue guidance, with explanation.\n\nExample:\n\n\u201cCritical migration logic exists without tests. No safe change surface can be established.\u201d\n\n3.3 Misleading Signal Example\n\nA documented case where a na\u00efve tool would overreact \u2014 and Litmus explicitly does not.\n\n4. Foundational Invariants (Hard Requirements)\n4.1 Determinism (Absolute)\n\nIdentical input \u2192 identical output\n\nNo timestamps, randomness, environment leakage\n\nCanonical traversal and ordering\n\nVerifiable canonical hash emitted\n\n4.2 Observable Signals Only\n\nAllowed inputs:\n\nStructure\n\nConfiguration\n\nTests\n\nDependencies\n\nVersioning artifacts\n\nDisallowed:\n\nGuessing intent from names or comments\n\nSentiment or heuristic psychology\n\n4.3 Restraint Is Mandatory\n\nFindings are severity-gated\n\nLow-risk repos may produce <1 page output\n\n\u201cNothing notable\u201d is valid\n\nOutput verbosity is bounded\n\n5. Trust Contract (Explicit)\n\nFor every major conclusion, Litmus must include one of:\n\nWhy this conclusion is reliable\n\nWhy it is bounded\n\nWhy a less sophisticated tool would mislead here\n\nThis is not optional.\nThis is how trust is earned.\n\n6. Intent Modeling (Bounded, Falsifiable)\n\nLitmus does not infer motivation.\nIt classifies architectural posture.\n\n6.1 Allowed Signals\n\nBoundary enforcement\n\nGovernance strictness\n\nLongevity handling (migrations, deprecations)\n\nInvestment asymmetry\n\n6.2 Evolutionary Archetypes (Examples)\n\nThese must be concrete and memorable:\n\nThe Pressure Cooker\nHigh change, low governance, tight coupling\n\nThe Museum\nStable, low change, high risk to disturb\n\nThe Construction Site\nActively evolving with guardrails\n\nThe Patchwork\nUneven maturity across domains\n\nEach classification must include:\n\nEvidence\n\nConfidence level\n\nExpiration conditions\n\n7. Safe-to-Change Surface (Primary Artifact)\n7.1 Definition\n\nA permission model, not a score.\n\nAnswers:\n\n\u201cWhere can pressure be applied right now without unacceptable risk?\u201d\n\n7.2 Required Properties\n\nExplicit safe zones\n\nExplicit no-touch zones\n\nExpiration logic\n\nEvidence references\n\n7.3 Mandatory First Move\n\nLitmus must always provide one of:\n\nA safe first action\n\nAn explicit statement that no safe move exists\n\nAbsence of a safe surface is a valid finding.\n\n8. What Not to Fix (First-Class Output)\n\nLitmus must explicitly identify:\n\nBenign issues\n\nAreas that look risky but are currently stable\n\nOptimizations that would be negative ROI\n\nEach includes:\n\nWhy it is not an issue\n\nWhen it would become one\n\nThis demonstrates senior restraint.\n\n9. Uncertainty & Refusal Model\n9.1 Visible Uncertainty\n\nUncertainty is:\n\nLocalized\n\nExplained\n\nCalm\n\n9.2 Mandatory Refusal Conditions\n\nLitmus must refuse when:\n\nCritical paths lack tests or contracts\n\nBlast radius cannot be bounded\n\nConfiguration is contradictory\n\nRefusal is a successful outcome.\n\n10. Multi-Language as Blast-Radius Control\n\nOne primary language per scan\n\nSecondary languages analyzed structurally only\n\nSemantic analysis never guesses across boundaries\n\nThis prevents false authority and overreach.\n\n11. Output Contract (Human-Grade)\n11.1 Executive Summary (\u22641 page)\n\nMust answer:\n\nIs it safe to act?\n\nWhere?\n\nWhere not?\n\nWhat is unknowable?\n\nNo vanity metrics.\n\n11.2 Decision Artifacts\n\nSafe-to-Change Surface\n\nNo-Touch Zones\n\nMisleading Signals\n\nFirst Recommended Action\n\n11.3 Evidence Appendix\n\nEvidence references only\n\nNo speculative commentary\n\n12. Tone & Voice Constraints\n\nCalm\n\nDirect\n\nSenior\n\nNo hype\n\nNo AI voice\n\nReads like a VP-level technical memo\n\n13. Deterministic Silence Requirement\n\nMaximum verbosity thresholds\n\nSeverity-gated output volume\n\nExplicit \u201cNothing notable\u201d verdicts allowed\n\nBrevity is enforced, not emergent.\n\n14. Final Litmus Test (Non-Negotiable)\n\nA senior engineer reading the output should think:\n\n\u201cThis is exactly what I would have said \u2014\nand I trust it because it knows when not to speak.\u201d\n\nIf this fails, the implementation is incorrect.\n\n15. Why This Is Unreasonably Good\n\nIt prevents damage instead of producing noise\n\nIt encodes senior judgment, not heuristics\n\nIt refuses when evidence is insufficient\n\nIt is deterministic, auditable, and calm\n\nIt optimizes for decision safety, not activity",
+        "spec_format": "canonical_json_v1",
+        "spec_version": "0.0"
+      }
+    },
+    {
+      "_cat": "meta",
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "meta",
+      "classification": "metadata",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "9ac352cadd17",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "key": "normalized",
+      "lineage_id": "ac4e3442b99b6460dd07b9bdad08589ad1ac975bfd1e68f6ae9d0e1c81654891",
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        },
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ]
+      },
+      "order_rank": [
+        1,
+        "metadata",
+        20,
+        "/metadata/normalized",
+        "Implement boolean at /metadata/normalized: True"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/metadata/normalized",
+      "relevance_reason": "routine",
+      "severity": "high",
+      "source_node_type": "dict_entry",
+      "spec_pointer": "/metadata/normalized",
+      "test_refs": [],
+      "text": "Implement boolean at /metadata/normalized: True",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": true
+    },
+    {
+      "_cat": "meta",
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "meta",
+      "classification": "metadata",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "d46de23e375d",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "normalized"
+          ],
+          "chain_hash": "13f51f2bc689d35c"
+        },
+        "candidate_tests": [
+          "test::generated/verification_spine/test_d46de23e375d.py::test_d46de23e375d"
+        ]
+      },
+      "order_rank": [
+        1,
+        "metadata",
+        15,
+        "/metadata/owner",
+        "Missing required metadata field: owner"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/metadata/owner",
+      "relevance_reason": "routine",
+      "severity": "high",
+      "spec_pointer": "/metadata/owner",
+      "test_refs": [],
+      "text": "Missing required metadata field: owner",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": null
+    },
+    {
+      "_cat": "meta",
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "meta",
+      "classification": "metadata",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "a40d9cade076",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "key": "product_id",
+      "lineage_id": "8bcb137b8b0cbf6080fd326b0da1f18d4124153058e3e5ba4af0082f0c88af87",
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        },
+        "candidate_tests": [
+          "test::generated/verification_spine/test_a40d9cade076.py::test_a40d9cade076"
+        ]
+      },
+      "order_rank": [
+        1,
+        "metadata",
+        20,
+        "/metadata/product_id",
+        "Implement value at /metadata/product_id"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/metadata/product_id",
+      "relevance_reason": "routine",
+      "severity": "high",
+      "source_node_type": "dict_entry",
+      "spec_pointer": "/metadata/product_id",
+      "test_refs": [],
+      "text": "Implement value at /metadata/product_id",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": "unknown"
+    },
+    {
+      "_cat": "meta",
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "meta",
+      "classification": "metadata",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "a8a3c27ccc8c",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "key": "source_format",
+      "lineage_id": "7567246a4894a596f81e72f15b44aca581af789937b388205fdcab8b4eb598df",
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        },
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ]
+      },
+      "order_rank": [
+        1,
+        "metadata",
+        23,
+        "/metadata/source_format",
+        "Implement value at /metadata/source_format"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/metadata/source_format",
+      "relevance_reason": "routine",
+      "severity": "high",
+      "source_node_type": "dict_entry",
+      "spec_pointer": "/metadata/source_format",
+      "test_refs": [],
+      "text": "Implement value at /metadata/source_format",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": "text"
+    },
+    {
+      "_cat": "meta",
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "meta",
+      "classification": "metadata",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "5d6a7180304b",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "key": "source_material",
+      "lineage_id": "6d519555e11248d7d1f82bd278923fa2ccddb20c03dc0a2ec8f4d0ff20ed8ece",
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        },
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ]
+      },
+      "order_rank": [
+        1,
+        "metadata",
+        25,
+        "/metadata/source_material",
+        "Implement value at /metadata/source_material"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/metadata/source_material",
+      "relevance_reason": "routine",
+      "severity": "high",
+      "source_node_type": "dict_entry",
+      "spec_pointer": "/metadata/source_material",
+      "test_refs": [],
+      "text": "Implement value at /metadata/source_material",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": "THE LITMUS ENGINE\nA Deterministic Repository Review System for Decision Safety\n\nTagline (internal):\nA senior reviewer that knows when not to speak.\n\n0. Brutal Framing (Read This First)\nWho this is for\n\nEngineers inheriting unfamiliar or legacy systems\n\nTech leads deciding where to start safely\n\nArchitects assessing change risk before committing effort\n\nTeams that want fewer mistakes, not more analysis\n\nWho this is not for\n\nCode style enforcement\n\nRefactoring automation\n\n\u201cFind all issues\u201d scanning\n\nJunior-level static analysis replacement\n\nTools that maximize findings or activity\n\nIf your goal is speed through confidence, this is the wrong tool.\nIf your goal is speed through restraint, this is exactly the tool.\n\n1. Why This Exists (Against Existing Tools)\n\nMost repository tools fail in the same way:\n\nThey overproduce signals\n\nThey conflate presence with importance\n\nThey sound confident where evidence is thin\n\nThey encourage premature action\n\nLinters, SAST tools, and static analyzers answer:\n\n\u201cWhat can I complain about?\u201d\n\nThe Litmus Engine answers:\n\n\u201cWhat would be irresponsible to touch right now?\u201d\n\nThis tool exists because false confidence is more dangerous than missing information.\n\n2. Core Objective\n\nPrevent harmful decisions in unfamiliar codebases by producing authoritative, restraint-oriented guidance grounded exclusively in observable evidence.\n\nThe engine must explicitly answer:\n\nWhere pressure can safely be applied\n\nWhere pressure must not be applied\n\nWhat is currently unknowable\n\nWhat looks risky but is not\n\nSilence is a success state.\n\n3. Proof of Seriousness (Non-Optional)\n\nThis repository must include the following from day one:\n\n3.1 Deterministic Golden Snapshot\n\nA sample repository (or reduced fixture)\n\nA canonical output JSON\n\nA canonical SHA-256 hash\n\n\u201cRunning Litmus against commit X must always produce hash Y.\u201d\n\n3.2 Refusal Example\n\nA documented case where the engine refuses to issue guidance, with explanation.\n\nExample:\n\n\u201cCritical migration logic exists without tests. No safe change surface can be established.\u201d\n\n3.3 Misleading Signal Example\n\nA documented case where a na\u00efve tool would overreact \u2014 and Litmus explicitly does not.\n\n4. Foundational Invariants (Hard Requirements)\n4.1 Determinism (Absolute)\n\nIdentical input \u2192 identical output\n\nNo timestamps, randomness, environment leakage\n\nCanonical traversal and ordering\n\nVerifiable canonical hash emitted\n\n4.2 Observable Signals Only\n\nAllowed inputs:\n\nStructure\n\nConfiguration\n\nTests\n\nDependencies\n\nVersioning artifacts\n\nDisallowed:\n\nGuessing intent from names or comments\n\nSentiment or heuristic psychology\n\n4.3 Restraint Is Mandatory\n\nFindings are severity-gated\n\nLow-risk repos may produce <1 page output\n\n\u201cNothing notable\u201d is valid\n\nOutput verbosity is bounded\n\n5. Trust Contract (Explicit)\n\nFor every major conclusion, Litmus must include one of:\n\nWhy this conclusion is reliable\n\nWhy it is bounded\n\nWhy a less sophisticated tool would mislead here\n\nThis is not optional.\nThis is how trust is earned.\n\n6. Intent Modeling (Bounded, Falsifiable)\n\nLitmus does not infer motivation.\nIt classifies architectural posture.\n\n6.1 Allowed Signals\n\nBoundary enforcement\n\nGovernance strictness\n\nLongevity handling (migrations, deprecations)\n\nInvestment asymmetry\n\n6.2 Evolutionary Archetypes (Examples)\n\nThese must be concrete and memorable:\n\nThe Pressure Cooker\nHigh change, low governance, tight coupling\n\nThe Museum\nStable, low change, high risk to disturb\n\nThe Construction Site\nActively evolving with guardrails\n\nThe Patchwork\nUneven maturity across domains\n\nEach classification must include:\n\nEvidence\n\nConfidence level\n\nExpiration conditions\n\n7. Safe-to-Change Surface (Primary Artifact)\n7.1 Definition\n\nA permission model, not a score.\n\nAnswers:\n\n\u201cWhere can pressure be applied right now without unacceptable risk?\u201d\n\n7.2 Required Properties\n\nExplicit safe zones\n\nExplicit no-touch zones\n\nExpiration logic\n\nEvidence references\n\n7.3 Mandatory First Move\n\nLitmus must always provide one of:\n\nA safe first action\n\nAn explicit statement that no safe move exists\n\nAbsence of a safe surface is a valid finding.\n\n8. What Not to Fix (First-Class Output)\n\nLitmus must explicitly identify:\n\nBenign issues\n\nAreas that look risky but are currently stable\n\nOptimizations that would be negative ROI\n\nEach includes:\n\nWhy it is not an issue\n\nWhen it would become one\n\nThis demonstrates senior restraint.\n\n9. Uncertainty & Refusal Model\n9.1 Visible Uncertainty\n\nUncertainty is:\n\nLocalized\n\nExplained\n\nCalm\n\n9.2 Mandatory Refusal Conditions\n\nLitmus must refuse when:\n\nCritical paths lack tests or contracts\n\nBlast radius cannot be bounded\n\nConfiguration is contradictory\n\nRefusal is a successful outcome.\n\n10. Multi-Language as Blast-Radius Control\n\nOne primary language per scan\n\nSecondary languages analyzed structurally only\n\nSemantic analysis never guesses across boundaries\n\nThis prevents false authority and overreach.\n\n11. Output Contract (Human-Grade)\n11.1 Executive Summary (\u22641 page)\n\nMust answer:\n\nIs it safe to act?\n\nWhere?\n\nWhere not?\n\nWhat is unknowable?\n\nNo vanity metrics.\n\n11.2 Decision Artifacts\n\nSafe-to-Change Surface\n\nNo-Touch Zones\n\nMisleading Signals\n\nFirst Recommended Action\n\n11.3 Evidence Appendix\n\nEvidence references only\n\nNo speculative commentary\n\n12. Tone & Voice Constraints\n\nCalm\n\nDirect\n\nSenior\n\nNo hype\n\nNo AI voice\n\nReads like a VP-level technical memo\n\n13. Deterministic Silence Requirement\n\nMaximum verbosity thresholds\n\nSeverity-gated output volume\n\nExplicit \u201cNothing notable\u201d verdicts allowed\n\nBrevity is enforced, not emergent.\n\n14. Final Litmus Test (Non-Negotiable)\n\nA senior engineer reading the output should think:\n\n\u201cThis is exactly what I would have said \u2014\nand I trust it because it knows when not to speak.\u201d\n\nIf this fails, the implementation is incorrect.\n\n15. Why This Is Unreasonably Good\n\nIt prevents damage instead of producing noise\n\nIt encodes senior judgment, not heuristics\n\nIt refuses when evidence is insufficient\n\nIt is deterministic, auditable, and calm\n\nIt optimizes for decision safety, not activity"
+    },
+    {
+      "_cat": "meta",
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "meta",
+      "classification": "metadata",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "fa0ef385fa0a",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "key": "spec_format",
+      "lineage_id": "083fb36762f1a90ae1dd006b6673266b74bbe1ac8b9a6089fe39d3823caec156",
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        },
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ]
+      },
+      "order_rank": [
+        1,
+        "metadata",
+        21,
+        "/metadata/spec_format",
+        "Implement value at /metadata/spec_format"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/metadata/spec_format",
+      "relevance_reason": "routine",
+      "severity": "high",
+      "source_node_type": "dict_entry",
+      "spec_pointer": "/metadata/spec_format",
+      "test_refs": [],
+      "text": "Implement value at /metadata/spec_format",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": "canonical_json_v1"
+    },
+    {
+      "_cat": "meta",
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "meta",
+      "classification": "metadata",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "67846b50014f",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "key": "spec_version",
+      "lineage_id": "01f797323e6dbea5f9b4bfac5a05849fe6887a519acfac859d5dfacf24f80413",
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        },
+        "candidate_tests": [
+          "test::generated/verification_spine/test_67846b50014f.py::test_item_67846b50014f"
+        ]
+      },
+      "order_rank": [
+        1,
+        "metadata",
+        22,
+        "/metadata/spec_version",
+        "Implement value at /metadata/spec_version"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/metadata/spec_version",
+      "relevance_reason": "routine",
+      "severity": "high",
+      "source_node_type": "dict_entry",
+      "spec_pointer": "/metadata/spec_version",
+      "test_refs": [],
+      "text": "Implement value at /metadata/spec_version",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": "0.0"
+    },
+    {
+      "_cat": "meta",
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "meta",
+      "classification": "metadata",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "0fc4d598fae4",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "normalized"
+          ],
+          "chain_hash": "13f51f2bc689d35c"
+        },
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ]
+      },
+      "order_rank": [
+        1,
+        "metadata",
+        17,
+        "/metadata/version",
+        "Missing required metadata field: version"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/metadata/version",
+      "relevance_reason": "routine",
+      "severity": "high",
+      "spec_pointer": "/metadata/version",
+      "test_refs": [],
+      "text": "Missing required metadata field: version",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": null
+    },
+    {
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "misc",
+      "classification": "core",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "127d3a34edae",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "key": "model",
+      "lineage_id": "281a480267f94335906178f4a92f91fe3b81c8b5d069c97132f84c61c67e3b84",
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        },
+        "candidate_tests": [
+          "test::ci/test_spec_pipeline_smoke.py::test_spec_model_components_defined",
+          "test::codegen/test_templates_render.py::test_render_model_template",
+          "test::services/test_structured_state.py::test_single_section_metadata_model_instructions_structured"
+        ]
+      },
+      "order_rank": [
+        3,
+        "core",
+        6,
+        "/model",
+        "Implement object at /model"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/model",
+      "relevance_reason": "routine",
+      "severity": "low",
+      "source_node_type": "dict_entry",
+      "spec_pointer": "/model",
+      "test_refs": [],
+      "text": "Implement object at /model",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": {}
+    },
+    {
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "category": "misc",
+      "classification": "core",
+      "deps": [],
+      "derived": false,
+      "generator_version": "1.0",
+      "id": "db7d2e804ece",
+      "invariants": [],
+      "invariants_from_spec": [],
+      "key": "sections",
+      "lineage_id": "ed6f4265a995b3777227bedfb905ec3708f334f6a475f30795197d7969315837",
+      "meta": {
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        },
+        "candidate_tests": [
+          "test::bootstrap/test_derived_tasks.py::test_bootstrap_sections_classification",
+          "test::ci/test_spec_pipeline_smoke.py::test_spec_sections_not_empty",
+          "test::services/test_sections_strictness.py::test_cli_integration_flag_writes_errors_json"
+        ]
+      },
+      "order_rank": [
+        3,
+        "core",
+        9,
+        "/sections",
+        "Implement object at /sections"
+      ],
+      "origin": {
+        "parent": null,
+        "source": "spec"
+      },
+      "product_id": "unknown",
+      "ptr": "/sections",
+      "relevance_reason": "routine",
+      "severity": "low",
+      "source_node_type": "dict_entry",
+      "spec_pointer": "/sections",
+      "test_refs": [],
+      "text": "Implement object at /sections",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "value": {}
+    }
+  ],
+  "checklist_preview_explanation": "Checklist preview showing 15 items representative of current structure.",
+  "checklist_preview_items": 15,
+  "checklist_summary": {
+    "items_blocking_progress": 0,
+    "items_future": 0,
+    "items_relevant_now": 15,
+    "total_items": 15
+  },
+  "conversion_state": "CONVERTIBLE",
+  "conversion_tier": "convertible",
+  "dsl_section_classification": {
+    "codegen_targets": {
+      "classification": "structural",
+      "empty": true,
+      "instruction_valid_when_removed": true,
+      "present": false,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    },
+    "execution": {
+      "classification": "structural",
+      "empty": true,
+      "instruction_valid_when_removed": true,
+      "present": false,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    },
+    "instructions": {
+      "classification": "structural",
+      "empty": true,
+      "instruction_valid_when_removed": true,
+      "present": false,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    },
+    "invariants": {
+      "classification": "structural",
+      "empty": true,
+      "instruction_valid_when_removed": true,
+      "present": false,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    },
+    "metadata": {
+      "classification": "structural",
+      "empty": false,
+      "instruction_valid_when_removed": true,
+      "present": true,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    },
+    "model": {
+      "classification": "structural",
+      "empty": true,
+      "instruction_valid_when_removed": true,
+      "present": true,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    },
+    "pointer_map": {
+      "classification": "structural",
+      "empty": true,
+      "instruction_valid_when_removed": true,
+      "present": false,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    },
+    "sections": {
+      "classification": "structural",
+      "empty": true,
+      "instruction_valid_when_removed": true,
+      "present": true,
+      "schema_valid_when_removed": false,
+      "schema_valid_with_current": false
+    }
+  },
+  "governance_enforcements": [],
+  "outputs": [],
+  "partial": true,
+  "semantic_strictness_policy": {
+    "active_levels": [
+      1
+    ],
+    "enforced_sections": [
+      {
+        "code": "sections_empty",
+        "rationale": "Sections is required by schema and empty in normalized skeleton",
+        "section": "sections"
+      }
+    ]
+  },
+  "spec_evolution": {
+    "added": [
+      "/metadata",
+      "/metadata/normalized",
+      "/metadata/product_id",
+      "/metadata/source_format",
+      "/metadata/source_material",
+      "/metadata/spec_format",
+      "/metadata/spec_version",
+      "/model",
+      "/sections"
+    ],
+    "changed": [],
+    "removed": [],
+    "semantic_sections_changed": {
+      "codegen_targets": {
+        "new": {
+          "classification": "structural",
+          "empty": true,
+          "instruction_valid_when_removed": true,
+          "present": false,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      },
+      "execution": {
+        "new": {
+          "classification": "structural",
+          "empty": true,
+          "instruction_valid_when_removed": true,
+          "present": false,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      },
+      "instructions": {
+        "new": {
+          "classification": "structural",
+          "empty": true,
+          "instruction_valid_when_removed": true,
+          "present": false,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      },
+      "invariants": {
+        "new": {
+          "classification": "structural",
+          "empty": true,
+          "instruction_valid_when_removed": true,
+          "present": false,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      },
+      "metadata": {
+        "new": {
+          "classification": "structural",
+          "empty": false,
+          "instruction_valid_when_removed": true,
+          "present": true,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      },
+      "model": {
+        "new": {
+          "classification": "structural",
+          "empty": true,
+          "instruction_valid_when_removed": true,
+          "present": true,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      },
+      "pointer_map": {
+        "new": {
+          "classification": "structural",
+          "empty": true,
+          "instruction_valid_when_removed": true,
+          "present": false,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      },
+      "sections": {
+        "new": {
+          "classification": "structural",
+          "empty": true,
+          "instruction_valid_when_removed": true,
+          "present": true,
+          "schema_valid_when_removed": false,
+          "schema_valid_with_current": false
+        },
+        "old": {},
+        "status": "added"
+      }
+    },
+    "summary": {
+      "added_count": 9,
+      "changed_count": 0,
+      "removed_count": 0,
+      "total_new": 9,
+      "total_old": 0,
+      "unchanged_count": 0
+    },
+    "unchanged": []
+  },
+  "spec_metadata": {
+    "normalized": true,
+    "product_id": "unknown",
+    "source_format": "text",
+    "source_material": "THE LITMUS ENGINE\nA Deterministic Repository Review System for Decision Safety\n\nTagline (internal):\nA senior reviewer that knows when not to speak.\n\n0. Brutal Framing (Read This First)\nWho this is for\n\nEngineers inheriting unfamiliar or legacy systems\n\nTech leads deciding where to start safely\n\nArchitects assessing change risk before committing effort\n\nTeams that want fewer mistakes, not more analysis\n\nWho this is not for\n\nCode style enforcement\n\nRefactoring automation\n\n\u201cFind all issues\u201d scanning\n\nJunior-level static analysis replacement\n\nTools that maximize findings or activity\n\nIf your goal is speed through confidence, this is the wrong tool.\nIf your goal is speed through restraint, this is exactly the tool.\n\n1. Why This Exists (Against Existing Tools)\n\nMost repository tools fail in the same way:\n\nThey overproduce signals\n\nThey conflate presence with importance\n\nThey sound confident where evidence is thin\n\nThey encourage premature action\n\nLinters, SAST tools, and static analyzers answer:\n\n\u201cWhat can I complain about?\u201d\n\nThe Litmus Engine answers:\n\n\u201cWhat would be irresponsible to touch right now?\u201d\n\nThis tool exists because false confidence is more dangerous than missing information.\n\n2. Core Objective\n\nPrevent harmful decisions in unfamiliar codebases by producing authoritative, restraint-oriented guidance grounded exclusively in observable evidence.\n\nThe engine must explicitly answer:\n\nWhere pressure can safely be applied\n\nWhere pressure must not be applied\n\nWhat is currently unknowable\n\nWhat looks risky but is not\n\nSilence is a success state.\n\n3. Proof of Seriousness (Non-Optional)\n\nThis repository must include the following from day one:\n\n3.1 Deterministic Golden Snapshot\n\nA sample repository (or reduced fixture)\n\nA canonical output JSON\n\nA canonical SHA-256 hash\n\n\u201cRunning Litmus against commit X must always produce hash Y.\u201d\n\n3.2 Refusal Example\n\nA documented case where the engine refuses to issue guidance, with explanation.\n\nExample:\n\n\u201cCritical migration logic exists without tests. No safe change surface can be established.\u201d\n\n3.3 Misleading Signal Example\n\nA documented case where a na\u00efve tool would overreact \u2014 and Litmus explicitly does not.\n\n4. Foundational Invariants (Hard Requirements)\n4.1 Determinism (Absolute)\n\nIdentical input \u2192 identical output\n\nNo timestamps, randomness, environment leakage\n\nCanonical traversal and ordering\n\nVerifiable canonical hash emitted\n\n4.2 Observable Signals Only\n\nAllowed inputs:\n\nStructure\n\nConfiguration\n\nTests\n\nDependencies\n\nVersioning artifacts\n\nDisallowed:\n\nGuessing intent from names or comments\n\nSentiment or heuristic psychology\n\n4.3 Restraint Is Mandatory\n\nFindings are severity-gated\n\nLow-risk repos may produce <1 page output\n\n\u201cNothing notable\u201d is valid\n\nOutput verbosity is bounded\n\n5. Trust Contract (Explicit)\n\nFor every major conclusion, Litmus must include one of:\n\nWhy this conclusion is reliable\n\nWhy it is bounded\n\nWhy a less sophisticated tool would mislead here\n\nThis is not optional.\nThis is how trust is earned.\n\n6. Intent Modeling (Bounded, Falsifiable)\n\nLitmus does not infer motivation.\nIt classifies architectural posture.\n\n6.1 Allowed Signals\n\nBoundary enforcement\n\nGovernance strictness\n\nLongevity handling (migrations, deprecations)\n\nInvestment asymmetry\n\n6.2 Evolutionary Archetypes (Examples)\n\nThese must be concrete and memorable:\n\nThe Pressure Cooker\nHigh change, low governance, tight coupling\n\nThe Museum\nStable, low change, high risk to disturb\n\nThe Construction Site\nActively evolving with guardrails\n\nThe Patchwork\nUneven maturity across domains\n\nEach classification must include:\n\nEvidence\n\nConfidence level\n\nExpiration conditions\n\n7. Safe-to-Change Surface (Primary Artifact)\n7.1 Definition\n\nA permission model, not a score.\n\nAnswers:\n\n\u201cWhere can pressure be applied right now without unacceptable risk?\u201d\n\n7.2 Required Properties\n\nExplicit safe zones\n\nExplicit no-touch zones\n\nExpiration logic\n\nEvidence references\n\n7.3 Mandatory First Move\n\nLitmus must always provide one of:\n\nA safe first action\n\nAn explicit statement that no safe move exists\n\nAbsence of a safe surface is a valid finding.\n\n8. What Not to Fix (First-Class Output)\n\nLitmus must explicitly identify:\n\nBenign issues\n\nAreas that look risky but are currently stable\n\nOptimizations that would be negative ROI\n\nEach includes:\n\nWhy it is not an issue\n\nWhen it would become one\n\nThis demonstrates senior restraint.\n\n9. Uncertainty & Refusal Model\n9.1 Visible Uncertainty\n\nUncertainty is:\n\nLocalized\n\nExplained\n\nCalm\n\n9.2 Mandatory Refusal Conditions\n\nLitmus must refuse when:\n\nCritical paths lack tests or contracts\n\nBlast radius cannot be bounded\n\nConfiguration is contradictory\n\nRefusal is a successful outcome.\n\n10. Multi-Language as Blast-Radius Control\n\nOne primary language per scan\n\nSecondary languages analyzed structurally only\n\nSemantic analysis never guesses across boundaries\n\nThis prevents false authority and overreach.\n\n11. Output Contract (Human-Grade)\n11.1 Executive Summary (\u22641 page)\n\nMust answer:\n\nIs it safe to act?\n\nWhere?\n\nWhere not?\n\nWhat is unknowable?\n\nNo vanity metrics.\n\n11.2 Decision Artifacts\n\nSafe-to-Change Surface\n\nNo-Touch Zones\n\nMisleading Signals\n\nFirst Recommended Action\n\n11.3 Evidence Appendix\n\nEvidence references only\n\nNo speculative commentary\n\n12. Tone & Voice Constraints\n\nCalm\n\nDirect\n\nSenior\n\nNo hype\n\nNo AI voice\n\nReads like a VP-level technical memo\n\n13. Deterministic Silence Requirement\n\nMaximum verbosity thresholds\n\nSeverity-gated output volume\n\nExplicit \u201cNothing notable\u201d verdicts allowed\n\nBrevity is enforced, not emergent.\n\n14. Final Litmus Test (Non-Negotiable)\n\nA senior engineer reading the output should think:\n\n\u201cThis is exactly what I would have said \u2014\nand I trust it because it knows when not to speak.\u201d\n\nIf this fails, the implementation is incorrect.\n\n15. Why This Is Unreasonably Good\n\nIt prevents damage instead of producing noise\n\nIt encodes senior judgment, not heuristics\n\nIt refuses when evidence is insufficient\n\nIt is deterministic, auditable, and calm\n\nIt optimizes for decision safety, not activity",
+    "spec_format": "canonical_json_v1",
+    "spec_version": "0.0"
+  },
+  "state_reason": "ingested"
+}

@@ -1,0 +1,269 @@
+{
+  "conversion_state": "CONVERTIBLE",
+  "conversion_tier": "convertible",
+  "partial": true,
+  "spec_metadata": {
+    "normalized": true,
+    "product_id": "unknown",
+    "source_format": "json",
+    "source_material": {
+      "$schema": "https://shieldcraft.ai/schemas/se_dsl_v1.schema.json",
+      "agents": [
+        {
+          "id": "documentation_agent",
+          "input_schema": "schemas/spec.json",
+          "output_schema": "schemas/docs_manifest.json",
+          "resource_limits": {
+            "cpu": 1000,
+            "memory_mb": 1024
+          },
+          "responsibilities": [
+            "generate_product_docs",
+            "generate_architecture_docs",
+            "generate_api_docs"
+          ],
+          "timeout_seconds": 120,
+          "version": "v1"
+        },
+        {
+          "id": "verification_agent",
+          "input_schema": "schemas/artifacts_manifest.json",
+          "output_schema": "schemas/verification_report.json",
+          "resource_limits": {
+            "cpu": 2000,
+            "memory_mb": 2048
+          },
+          "responsibilities": [
+            "validate_against_contracts",
+            "run_deterministic_tests"
+          ],
+          "timeout_seconds": 300,
+          "version": "v1"
+        },
+        {
+          "id": "test_synthesis_agent",
+          "output_schema": "schemas/test_suite_manifest.json",
+          "resource_limits": {
+            "cpu": 2000,
+            "memory_mb": 2048
+          },
+          "responsibilities": [
+            "generate_unit_tests",
+            "generate_integration_tests",
+            "generate_snapshots"
+          ],
+          "timeout_seconds": 600,
+          "version": "v1"
+        },
+        {
+          "id": "patch_pr_agent",
+          "output_schema": "schemas/patch_manifest.json",
+          "resource_limits": {
+            "cpu": 1500,
+            "memory_mb": 1536
+          },
+          "responsibilities": [
+            "generate_patch",
+            "generate_rollback_patch"
+          ],
+          "timeout_seconds": 300,
+          "version": "v1"
+        },
+        {
+          "id": "architecture_agent",
+          "output_schema": "schemas/arch_manifest.json",
+          "resource_limits": {
+            "cpu": 1000,
+            "memory_mb": 1024
+          },
+          "responsibilities": [
+            "generate_diagrams",
+            "generate_dependency_graphs"
+          ],
+          "timeout_seconds": 180,
+          "version": "v1"
+        }
+      ],
+      "artifact_contract": {
+        "artifacts": [
+          {
+            "classification": "contractual",
+            "id": "product_spec",
+            "path": "spec/shieldcraft_engine.json"
+          },
+          {
+            "classification": "contractual",
+            "id": "architecture_contract",
+            "path": "architecture/contracts.json"
+          },
+          {
+            "classification": "near-contractual",
+            "id": "tests",
+            "path": "tests/"
+          },
+          {
+            "classification": "production_ready",
+            "id": "src",
+            "path": "src/"
+          },
+          {
+            "classification": "contractual",
+            "id": "evidence_bundle",
+            "path": "evidence/"
+          }
+        ],
+        "canonical_hash_algorithm": "sha256",
+        "sign_contractual_artifacts": true
+      },
+      "ci_contract": {
+        "required_jobs": [
+          "validate_schema",
+          "unit",
+          "integration",
+          "snapshot_verify",
+          "wasm",
+          "self_test",
+          "verify"
+        ],
+        "snapshot_determinism_enforced": true
+      },
+      "determinism": {
+        "canonical_json": true,
+        "float_precision": 6,
+        "hash_algorithm": "sha256",
+        "snapshot_runs": 3,
+        "timestamp_format": "UTC_ISO8601"
+      },
+      "error_contract": {
+        "canonical_error_fields": [
+          "code",
+          "message",
+          "context",
+          "trace_id"
+        ],
+        "categories": [
+          "determinism_violation",
+          "spec_invalid",
+          "agent_timeout",
+          "agent_failure",
+          "vendor_failure"
+        ],
+        "schema": "schemas/error.json"
+      },
+      "evidence_bundle": {
+        "provenance_required": true,
+        "retention_days": 365,
+        "schema": "schemas/evidence_bundle.json",
+        "signature_algorithm": "rsa-pss-sha256",
+        "signing_required": true
+      },
+      "generation_mappings": {
+        "components": [
+          {
+            "id": "agent_manifest",
+            "template": "templates/agent_manifest.j2"
+          },
+          {
+            "id": "pipeline_diagram",
+            "template": "templates/pipeline_diagram.mmd.j2"
+          },
+          {
+            "id": "governance_contract",
+            "template": "templates/governance.j2"
+          }
+        ],
+        "tasks": [
+          {
+            "agent": "documentation_agent",
+            "id": "generate_docs"
+          },
+          {
+            "agent": "test_synthesis_agent",
+            "id": "generate_tests"
+          },
+          {
+            "agent": "verification_agent",
+            "id": "verify"
+          }
+        ],
+        "trace": true
+      },
+      "metadata": {
+        "canonical_spec_hash": "",
+        "created_at_utc": "",
+        "description": "Deterministic software manufacturing engine with structured pipelines, canonical JSON DSL, strict schema governance, and agent-based artifact production. Designed to later support AI-augmented steps such as spec refinement, architecture synthesis, and test generation.",
+        "generator_version": ">=1.0,<2.0",
+        "language": "python",
+        "owner": "Deon Prinsloo",
+        "product_id": "shieldcraft_engine",
+        "product_name": "ShieldCraft Engine",
+        "spec_version": "1.0.0"
+      },
+      "observability": {
+        "logs_enabled": true,
+        "metrics": [
+          "determinism_failures",
+          "run_latency_ms",
+          "model_tokens_used",
+          "evidence_bundle_generated"
+        ],
+        "metrics_enabled": true
+      },
+      "pipeline": {
+        "states": [
+          "ingest_spec",
+          "validate_spec",
+          "run_agents",
+          "aggregate_results",
+          "verification",
+          "finalize",
+          "done"
+        ],
+        "transitions": [
+          {
+            "from": "ingest_spec",
+            "id": "t1",
+            "to": "validate_spec"
+          },
+          {
+            "from": "validate_spec",
+            "id": "t2",
+            "to": "run_agents"
+          },
+          {
+            "from": "run_agents",
+            "id": "t3",
+            "to": "aggregate_results"
+          },
+          {
+            "from": "aggregate_results",
+            "id": "t4",
+            "to": "verification"
+          },
+          {
+            "from": "verification",
+            "id": "t5",
+            "to": "finalize"
+          },
+          {
+            "from": "finalize",
+            "id": "t6",
+            "to": "done"
+          }
+        ]
+      },
+      "security": {
+        "allowed_paths": [
+          "src/",
+          "tests/",
+          "spec/"
+        ],
+        "no_external_calls": true,
+        "secrets_policy": "no_secrets_in_repo"
+      }
+    },
+    "spec_format": "canonical_json_v1",
+    "spec_version": "0.0"
+  },
+  "state_reason": "sections_empty"
+}

@@ -30,17 +30,7 @@ def test_selfhost_minimal_pipeline():
             "model": {
                 "version": "1.0"
             },
-            "sections": {
-                "bootstrap": {
-                    "description": "Bootstrap components",
-                    "loader": {
-                        "type": "loader_stage"
-                    },
-                    "engine": {
-                        "type": "engine_stage"
-                    }
-                }
-            }
+            "sections": [{"id": "bootstrap","description": "Bootstrap components","loader": {"type": "loader_stage"},"engine": {"type": "engine_stage"}}]
         }
         json.dump(spec, tmp)
         tmp_path = tmp.name
@@ -92,11 +82,7 @@ def test_selfhost_no_missing_pointer_errors():
                 "self_host": True
             },
             "model": {"version": "1.0"},
-            "sections": {
-                "core": {
-                    "description": "Core components"
-                }
-            }
+            "sections": [{"id": "core", "description": "Core components"}]
         }
         json.dump(spec, tmp)
         tmp_path = tmp.name
@@ -137,7 +123,7 @@ def test_selfhost_stability_check():
                 "self_host": True
             },
             "model": {"version": "1.0"},
-            "sections": {}
+            "sections": [{"id": "core"}]
         }
         json.dump(spec, tmp)
         tmp_path = tmp.name

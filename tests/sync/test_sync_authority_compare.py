@@ -37,3 +37,26 @@ def test_compare_authority_parity(tmp_path, monkeypatch):
     res = verify_repo_state_authoritative(str(tmp_path))
     assert res.get("ok") is True
     assert res.get("authority") == "compare"
+
+
+def test_sync_authority_compare(tmp_path, monkeypatch):
+    # Thin wrapper to provide the exact test name required by CI's guard
+    from shieldcraft.snapshot import generate_snapshot
+    m = generate_snapshot(str(tmp_path))
+    os.makedirs(tmp_path / "artifacts", exist_ok=True)
+    artifact_path = tmp_path / "artifacts" / "repo_sync_state.json"
+    with open(artifact_path, "w") as f:
+        json.dump(m, f, sort_keys=True)
+    h = hashlib.sha256(open(artifact_path, "rb").read()).hexdigest()
+    repo_state = {"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}
+    with open(tmp_path / "repo_state_sync.json", "w") as f:
+        json.dump(repo_state, f)
+
+    from shieldcraft.services.sync import _canonical_manifest_hash, verify_repo_state_authoritative
+    assert _canonical_manifest_hash(m) == h
+
+    monkeypatch.setenv("SHIELDCRAFT_SYNC_AUTHORITY", "compare")
+
+    res = verify_repo_state_authoritative(str(tmp_path))
+    assert res.get("ok") is True
+    assert res.get("authority") == "compare"

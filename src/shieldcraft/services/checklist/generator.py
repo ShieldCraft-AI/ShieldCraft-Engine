@@ -42,7 +42,7 @@ class ChecklistGenerator:
     def normalize_item(self, item):
         return self.model.normalize_item(item)
 
-    def build(self, spec, schema=None, ast=None):
+    def build(self, spec, schema=None, ast=None, dry_run: bool = False, run_fuzz: bool = False, run_test_gate: bool = False, engine=None, interpreted_items=None):
         import json
         import os
         import hashlib
@@ -92,6 +92,18 @@ class ChecklistGenerator:
             from shieldcraft.services.ast.builder import ASTBuilder
             ast_builder = ASTBuilder()
             ast = ast_builder.build(spec)
+
+        # Run speculative spec fuzzing gate to detect ambiguity/contradiction
+        if run_fuzz:
+            try:
+                from shieldcraft.services.validator.spec_gate import enforce_spec_fuzz_stability
+                enforce_spec_fuzz_stability(spec, self)
+            except RuntimeError:
+                # Halt generation immediately on detected spec failures
+                raise
+            except Exception:
+                # Non-fatal: if fuzzing/gate unavailable, continue
+                pass
         
         # Build lineage map from AST
         lineage_map = get_lineage_map(ast)
@@ -109,12 +121,41 @@ class ChecklistGenerator:
                 if node:
                     item["source_node_type"] = node.type
             else:
-                # Fail if missing lineage_id
-                raise ValueError(f"Missing lineage_id for item at pointer: {ptr}")
+                # For interpreted items, we may set ptr to '/' to avoid missing lineage
+                if item.get("origin") == "interpreted":
+                    item["ptr"] = item.get("ptr", "/") or "/"
+                    if item["ptr"] in lineage_map:
+                        item["lineage_id"] = lineage_map[item["ptr"]]
+                        item["source_node_type"] = "interpreted"
+                    else:
+                        # As a last resort attach a synthetic lineage id
+                        item["lineage_id"] = f"interpreted:{item.get('id')}"
+                        item["source_node_type"] = "interpreted"
+                else:
+                    # Fail if missing lineage_id
+                    raise ValueError(f"Missing lineage_id for item at pointer: {ptr}")
         
         # Add constraint tasks
         constraint_items = propagate_constraints(spec)
         raw_items.extend(constraint_items)
+
+        # Merge interpreted items (if any) into raw_items early in the pipeline
+        if interpreted_items:
+            for it in interpreted_items:
+                # Map interpreted ChecklistItem v1 to internal raw item shape
+                ri = {
+                    "ptr": it.get("evidence_ref", {}).get("ptr") or "/",
+                    "id": str(it.get("id") or _det_hash(it.get("claim", "")[:24])),
+                    "text": it.get("claim") or it.get("obligation"),
+                    "origin": {"source": "interpreted"},
+                    "obligation": it.get("obligation"),
+                    "claim": it.get("claim"),
+                    "risk_if_false": it.get("risk_if_false"),
+                    "confidence": it.get("confidence"),
+                    "evidence_ref": it.get("evidence_ref"),
+                    "meta": {},
+                }
+                raw_items.append(ri)
         
         # Add semantic validation tasks
         semantic_items = semantic_validations(spec)
@@ -158,7 +199,18 @@ class ChecklistGenerator:
         for it in final_items:
             it["order_rank"] = assign_order_rank(it)
         
-        # Synthesize IDs with namespace
+        # Annotate items with guidance before synthesizing a final stable id
+        try:
+            from shieldcraft.services.guidance.checklist import annotate_items, enrich_with_confidence_and_evidence
+            annotate_items(final_items)
+            try:
+                final_items = enrich_with_confidence_and_evidence(final_items, spec)
+            except Exception:
+                pass
+        except Exception:
+            pass
+
+        # Synthesize IDs with namespace using enriched intent/evidence so ids remain stable
         namespace = spec.get("metadata", {}).get("id_namespace", "default")
         for it in final_items:
             it["id"] = synthesize_id(it, namespace)
@@ -293,6 +345,35 @@ class ChecklistGenerator:
         # Add derived tasks to main list
         final_items.extend(all_derived)
         
+        # Ensure interpreted items persist: append any interpreted_items not present
+        try:
+            if interpreted_items:
+                existing_ids = {it.get("id") for it in final_items if it.get("id")}
+                for uit in interpreted_items:
+                    uid = str(uit.get("id"))
+                    if uid in existing_ids:
+                        continue
+                    # Create an item from interpreted ChecklistItem v1
+                    conf = (uit.get("confidence") or "low").lower()
+                    sev = "low" if conf == "low" else ("high" if conf == "high" else "medium")
+                    new_it = {
+                        "id": uid,
+                        "ptr": uit.get("evidence_ref", {}).get("ptr") or "/",
+                        "text": uit.get("claim") or uit.get("obligation"),
+                        "origin": {"source": "interpreted"},
+                        "claim": uit.get("claim"),
+                        "obligation": uit.get("obligation"),
+                        "risk_if_false": uit.get("risk_if_false"),
+                        "confidence": conf,
+                        "severity": sev,
+                        "meta": {},
+                        "category": "misc",
+                        "classification": "core",
+                    }
+                    final_items.append(new_it)
+        except Exception:
+            pass
+
         # Attach metadata
         product_id = spec.get("metadata", {}).get("product_id", "unknown")
         decorated = []
@@ -304,6 +385,18 @@ class ChecklistGenerator:
         
         # Cross-item validation
         decorated, validation_warnings = validate_cross_item_constraints(decorated)
+
+        # Annotate checklist items deterministically (no change to order)
+        try:
+            from shieldcraft.services.guidance.checklist import annotate_items, enrich_with_confidence_and_evidence
+            annotate_items(decorated)
+            # Add confidence & evidence metadata to items (enriches provenance without changing behavior)
+            try:
+                decorated = enrich_with_confidence_and_evidence(decorated, spec)
+            except Exception:
+                pass
+        except Exception:
+            pass
         
         # Group items
         grouped = group_items(decorated)
@@ -318,12 +411,70 @@ class ChecklistGenerator:
         if schema is None:
             schema = {"type": "object"}  # default minimal schema
         preflight = run_preflight(spec, schema, decorated)
-        
-        # Write preflight report
-        pre_path = f"products/{product_id}/checklist/preflight.json"
-        os.makedirs(os.path.dirname(pre_path), exist_ok=True)
-        write_canonical_json(pre_path, preflight)
-        
+        # Enforce that checklist items have attached, valid tests (halt if not)
+        if run_test_gate:
+            try:
+                from shieldcraft.services.validator.test_gate import enforce_tests_attached
+                enforce_tests_attached(decorated)
+            except RuntimeError:
+                # Halt generation immediately if tests missing or invalid
+                raise
+            except Exception:
+                # Non-fatal: if test gate unavailable, continue
+                pass
+
+        # Optionally attach candidate test refs for items (non-authoritative)
+        # Before expanding tests, allow personas to evaluate and constrain/veto items
+        try:
+            if engine is not None and getattr(engine, "persona_enabled", False):
+                from shieldcraft.persona.persona_registry import find_personas_for_phase
+                from shieldcraft.persona.persona_evaluator import evaluate_personas
+                from shieldcraft.services.validator.persona_gate import enforce_persona_veto
+
+                personas = find_personas_for_phase("checklist")
+                persona_res = evaluate_personas(engine, personas, decorated, phase="checklist")
+                # Apply persona constraints in the engine-controlled scope deterministically
+                for c in persona_res.get("constraints", []):
+                    iid = c.get("item_id")
+                    setter = c.get("set", {})
+                    # Find matching item and apply permitted setters
+                    for item in decorated:
+                        if item.get("id") == iid:
+                            for sk, sv in setter.items():
+                                if sk == "meta":
+                                    item.setdefault("meta", {}).setdefault("persona_constraints_applied", []).append({"persona": c.get("persona"), "set": sv})
+                                else:
+                                    item[sk] = sv
+                # Enforce vetoes if any persona emitted a veto
+                enforce_persona_veto(engine)
+        except RuntimeError:
+            raise
+        except Exception:
+            # Do not let persona evaluation failures break checklist generation
+            pass
+
+        try:
+            from shieldcraft.verification.test_expander import expand_tests_for_item
+            from shieldcraft.verification.test_registry import discover_tests
+            test_map = discover_tests()
+            for it in decorated:
+                exp = expand_tests_for_item(it, test_map)
+                if exp.get("candidates"):
+                    it.setdefault("meta", {})["candidate_tests"] = exp.get("candidates")
+        except Exception:
+            pass
+        # Determinism marker: if a run seed exists, attach a small per-item marker
+        try:
+            from shieldcraft.verification.seed_manager import get_seed
+            if engine is not None:
+                run_seed = get_seed(engine, "run")
+                if run_seed:
+                    for it in decorated:
+                        sm = __import__("hashlib").sha256((run_seed + ":" + it.get("id", "")).encode("utf-8")).hexdigest()[:8]
+                        it.setdefault("meta", {})["determinism_marker"] = sm
+        except Exception:
+            pass
+
         plan = ExecutionPlan(decorated)
         plan.stage_pass1(decorated)
 
@@ -362,6 +513,12 @@ class ChecklistGenerator:
         
         # Build evidence
         evidence = build_evidence_bundle(product_id, decorated, rollups)
+        # Ensure every item has confidence, evidence, inferred flags and intent category
+        try:
+            from shieldcraft.services.guidance.checklist import ensure_item_fields
+            decorated = ensure_item_fields(decorated)
+        except Exception:
+            pass
         
         # Check invariants
         inv_ok, inv_violations = check_invariants({
@@ -436,6 +593,23 @@ class ChecklistGenerator:
                 "dependency_violations": dep_viol,
                 "execution_plan": exec_plan
             }
+            try:
+                if engine is not None:
+                    from shieldcraft.verification.seed_manager import snapshot
+                    try:
+                        from shieldcraft.services.governance.determinism import DeterminismEngine
+                        de = DeterminismEngine()
+                        ast_summary = []
+                        try:
+                            ast_summary = sorted([n.ptr for n in ast.walk()])
+                        except Exception:
+                            ast_summary = []
+                        ast_fp = de.hash(de.canonicalize(ast_summary))
+                        result["_determinism"] = {"seeds": snapshot(engine), "spec": spec, "ast_summary": ast_fp, "checklist": result}
+                    except Exception:
+                        result["_determinism"] = {"seeds": snapshot(engine), "spec": spec, "ast_summary": None, "checklist": result}
+            except Exception:
+                pass
             return result
 
         result = {
@@ -458,11 +632,31 @@ class ChecklistGenerator:
         }
         
         # Write manifest
-        write_manifest(product_id, result)
+        if not dry_run:
+            write_manifest(product_id, result)
         
         # Compute stability
         signature = compute_run_signature(result)
         result["stable"] = compare_to_previous(product_id, signature)
+        # Attach determinism snapshot if engine provided
+        try:
+            if engine is not None:
+                from shieldcraft.verification.seed_manager import snapshot
+                try:
+                    # Avoid storing non-serializable AST objects; record a lightweight AST summary hash instead
+                    from shieldcraft.services.governance.determinism import DeterminismEngine
+                    de = DeterminismEngine()
+                    ast_summary = []
+                    try:
+                        ast_summary = sorted([n.ptr for n in ast.walk()])
+                    except Exception:
+                        ast_summary = []
+                    ast_fp = de.hash(de.canonicalize(ast_summary))
+                    result["_determinism"] = {"seeds": snapshot(engine), "spec": spec, "ast_summary": ast_fp, "checklist": result}
+                except Exception:
+                    pass
+        except Exception:
+            pass
         
         return result
 

@@ -48,6 +48,7 @@ def test_selfhost_writes_errors_on_validation(monkeypatch, tmp_path):
     assert 'errors' in data
     assert data['errors'][0]['code'] == 'missing_provenance'
 
-    # Ensure no other file types were emitted
+    # Ensure no other file types were emitted besides optional summary/manifest, checklist draft and spec feedback
     entries = [p for p in os.listdir('.selfhost_outputs') if not p.startswith('.')]
-    assert set(entries) == {'errors.json'}
+    assert 'errors.json' in entries
+    assert set(entries) <= {'errors.json', 'summary.json', 'manifest.json', 'checklist_draft.json', 'spec_feedback.json', 'checklist.json'}

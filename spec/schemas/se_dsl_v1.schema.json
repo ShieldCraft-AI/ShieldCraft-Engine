@@ -186,5 +186,19 @@
         "trace": { "type": "boolean" }
       }
     }
+    ,
+    "definitions": {
+      "checklist_item": {
+        "type": "object",
+        "required": ["test_refs"],
+        "properties": {
+          "test_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
   }
 }

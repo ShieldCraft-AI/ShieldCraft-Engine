@@ -157,6 +157,19 @@ class Engine:
                 pass
             raise
 
+        # Verification spine hook (non-invasive): validate registered verification
+        # properties for well-formedness. This must not alter preflight outcome
+        # unless verification properties are malformed (reported as verification_failed).
+        try:
+            from shieldcraft.verification import registry as _vreg, assertions as _vassert
+            props = _vreg.global_registry().get_all()
+            _vassert.assert_verification_properties(props)
+        except RuntimeError as e:
+            raise RuntimeError("verification_failed") from e
+        except Exception:
+            # Do not change preflight behavior if verification spine is unavailable
+            pass
+
         # Ensure validation recorded deterministically
         if isinstance(spec, dict) and "instructions" in spec:
             fp = compute_spec_fingerprint(spec)
@@ -176,6 +189,36 @@ class Engine:
         except Exception:
             # Observability must not alter behavior if failing
             pass
+        # Enforce Test Attachment Contract (TAC v1) before finishing preflight
+        # This enforcement is opt-in to avoid breaking existing callers; enable
+        # via env var `SHIELDCRAFT_ENFORCE_TEST_ATTACHMENT=1` or by setting
+        # `metadata.enforce_tests_attached` in the spec. Tests that validate
+        # TAC should set the env var explicitly.
+        try:
+            enforce_flag = os.getenv("SHIELDCRAFT_ENFORCE_TEST_ATTACHMENT", "0") == "1"
+            spec_enforce = isinstance(spec, dict) and spec.get("metadata", {}).get("enforce_tests_attached", False)
+            if enforce_flag or spec_enforce:
+                from shieldcraft.services.validator.tests_attached_validator import verify_tests_attached, ProductInvariantFailure
+                # Build a dry-run checklist to inspect test_refs (non-emitting)
+                try:
+                    from shieldcraft.services.ast.builder import ASTBuilder
+                    ast_local = ASTBuilder().build(spec)
+                except Exception:
+                    ast_local = None
+                checklist_preview = None
+                try:
+                    checklist_preview = self.checklist_gen.build(spec, ast=ast_local, dry_run=True, run_test_gate=False, engine=self)
+                except Exception:
+                    # If checklist generation itself fails, surface as preflight failure
+                    raise RuntimeError("checklist_generation_failed")
+                # Now verify TAC
+                verify_tests_attached(checklist_preview)
+        except ProductInvariantFailure:
+            # Re-raise to allow caller to see the structured failure
+            raise
+        except Exception:
+            # Any unexpected check failure is surfaced as a preflight failure
+            raise RuntimeError("tests_attached_check_failed")
         try:
             from shieldcraft.observability import emit_state
             emit_state(self, "preflight", "preflight", "ok")
@@ -194,7 +237,9 @@ class Engine:
         accidental bypasses.
         """
         if not isinstance(spec, dict):
-            return
+            # Ensure non-dict specs surface as structured validation failures
+            from shieldcraft.services.validator import ValidationError, SPEC_NOT_DICT
+            raise ValidationError(SPEC_NOT_DICT, "spec must be a dict")
 
         # Verify repo sync first (non-bypassable) for all runs.
         # Use the authoritative sync decision point so we have a single
@@ -302,7 +347,40 @@ class Engine:
         write_canonical_json(f"{plan_dir}/plan.json", plan)
         
         # Generate checklist using AST
-        checklist = self.checklist_gen.build(spec, ast=ast)
+        # Ensure a deterministic run seed is recorded and available to subsystems
+        try:
+            from shieldcraft.verification.seed_manager import generate_seed, snapshot
+            generate_seed(self, "run")
+        except Exception:
+            pass
+
+        checklist = self.checklist_gen.build(spec, ast=ast, engine=self)
+
+        # Attach determinism snapshot for replayability
+        try:
+            from shieldcraft.verification.seed_manager import snapshot
+            det = snapshot(self)
+            checklist["_determinism"] = {"seeds": det, "spec": spec, "ast": ast, "checklist": checklist}
+        except Exception:
+            pass
+        # Evaluate readiness based on verification gates and attach report
+        try:
+            from shieldcraft.verification.readiness_evaluator import evaluate_readiness
+            from shieldcraft.verification.readiness_report import render_readiness
+            readiness = evaluate_readiness(self, spec, checklist)
+            checklist_readiness = readiness
+            checklist["_readiness"] = checklist_readiness
+            checklist["_readiness_report"] = render_readiness(readiness)
+            # Emit observable readiness state
+            try:
+                from shieldcraft.observability import emit_state
+                emit_state(self, "readiness", "readiness", "ok" if readiness.get("ok") else "fail", str(readiness.get("results")))
+            except Exception:
+                pass
+        except Exception:
+            # If readiness evaluation fails, mark as not ready and attach minimal info
+            checklist["_readiness"] = {"ok": False, "results": {"readiness_eval": {"ok": False}}}
+            checklist["_readiness_report"] = "Readiness evaluation failed"
         
         return {"spec": spec, "ast": ast, "checklist": checklist, "plan": plan}
 
@@ -364,7 +442,7 @@ class Engine:
 
             # Build AST and checklist
             ast = self.ast.build(spec)
-            checklist = self.checklist_gen.build(spec, ast=ast)
+            checklist = self.checklist_gen.build(spec, ast=ast, engine=self)
             
             # Filter bootstrap category items
             bootstrap_items = [
@@ -543,6 +621,76 @@ class Engine:
                 emit_state(self, "self_host", "self_host", "ok")
             except Exception:
                 pass
+
+            # Post-processing: enforce minimality and execution-plan invariants
+            try:
+                # Prefer persisted canonical requirements if available, else extract from spec
+                try:
+                    reqs = json.load(open(os.path.join(output_dir, 'requirements.json'))).get('requirements', [])
+                except Exception:
+                    try:
+                        reqs = json.load(open(os.path.join('.selfhost_outputs', 'requirements.json'))).get('requirements', [])
+                    except Exception:
+                        from shieldcraft.interpretation.requirements import extract_requirements
+                        rtxt = spec.get('metadata', {}).get('source_material') or spec.get('raw_input') or json.dumps(spec, sort_keys=True)
+                        # ensure string input for extractor
+                        if not isinstance(rtxt, str):
+                            import json as _json
+                            rtxt = _json.dumps(rtxt, sort_keys=True)
+                        reqs = extract_requirements(rtxt)
+                # Use in-memory checklist when available (deterministic), fallback to persisted
+                items = checklist.get('items', []) or json.load(open(os.path.join('.selfhost_outputs', 'checklist.json'))).get('items', [])
+                valid_items = [it for it in items if it.get('quality_status') != 'INVALID']
+
+                # Collapse redundant items deterministically and fail on invariant violations
+                from shieldcraft.checklist.equivalence import detect_and_collapse
+                pruned_items, minimality_report = detect_and_collapse(valid_items, reqs)
+                violations = [p for p in minimality_report.get('proof_of_minimality', []) if not p.get('necessary')]
+                if violations:
+                    manifest['checklist_minimality_summary'] = {
+                        'removed_count': minimality_report.get('removed_count', 0),
+                        'equivalence_groups': len(minimality_report.get('equivalence_groups', [])),
+                        'violations': violations,
+                    }
+                    raise RuntimeError('minimality_invariant_failed')
+
+                # Persist pruned checklist to both fingerprinted output and root outputs
+                with open(os.path.join(output_dir, 'checklist.json'), 'w', encoding='utf8') as _cf:
+                    json.dump({'items': pruned_items}, _cf, indent=2, sort_keys=True)
+                with open(os.path.join('.selfhost_outputs', 'checklist.json'), 'w', encoding='utf8') as _cfroot:
+                    json.dump({'items': pruned_items}, _cfroot, indent=2, sort_keys=True)
+
+                # Build execution plan and enforce executability
+                from shieldcraft.checklist.dependencies import infer_item_dependencies
+                from shieldcraft.checklist.execution_graph import build_execution_plan
+                from shieldcraft.requirements.coverage import compute_coverage
+
+                covers = compute_coverage(reqs, pruned_items)
+                # persist sequence artifact (build_sequence writes to outdir)
+                try:
+                    from shieldcraft.checklist.dependencies import build_sequence
+                    build_sequence(pruned_items, infer_item_dependencies(reqs, covers), outdir='.selfhost_outputs')
+                except Exception:
+                    pass
+                inferred = infer_item_dependencies(reqs, covers)
+                plan = build_execution_plan(pruned_items, inferred)
+                manifest['checklist_execution_plan'] = {'ordered_item_count': len(plan.get('ordered_item_ids', [])), 'cycle_groups': plan.get('cycles', {}), 'missing_artifacts': plan.get('missing_artifacts', []), 'priority_violations': plan.get('priority_violations', [])}
+
+                if plan.get('cycles'):
+                    raise RuntimeError('execution_cycle_detected')
+                if plan.get('missing_artifacts'):
+                    raise RuntimeError('missing_artifact_producer')
+                if plan.get('priority_violations'):
+                    raise RuntimeError('priority_violation_detected')
+
+                order_map = {nid: idx + 1 for idx, nid in enumerate(plan.get('ordered_item_ids', []))}
+                for it in pruned_items:
+                    it['execution_order'] = order_map.get(it.get('id'))
+                with open(os.path.join(output_dir, 'checklist.json'), 'w', encoding='utf8') as _cf2:
+                    json.dump({'items': pruned_items}, _cf2, indent=2, sort_keys=True)
+            except Exception:
+                # Propagate fatal errors to caller
+                raise
 
             return {
                 "fingerprint": fingerprint,

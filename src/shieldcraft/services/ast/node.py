@@ -11,6 +11,8 @@ class Node:
         self.ptr = ptr  # json pointer to original spec location
         self.parent_ptr = None  # Non-cyclic parent reference
         self.lineage_id = None  # SHA256 of pointer + type
+        self.spec_id = None  # Stable spec identifier for clause-level tracing
+        self.clause_type = None  # Semantic clause type (requirement/forbid/etc)
 
     def add(self, child):
         self.children.append(child)
@@ -25,7 +27,39 @@ class Node:
         pointer = self.to_pointer()
         lineage_string = f"{pointer}:{self.type}"
         self.lineage_id = hashlib.sha256(lineage_string.encode()).hexdigest()
+        # Also compute a stable spec identifier for traceability
+        self.compute_spec_id()
+        # Infer clause type for higher-level verification
+        self.infer_clause_type()
         return self.lineage_id
+
+    def compute_spec_id(self):
+        """Compute a stable spec identifier based on pointer and node content."""
+        pointer = self.to_pointer()
+        base = pointer
+        if isinstance(self.value, dict) and "id" in self.value:
+            base = f"{pointer}:{self.value.get('id')}"
+        spec_str = f"spec:{base}"
+        self.spec_id = hashlib.sha256(spec_str.encode()).hexdigest()
+        return self.spec_id
+
+    def infer_clause_type(self):
+        """Infer clause type from node type or explicit metadata."""
+        # If explicitly provided in value, prefer that
+        if isinstance(self.value, dict) and "clause_type" in self.value:
+            self.clause_type = self.value.get("clause_type")
+            return self.clause_type
+
+        # Derive from node type heuristics
+        t = (self.type or "").lower()
+        if "require" in t or "must" in t:
+            self.clause_type = "requirement"
+        elif "forbid" in t or "forbid" in (str(self.value) or ""):
+            self.clause_type = "forbid"
+        else:
+            self.clause_type = "clause"
+
+        return self.clause_type
     
     def find(self, pointer):
         """Find node by JSON pointer."""

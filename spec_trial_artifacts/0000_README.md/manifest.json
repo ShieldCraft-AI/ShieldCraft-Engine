@@ -1,0 +1,14 @@
+{
+  "conversion_state": "CONVERTIBLE",
+  "conversion_tier": "convertible",
+  "partial": true,
+  "spec_metadata": {
+    "normalized": true,
+    "product_id": "unknown",
+    "source_format": "text",
+    "source_material": "# ShieldCraft Engine Spec\n\nThis folder contains canonical SE DSL v1 spec and schema. Use canonical JSON rules.\n\n## Files\n\n- `se_dsl_v1.spec.json` - Canonical spec for ShieldCraft Engine\n- `pointer_map.json` - Task ID to JSON Pointer mapping\n- `schemas/` - JSON Schema definitions\n\n## Canonical JSON Rules\n\n- Sort keys alphabetically\n- Use 2-space indentation\n- No trailing whitespace\n- UTF-8 encoding\n- Unix line endings (LF)\n\n## Self-Host Dry-Run\n\nTo run self-host dry-run with bootstrap spec:\n\n```bash\npython -m src.shieldcraft.engine \\\n  --self-host \\\n  --spec examples/selfhost/bootstrap_spec.json \\\n  --dry-run \\\n  --emit-preview artifacts/selfhost_preview.json\n```\n\nTo validate the generated preview:\n\n```bash\npython -c \"from src.shieldcraft.services.selfhost.preview_validator import validate_preview; import json; preview = json.load(open('artifacts/selfhost_preview.json')); print(validate_preview(preview))\"\n```\n\n## Canonical JSON Support\n\nCanonical JSON is now supported via `src/shieldcraft/dsl/loader.py`. Specs with `canonical: true` or `canonical_spec_hash` in metadata will be loaded using the canonical loader which enforces deterministic JSON rules.\n\nSee `ci/selfhost_dryrun.yml` for CI integration.\n",
+    "spec_format": "canonical_json_v1",
+    "spec_version": "0.0"
+  },
+  "state_reason": "sections_empty"
+}

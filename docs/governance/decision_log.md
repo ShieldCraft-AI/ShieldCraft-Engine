@@ -36,3 +36,15 @@ Authoritative decisions made on 2025-12-13 (Phase 13 kickoff). All decisions rec
 - All RFCs above are provided with explicit decisions and rationale. There are no implicit approvals.
 - Deferred RFCs: None.
 
+## TAC_OPT_IN_V1
+- Decision: LOCKED
+- Rationale:
+	- Early specs must be allowed to run without full test binding.
+	- TAC is a quality accelerator, not a bootstrap blocker.
+	- Spec-driven enforcement remains available when explicitly enabled.
+- Mechanism:
+	- Environment flag: `SHIELDCRAFT_ENFORCE_TEST_ATTACHMENT=1`
+	- Spec flag: `metadata.enforce_tests_attached=true`
+- Effective scope: Implementation-level (engine preflight enforcement)
+- Status: LOCKED
+

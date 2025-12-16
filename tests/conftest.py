@@ -2,6 +2,17 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
+def clear_persona_registry():
+    # Ensure persona registry does not leak across tests
+    from shieldcraft.persona.persona_registry import clear_registry
+    try:
+        yield
+    finally:
+        clear_registry()
+import pytest
+
+
+@pytest.fixture(autouse=True)
 def default_external_sync(monkeypatch):
     """Default test environment: prefer legacy external sync unless a test overrides.
 

@@ -31,7 +31,7 @@ def canonicalize_json(data, float_precision=2):
         try:
             dt = datetime.fromisoformat(data.replace('Z', '+00:00'))
             return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
-        except:
+        except ValueError:
             return data
     else:
         return data
@@ -103,7 +103,7 @@ def load_canonical_spec(path: str):
     canonical_data = canonicalize_json(raw_data, float_precision)
     
     # Step 3c: Validate canonical rules
-    ok, issues = validate_canonical_rules(canonical_data)
+    ok = validate_canonical_rules(canonical_data)[0]
     if not ok:
         # Auto-fix by using canonicalized version
         pass  # Already canonicalized
@@ -118,10 +118,13 @@ def load_canonical_spec(path: str):
         try:
             schema = json.loads(schema_path.read_text())
             validate(canonical_data, schema)
-        except Exception:
+        except (json.JSONDecodeError, ImportError, AttributeError, TypeError, ValueError) as e:
             # INTENTIONAL: Skip validation errors for canonical specs.
             # Canonical specs may have extended structure beyond base schema.
             # Validation is advisory only during canonical loading.
+            pass
+        except RuntimeError:
+            # Catch any other unexpected runtime exception, but this should be rare.
             pass
     
     # Step 5: Build AST

@@ -1,0 +1,30 @@
+{
+  "conversion_state": "CONVERTIBLE",
+  "conversion_tier": "convertible",
+  "partial": true,
+  "spec_metadata": {
+    "normalized": true,
+    "product_id": "unknown",
+    "source_format": "json",
+    "source_material": {
+      "ast_construction.build_nodes": "/sections/1/tasks/0",
+      "ast_construction.check_completeness": "/sections/1/tasks/1",
+      "checklist_generation.dependency": "/sections/2/tasks/2",
+      "checklist_generation.extract": "/sections/2/tasks/0",
+      "checklist_generation.invariants": "/sections/2/tasks/3",
+      "checklist_generation.rollup": "/sections/2/tasks/4",
+      "checklist_generation.semantic": "/sections/2/tasks/1",
+      "code_generation.emit_bootstrap": "/sections/3/tasks/1",
+      "code_generation.emit_modules": "/sections/3/tasks/0",
+      "governance.determinism": "/sections/4/tasks/0",
+      "governance.evidence_bundle": "/sections/4/tasks/1",
+      "manifest.sign": "/sections/5/tasks/1",
+      "manifest.write": "/sections/5/tasks/0",
+      "spec_ingestion.fingerprint": "/sections/0/tasks/1",
+      "spec_ingestion.validate_schema": "/sections/0/tasks/0"
+    },
+    "spec_format": "canonical_json_v1",
+    "spec_version": "0.0"
+  },
+  "state_reason": "sections_empty"
+}

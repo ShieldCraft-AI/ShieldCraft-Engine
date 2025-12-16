@@ -118,4 +118,14 @@ def is_allowed_selfhost_input(spec: dict) -> bool:
     if not isinstance(spec, dict):
         return False
     extra = set(spec.keys()) - ALLOWED_SELFHOST_INPUT_KEYS
-    return len(extra) == 0
+    # Allow a deterministic ingestion envelope produced by `ingest_spec` which
+    # uses the keys `metadata` and `raw_input`. Only accept the envelope when
+    # it was explicitly normalized (metadata.normalized == True) to avoid
+    # relaxing the allowlist for arbitrary inputs.
+    if len(extra) == 0:
+        return True
+    if extra == {"raw_input"}:
+        md = spec.get("metadata")
+        if isinstance(md, dict) and md.get("normalized") is True:
+            return True
+    return False

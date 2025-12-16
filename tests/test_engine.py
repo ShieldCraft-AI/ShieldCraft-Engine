@@ -10,7 +10,7 @@ def test_engine_pipeline():
     tmp.write(json.dumps({
         "metadata": {"product_id": "t", "version": "1", "spec_format": "canonical_json_v1"},
         "model": {"version": "1.0"},
-        "sections": {"s": {"description": "x", "fields": {"a": 1}}}
+        "sections": [{"id": "s", "description": "x", "fields": {"a": 1}}]
     }).encode())
     tmp.close()
 

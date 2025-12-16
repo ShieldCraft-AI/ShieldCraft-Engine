@@ -17,11 +17,7 @@ def test_basic_selfhost_pipeline():
                 "self_host": True
             },
             "model": {"version": "1.0"},
-            "sections": {
-                "bootstrap": {
-                    "description": "Bootstrap components"
-                }
-            }
+            "sections": [{"id": "bootstrap", "description": "Bootstrap components"}]
         }
         json.dump(spec, tmp)
         tmp_path = tmp.name
@@ -55,7 +51,7 @@ def test_selfhost_output_structure():
                 "spec_format": "canonical_json_v1"
             },
             "model": {"version": "1.0"},
-            "sections": {}
+            "sections": [{"id": "core"}]
         }
         json.dump(spec, tmp)
         tmp_path = tmp.name
@@ -86,7 +82,7 @@ def test_selfhost_isolation():
                 "spec_format": "canonical_json_v1"
             },
             "model": {},
-            "sections": {}
+            "sections": [{"id": "core"}]
         }
         json.dump(spec, tmp)
         tmp_path = tmp.name

@@ -117,6 +117,33 @@ def write_manifest(product_id, result):
         "metrics": spec_metrics,
         "pointer_coverage_summary": pointer_coverage_summary
     }
+    # Include checklist preview summary for quick inspection
+    try:
+        checklist_items = items or []
+        data["checklist_preview_items"] = len(checklist_items)
+        summary = []
+        for it in checklist_items[:5]:
+            summary.append({
+                "id": it.get("id"),
+                "claim": it.get("claim") or it.get("text") or it.get("description")
+            })
+        # Keep this as a preview-specific summary to avoid clashing with
+        # higher-level guidance-produced `checklist_summary` structure.
+        data["checklist_preview_summary"] = summary
+    except Exception:
+        # Non-fatal: do not block manifest emission
+        pass
+    # Enforce persona guard before writing any artifacts
+    try:
+        from shieldcraft.services.governance.persona_guard import enforce_manifest_emission_ok
+        enforce_manifest_emission_ok()
+    except RuntimeError:
+        # Re-raise persona guard halting error to caller
+        raise
+    except Exception:
+        # Non-fatal: do not block manifest if guard cannot be evaluated
+        pass
+
     path = f"products/{product_id}/manifest.json"
     os.makedirs(os.path.dirname(path), exist_ok=True)
     write_canonical_json(path, data)
@@ -146,7 +173,14 @@ def write_manifest_v2(manifest, outdir, dry_run=False, codegen_bundle_hash=None)
     
     # Write files
     os.makedirs(outdir, exist_ok=True)
-    
+    # Enforce persona guard before writing any artifacts
+    try:
+        from shieldcraft.services.governance.persona_guard import enforce_manifest_emission_ok
+        enforce_manifest_emission_ok()
+    except RuntimeError:
+        raise
+    except Exception:
+        pass
     # Write manifest.json (canonical JSON)
     manifest_path = os.path.join(outdir, "manifest.json")
     write_canonical_json(manifest_path, manifest)

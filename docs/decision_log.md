@@ -41,4 +41,3 @@ Authoritative decisions made on 2025-12-13 (Phase 13 kickoff). All decisions rec
 ## Audit: Check for unambiguous decision status
 - All RFCs above are provided with explicit decisions and rationale. There are no implicit approvals.
 - Deferred RFCs: None.
-
