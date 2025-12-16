@@ -21,3 +21,8 @@ Next steps
 1. Add CI generation step to produce `src/generated` outputs prior to tests.  
 2. Add a regression test that runs generation twice and asserts `codegen_bundle_hash` equality.  
 3. After CI and test guards are in place, delete `src/generated` from the repository in a normal commit (no history rewrite).
+  
+Enforcement
+-----------
+- A CI guard will run on pushes and PRs and fail the job if any files under `src/generated/` are committed.  
+- Local developers should not commit generated outputs; instead run the local generation step when needed for debugging or demos: `python -m src.shieldcraft.engine --self-host --spec spec/se_dsl_v1.spec.json --dry-run --emit-preview .selfhost_outputs/selfhost_preview.json`.
