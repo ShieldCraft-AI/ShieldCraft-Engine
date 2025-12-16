@@ -162,3 +162,19 @@ This file declares the governance anchor; enforcement logic will be implemented 
 - `finalize_checklist(...)` is the sole emission boundary.
 - This invariant is enforced by code-level assertions and tests.
 
+## Semantic Outcome Invariants (Phase 5)
+
+- Statement: Every emitted checklist MUST contain a single canonical `primary_outcome` with value one of: `SUCCESS`, `REFUSAL`, `BLOCKED`, `DIAGNOSTIC_ONLY`.
+- Role assignment: Each checklist item MUST be assigned exactly one `role` drawn from: `PRIMARY_CAUSE`, `CONTRIBUTING_BLOCKER`, `SECONDARY_DIAGNOSTIC`, `INFORMATIONAL`.
+- Mapping rules:
+  - `REFUSAL` if any recorded event has outcome `REFUSAL`.
+  - `BLOCKED` if no `REFUSAL` and any recorded event has outcome `BLOCKER`.
+  - `DIAGNOSTIC_ONLY` if all recorded events are `DIAGNOSTIC`.
+  - `SUCCESS` if there are no events or only informational/non-diagnostic events.
+- Semantic invariants (enforced in `finalize_checklist`):
+  - Exactly one `PRIMARY_CAUSE` item MUST exist unless `primary_outcome == SUCCESS`.
+  - `REFUSAL` outcome MUST include `refusal_reason` and top-level `refusal == true`.
+  - `BLOCKED` outcome MUST NOT set `refusal == true`.
+  - `DIAGNOSTIC_ONLY` outcome MUST NOT contain `BLOCKER` or `REFUSAL` items.
+- Enforcement: These invariants are enforced by code-level assertions inside `finalize_checklist` and protected by deterministic, unit-tested behavior.
+

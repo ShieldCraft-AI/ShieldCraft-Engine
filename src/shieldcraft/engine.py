@@ -90,6 +90,95 @@ def finalize_checklist(engine, partial_result=None, exception=None):
             checklist['refusal_reason'] = ev.get('message') or ev.get('gate_id')
             break
 
+    # Derive a single canonical primary outcome from recorded events.
+    # Rules (deterministic, no heuristics):
+    #  - REFUSAL if any event.outcome == 'REFUSAL'
+    #  - BLOCKED if no REFUSAL and any event.outcome == 'BLOCKER'
+    #  - DIAGNOSTIC_ONLY if only DIAGNOSTIC events are present
+    #  - SUCCESS if zero events or only informational/non-diagnostic events
+    outcomes = [((ev.get('outcome') or '').upper()) for ev in events]
+    primary_outcome = None
+    if any(o == 'REFUSAL' for o in outcomes):
+        primary_outcome = 'REFUSAL'
+    elif any(o == 'BLOCKER' for o in outcomes):
+        primary_outcome = 'BLOCKED'
+    elif not events:
+        primary_outcome = 'SUCCESS'
+    elif all(o == 'DIAGNOSTIC' for o in outcomes if o):
+        primary_outcome = 'DIAGNOSTIC_ONLY'
+    else:
+        # If events exist but are not purely DIAGNOSTIC, treat as SUCCESS per rules
+        primary_outcome = 'SUCCESS'
+
+    checklist['primary_outcome'] = primary_outcome
+
+    # Top-level convenience flags derived strictly from primary_outcome
+    result_refusal = primary_outcome == 'REFUSAL'
+
+    # Assign deterministic semantic roles to checklist items (exactly one role each).
+    # Roles: PRIMARY_CAUSE, CONTRIBUTING_BLOCKER, SECONDARY_DIAGNOSTIC, INFORMATIONAL
+    # Only assign a PRIMARY_CAUSE when primary_outcome != 'SUCCESS'. Determination
+    # is based on matching items' meta.gate to recorded events of the decisive type.
+    gate_outcomes = {}
+    for ev in events:
+        g = ev.get('gate_id')
+        o = (ev.get('outcome') or '').upper()
+        if g:
+            gate_outcomes.setdefault(g, set()).add(o)
+
+    # Map primary_outcome back to the decisive event outcome label
+    decisive_label = None
+    if primary_outcome == 'REFUSAL':
+        decisive_label = 'REFUSAL'
+    elif primary_outcome == 'BLOCKED':
+        decisive_label = 'BLOCKER'
+    elif primary_outcome == 'DIAGNOSTIC_ONLY':
+        decisive_label = 'DIAGNOSTIC'
+
+    items = checklist.get('items', []) or []
+    # Helper deterministic key
+    def _item_key(it):
+        meta = it.get('meta', {}) or {}
+        return (meta.get('gate') or '', meta.get('phase') or '', it.get('text') or '')
+
+    primary_item = None
+    if primary_outcome != 'SUCCESS' and items:
+        candidate_gates = sorted([g for g, outs in gate_outcomes.items() if decisive_label in outs]) if decisive_label else []
+        candidate_items = [it for it in items if (it.get('meta') or {}).get('gate') in candidate_gates]
+        if candidate_items:
+            primary_item = min(candidate_items, key=_item_key)
+        else:
+            # fallback: pick a deterministic item from all items
+            primary_item = min(items, key=_item_key)
+
+    # Assign roles
+    for it in items:
+        it['role'] = None
+        if primary_item is not None and it is primary_item:
+            it['role'] = 'PRIMARY_CAUSE'
+            continue
+        gate = (it.get('meta') or {}).get('gate')
+        gate_out = set()
+        if gate:
+            gate_out = gate_outcomes.get(gate, set())
+        # CONTRIBUTING_BLOCKER if gate was BLOCKER and not primary
+        if 'BLOCKER' in gate_out:
+            it['role'] = 'CONTRIBUTING_BLOCKER'
+            continue
+        # SECONDARY_DIAGNOSTIC when diagnostic and primary outcome is not DIAGNOSTIC_ONLY
+        if 'DIAGNOSTIC' in gate_out and primary_outcome != 'DIAGNOSTIC_ONLY':
+            it['role'] = 'SECONDARY_DIAGNOSTIC'
+            continue
+        # Default informational
+        it['role'] = 'INFORMATIONAL'
+
+    # Enforce semantic invariants now that roles are assigned
+    _assert_semantic_invariants(checklist, primary_outcome, gate_outcomes)
+
+    # Expose primary outcome at the top-level result as required by the
+    # Checklist Semantics Contract (Phase 5).
+    result_primary_outcome = primary_outcome
+
     # Compose final result preserving partial_result type if present
     result = {}
     if partial_result and isinstance(partial_result, dict):
@@ -97,6 +186,9 @@ def finalize_checklist(engine, partial_result=None, exception=None):
 
     # Ensure canonical fields
     result['checklist'] = checklist
+    # Reflect primary outcome and derived refusal at the top-level for ease of consumption
+    result['primary_outcome'] = result_primary_outcome
+    result['refusal'] = result_refusal
     # Surface an explicit top-level emission flag so callers and invariants
     # can assert emission without digging into nested structures.
     result['emitted'] = True
@@ -109,6 +201,36 @@ def finalize_checklist(engine, partial_result=None, exception=None):
         raise AssertionError('Checklist emission invariant violated')
 
     return result
+
+
+def _assert_semantic_invariants(checklist_obj, primary, gate_outcomes=None):
+    """Module-level semantic invariant assertions for checklists.
+
+    This helper is testable and is invoked from `finalize_checklist` after
+    roles have been deterministically assigned.
+    """
+    items_local = checklist_obj.get('items', []) or []
+    roles = [it.get('role') for it in items_local]
+    gate_outcomes = gate_outcomes or {}
+    # Exactly one PRIMARY_CAUSE item MUST exist unless primary == 'SUCCESS'
+    if primary != 'SUCCESS':
+        if roles.count('PRIMARY_CAUSE') != 1:
+            raise AssertionError('Semantic invariant violated: exactly one PRIMARY_CAUSE required for non-SUCCESS outcomes')
+    else:
+        if 'PRIMARY_CAUSE' in roles:
+            raise AssertionError('Semantic invariant violated: SUCCESS outcome must not contain PRIMARY_CAUSE')
+    # REFUSAL outcome MUST include refusal_reason
+    if primary == 'REFUSAL':
+        if not checklist_obj.get('refusal') or not checklist_obj.get('refusal_reason'):
+            raise AssertionError('Semantic invariant violated: REFUSAL outcome must include refusal_reason')
+    # BLOCKED outcome MUST NOT set refusal == true
+    if primary == 'BLOCKED':
+        if checklist_obj.get('refusal'):
+            raise AssertionError('Semantic invariant violated: BLOCKED outcome must not set refusal == true')
+    # DIAGNOSTIC_ONLY outcome MUST NOT contain BLOCKER or REFUSAL items
+    if primary == 'DIAGNOSTIC_ONLY':
+        if any(((it.get('meta') or {}).get('gate') and ('BLOCKER' in gate_outcomes.get((it.get('meta') or {}).get('gate'), set()) or 'REFUSAL' in gate_outcomes.get((it.get('meta') or {}).get('gate'), set()))) for it in items_local):
+            raise AssertionError('Semantic invariant violated: DIAGNOSTIC_ONLY outcome must not contain BLOCKER or REFUSAL items')
 
 
 class Engine:

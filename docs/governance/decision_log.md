@@ -109,4 +109,10 @@ Authoritative decisions made on 2025-12-13 (Phase 13 kickoff). All decisions rec
 - Rationale: Provide an auditable stop condition and an authoritative code-level guard to prevent emission regressions.
 
 
-
+## Phase 5 In Progress — Semantic Lock
+- Decision: RECORD
+- Summary (facts-only): Phase 5 work has begun to lock checklist semantics: derive a single canonical `primary_outcome` and assign a single, deterministic `role` to each checklist item. These semantics are enforced by in-code assertions and deterministic tests.
+- Next steps:
+  - Implement primary outcome derivation and role normalization (in progress).
+  - Add semantic invariants and tests to ensure regression protection.
+  - Finalize Phase 5 and close with an authoritative decision entry when all invariants and tests are complete.
