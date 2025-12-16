@@ -122,10 +122,20 @@ Authoritative decisions made on 2025-12-13 (Phase 13 kickoff). All decisions rec
 
 ## Phase 6 Closed — Persona Arbitration Simplified
 - Decision: RECORD
-- Summary (facts-only): Phase 6 (Persona Arbitration Simplification) is complete. Persona authority, routing, and event compression have been introduced as defensive, deterministic, metadata-only changes and documentation. Persona outputs remain auditable evidence and do not, by themselves, alter canonical checklist semantics.
+- Summary (facts-only): Phase 6 (Persona Arbitration Simplification) is complete. Persona authority, routing, and event compression were introduced as defensive, deterministic, metadata-only changes and documentation. Persona outputs remain auditable evidence and do not, by themselves, alter canonical checklist semantics.
 - Explicit state:
-  - A Persona Authority Model (DECISIVE|ADVISORY|ANNOTATIVE) has been introduced as metadata; persona dataclasses now carry an optional `authority` attribute.
+  - A Persona Authority Model (DECISIVE|ADVISORY|ANNOTATIVE) was introduced as metadata; persona dataclasses now carry an optional `authority` attribute.
   - Deterministic, static persona routing (configurable) is available via `src/shieldcraft/persona/routing.py`; discovery falls back to `scope` when routing is not configured.
   - Persona events are compressed into a deterministic `checklist.persona_summary` structure for auditability; primary persona cause is selected deterministically and traceably.
-  - Marked legacy persona protocol artifacts for deprecation and archived legacy docs as informational only.
+  - Legacy persona protocol artifacts were marked for deprecation and archived as informational references.
 - Rationale: Simplify persona arbitration while preserving auditability, determinism, and decision authority; future runtime enforcement of authority classes will be gated by governance decisions.
+
+
+## Phase 7 Closed — Persona Protocol Consolidated
+- Decision: RECORD
+- Summary (facts-only): Phase 7 (Persona Protocol Consolidation) is complete. The persona protocol has been consolidated into a minimal, authoritative core (`docs/persona/PERSONA_PROTOCOL.md`), supporting documents were rewritten as references or archived, and deprecation markers were added for legacy mechanisms.
+- Explicit state:
+  - The canonical `PERSONA_PROTOCOL.md` is the single authoritative protocol for persona behavior, authority classes, routing, decision precedence, and event emission rules.
+  - Supporting operational documents reference the canonical core and legacy materials are archived as historical references (`docs/persona/legacy/`).
+  - A documented inventory, gaps report, and simplification summary accompany the consolidation (`docs/governance/PERSONA_DOCUMENT_INVENTORY.md`, `PERSONA_PROTOCOL_GAPS.md`, `PERSONA_PROTOCOL_SIMPLIFICATION_SUMMARY.md`).
+- Rationale: Reduce documentation surface, make persona expectations explicit and auditable, and preserve historical artifacts for traceability; no runtime behavior was changed in Phase 7.
