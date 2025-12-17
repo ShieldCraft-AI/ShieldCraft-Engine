@@ -1,0 +1,29 @@
+name: Guard - no tracked generated files
+
+on:
+  pull_request:
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  check-generated-not-tracked:
+    name: Ensure src/generated is not tracked
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for tracked generated files
+        run: |
+          set -euo pipefail
+          echo "Checking tracked files under src/generated/..."
+          count=$(git ls-files src/generated || true | wc -l)
+          if [ "${count// /}" != "0" ]; then
+            echo "ERROR: Detected tracked files under src/generated. This path must not contain committed build outputs."
+            echo "Found files:" 
+            git ls-files src/generated || true
+            exit 1
+          fi
+          echo "No tracked generated files found."

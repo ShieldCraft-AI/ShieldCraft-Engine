@@ -1,4 +1,6 @@
 import hashlib
+import logging
+logger = logging.getLogger(__name__)
 from .model import ChecklistModel
 from .extractor import SpecExtractor
 from .sections import SECTION_TITLES, ordered_sections
@@ -43,6 +45,8 @@ class ChecklistGenerator:
         return self.model.normalize_item(item)
 
     def build(self, spec, schema=None, ast=None, dry_run: bool = False, run_fuzz: bool = False, run_test_gate: bool = False, engine=None, interpreted_items=None):
+        # Trace entry
+        logger.debug("ChecklistGenerator.build: ENTRY")
         import json
         import os
         import hashlib
@@ -89,14 +93,114 @@ class ChecklistGenerator:
 
         # Build AST if not provided
         if not ast:
+            try:
+                logger.debug("ChecklistGenerator.build: building AST")
+            except Exception:
+                pass
             from shieldcraft.services.ast.builder import ASTBuilder
             ast_builder = ASTBuilder()
             ast = ast_builder.build(spec)
+            try:
+                logger.debug("ChecklistGenerator.build: AST built")
+            except Exception:
+                pass
 
         # Make checklist context available to generator via engine (plumbing only)
         context = None
         if engine is not None:
             context = getattr(engine, 'checklist_context', None)
+
+        # Phase 11A: Synthesize missing known defaults and enforce tiers
+        from shieldcraft.services.spec.defaults import synthesize_missing_spec_fields
+        from shieldcraft.services.checklist.tier_enforcement import enforce_tiers
+
+        # Capture missing sections (and record BLOCKERs/DIAGNOSTICs) before synthesis
+        missing_items = enforce_tiers(spec, context)
+
+        # Synthesize defaults deterministically
+        try:
+            logger.debug("ChecklistGenerator.build: synthesizing defaults")
+        except Exception:
+            pass
+        spec, synthesized_keys = synthesize_missing_spec_fields(spec)
+        try:
+            logger.debug(f"ChecklistGenerator.build: synthesized keys={synthesized_keys}")
+        except Exception:
+            pass
+
+        # For any synthesized Tier A/B keys, record a DIAGNOSTIC checklist item and create explainability metadata
+        synthesized_items = []
+        for key in synthesized_keys:
+            # Emit events for synthesized defaults: Tier A -> BLOCKER + DIAGNOSTIC, Tier B -> DIAGNOSTIC
+            try:
+                if context:
+                    try:
+                        tier = "A" if key in ("metadata", "agents", "evidence_bundle") else ("B" if key in ("determinism", "artifact_contract", "generation_mappings", "security") else "C")
+                        ev_name = f"G_SYNTHESIZED_DEFAULT_{key.upper()}"
+                        if tier == "A":
+                            try:
+                                context.record_event(ev_name, "compilation", "BLOCKER", message=f"Synthesized Tier A default for missing section: {key}", evidence={"section": key})
+                            except Exception:
+                                pass
+                            try:
+                                context.record_event(ev_name, "compilation", "DIAGNOSTIC", message=f"Synthesized default for missing section: {key}", evidence={"section": key})
+                            except Exception:
+                                pass
+                        elif tier == "B":
+                            try:
+                                context.record_event(ev_name, "compilation", "DIAGNOSTIC", message=f"Synthesized Tier B default for missing section: {key}", evidence={"section": key})
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+
+            # Determine tier for the synthesized key (ensure tier is set for later use)
+            tier = "A" if key in ("metadata", "agents", "evidence_bundle") else ("B" if key in ("determinism", "artifact_contract", "generation_mappings", "security") else "C")
+
+            # Build a deterministic checklist diagnostic for the synthesized default (include provenance metadata)
+            synth_item = {
+                "ptr": f"/{key}",
+                "text": f"SYNTHESIZED DEFAULT: injected default for missing section {key}",
+                "meta": {
+                    "section": key,
+                    "tier": tier,
+                    "synthesized_default": True,
+                    "source": "default",
+                    "justification": f"safe_default_{key}",
+                    "justification_ptr": f"/{key}",
+                    "inference_type": "safe_default",
+                },
+                "severity": "high" if tier == "A" else "medium",
+                "classification": "compiler",
+            }
+            synthesized_items.append(synth_item)
+
+        # We'll append both tier-enforcement missing items and synthesized items to raw_items after extraction so they flow through the pipeline
+        _pre_extraction_missing_items = missing_items + synthesized_items
+
+        # Inference ceiling enforcement: ensure Tier A syntheses have an accompanying explicit missing-item
+        try:
+            from shieldcraft.services.checklist.tier_enforcement import TIER_A
+            synthesized_set = set(synthesized_keys or [])
+            for k in synthesized_set:
+                if k in TIER_A:
+                    # There must be a pre-extraction missing item for this section
+                    if not any(((it.get('meta') or {}).get('section') == k) for it in _pre_extraction_missing_items):
+                        raise AssertionError(f"Compiler invariant violated: Tier A synthesized key {k} without explicit missing-item explainability")
+                # Attach provenance of the synthesized defaults into spec-level metadata so finalizer can expose it
+                if hasattr(spec, 'setdefault'):
+                    if '_synthesized_metadata' in spec:
+                        # already attached in defaults; nothing to do
+                        pass
+                    else:
+                        spec.setdefault('_synthesized_metadata', {})
+                        for k2 in synthesized_keys:
+                            spec['_synthesized_metadata'][k2] = {'source': 'default', 'justification': f'safe_default_{k2}', 'inference_type': 'safe_default'}
+        except Exception:
+            # Failures here must be visible during testing; do not silently continue in production
+            raise
 
         # Run speculative spec fuzzing gate to detect ambiguity/contradiction
         if run_fuzz:
@@ -129,16 +233,67 @@ class ChecklistGenerator:
         
         # Extract items using AST traversal
         raw_items = self._extract_from_ast(ast)
+        try:
+            logger.debug(f"ChecklistGenerator.build: raw_items extracted count={len(raw_items)}")
+        except Exception:
+            pass
+
+        # Append any pre-extraction missing items produced by tier enforcement
+        try:
+            raw_items.extend(_pre_extraction_missing_items)
+        except Exception:
+            pass
+
+        # Spec sufficiency diagnostics: emit DIAGNOSTIC items explaining insufficiency
+        try:
+            logger.debug("ChecklistGenerator.build: running spec sufficiency checks")
+        except Exception:
+            pass
+        try:
+            from shieldcraft.services.spec.analysis import check_spec_sufficiency
+            findings = check_spec_sufficiency(spec)
+            for f in findings:
+                # record diagnostic event
+                try:
+                    if context:
+                        try:
+                            context.record_event(f"G_SPEC_INSUFFICIENCY_{f['code']}", "compilation", "DIAGNOSTIC", message=f['message'], evidence={"pointer": f.get('pointer')})
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+                # Append as a checklist diagnostic item
+                raw_items.append({
+                    "ptr": f.get("pointer") or "/",
+                    "text": f"SPEC INSUFFICIENT: {f.get('message')}",
+                    "meta": {"insufficiency": f.get('code')},
+                    "severity": "medium" if f.get('severity') == 'medium' else 'low',
+                    "classification": "compiler",
+                    "synthesized_default": False,
+                })
+        except Exception:
+            pass
         
         # Attach lineage_id to each item
+        try:
+            logger.debug("ChecklistGenerator.build: attaching lineage and extracting items")
+        except Exception:
+            pass
         for item in raw_items:
             ptr = item.get("ptr", "/")
+            try:
+                logger.debug(f"ChecklistGenerator.build: processing raw item ptr={ptr}")
+            except Exception:
+                pass
             if ptr in lineage_map:
                 item["lineage_id"] = lineage_map[ptr]
                 # Find node to get type
-                node = ast.find(ptr)
-                if node:
-                    item["source_node_type"] = node.type
+                try:
+                    node = ast.find(ptr)
+                    if node:
+                        item["source_node_type"] = node.type
+                except Exception:
+                    item["source_node_type"] = None
             else:
                 # For interpreted items, we may set ptr to '/' to avoid missing lineage
                 if item.get("origin") == "interpreted":
@@ -217,12 +372,28 @@ class ChecklistGenerator:
             it["classification"] = classify_item(it)
             it["severity"] = compute_severity(it)
             enriched.append(it)
+        try:
+            logger.debug(f"ChecklistGenerator.build: enriched count={len(enriched)}")
+        except Exception:
+            pass
         
         # Dedupe, collapse, and canonically sort
         merged = enriched
         merged = dedupe_items(merged)
+        try:
+            logger.debug(f"ChecklistGenerator.build: after dedupe count={len(merged)}")
+        except Exception:
+            pass
         merged = collapse_items(merged)
+        try:
+            logger.debug(f"ChecklistGenerator.build: after collapse count={len(merged)}")
+        except Exception:
+            pass
         final_items = canonical_sort(merged)
+        try:
+            logger.debug(f"ChecklistGenerator.build: after canonical_sort final_items count={len(final_items)}")
+        except Exception:
+            pass
         
         # Assign order rank
         for it in final_items:
@@ -231,9 +402,21 @@ class ChecklistGenerator:
         # Annotate items with guidance before synthesizing a final stable id
         try:
             from shieldcraft.services.guidance.checklist import annotate_items, enrich_with_confidence_and_evidence
+            try:
+                logger.debug("ChecklistGenerator.build: annotating items")
+            except Exception:
+                pass
             annotate_items(final_items)
             try:
+                logger.debug("ChecklistGenerator.build: enriching items with confidence and evidence")
+            except Exception:
+                pass
+            try:
                 final_items = enrich_with_confidence_and_evidence(final_items, spec)
+                try:
+                    logger.debug(f"ChecklistGenerator.build: after enrich, items count={len(final_items)}")
+                except Exception:
+                    pass
             except Exception:
                 pass
         except Exception:
@@ -270,36 +453,93 @@ class ChecklistGenerator:
         
         invariant_violations = []
         for invariant in all_invariants:
+            # Normalize invariant fields (support mixed shapes from different extractors)
+            inv_ptr = invariant.get("spec_ptr") or invariant.get("pointer") or ""
+            expr = invariant.get("expr") or invariant.get("constraint") or ""
+
             # Build evaluation context
             eval_context = {
                 "items": final_items,
                 "spec": spec
             }
-            
-            # Evaluate invariant expression
-            expr = invariant.get("expr", "")
-            result = evaluate_invariant(expr, eval_context)
-            
+
+            # Evaluate invariant expression (if any)
+            result = True
+            if expr:
+                result = evaluate_invariant(expr, eval_context)
+            else:
+                # No expression: treat as unknown/malformed invariant -> safe default
+                # Record explainability in eval_context so callers can attach metadata
+                try:
+                    if isinstance(eval_context, dict):
+                        ctxmap = eval_context.setdefault('_invariant_eval_explain', {})
+                        ctxmap[expr] = {'source': 'default_true', 'justification': 'unknown_expr_safe_default'}
+                except Exception:
+                    pass
+
+            # Prepare a single diagnostic (if needed) per invariant; don't mutate final_items while iterating
+            pending_diag = None
+            explainability = None
+            if not (expr.startswith("exists(") or expr.startswith("count(") or expr.startswith("unique(")):
+                explainability = {"source": "default_true", "justification": "unknown_expr_safe_default", "inference_type": "safe_default"}
+                pending_diag = {
+                    "ptr": inv_ptr or "/",
+                    "text": f"INVARIANT_SAFE_DEFAULT: {expr}",
+                    "meta": {"invariant_expr": expr, "explainability": explainability, "inference_type": "safe_default"},
+                    "severity": "medium",
+                    "classification": "compiler",
+                }
+
             # Attach result to items that match this invariant
-            for item in final_items:
+            for item in list(final_items):
                 item_ptr = item.get("ptr", "")
-                inv_ptr = invariant.get("spec_ptr", "")
-                
-                if item_ptr.startswith(inv_ptr) or inv_ptr.startswith(item_ptr):
+                if inv_ptr and (item_ptr.startswith(inv_ptr) or inv_ptr.startswith(item_ptr)):
                     if "meta" not in item:
                         item["meta"] = {}
                     if "invariant_results" not in item["meta"]:
                         item["meta"]["invariant_results"] = []
-                    item["meta"]["invariant_results"].append({
-                        "invariant_id": invariant.get("id"),
-                        "result": result
-                    })
-            
+                    # Always attach explainability metadata for invariants (evaluated or defaulted)
+                    inv_record = {"invariant_id": invariant.get("id"), "result": result}
+                    if explainability:
+                        inv_record["explainability"] = explainability
+                    else:
+                        inv_record["explainability"] = {"source": "evaluated_expr", "justification": "expr_evaluated", "inference_type": "structural"}
+                    item["meta"]["invariant_results"].append(inv_record)
+
+            # If we prepared a diagnostic, append it once and record an event
+            if pending_diag is not None:
+                try:
+                    pending_diag["id"] = synthesize_id(pending_diag, namespace)
+                except Exception:
+                    pending_diag["id"] = f"diag::{hash(str(pending_diag))&0xffff:04x}"
+                # Ensure diagnostic pointer is unique so it survives cross-item validation
+                try:
+                    pending_diag["ptr"] = f"/_diagnostics/invariant/{pending_diag['id']}"
+                except Exception:
+                    pending_diag["ptr"] = f"/_diagnostics/invariant/unknown"
+                final_items.append(pending_diag)
+                try:
+                    logger.debug(f"ChecklistGenerator.build: appended invariant diag item id={pending_diag.get('id')} expr={expr}")
+                except Exception:
+                    pass
+                try:
+                    if context and getattr(context, 'record_event', None):
+                        try:
+                            context.record_event(f"G_INVARIANT_SAFE_DEFAULT", "compilation", "DIAGNOSTIC", message=f"Invariant defaulted: {expr}", evidence={"pointer": inv_ptr})
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+                try:
+                    logger.debug(f"ChecklistGenerator.build: recorded G_INVARIANT_SAFE_DEFAULT for expr={expr}")
+                except Exception:
+                    pass
+
             # Record violations
             if not result:
                 invariant_violations.append({
                     "invariant_id": invariant.get("id"),
-                    "spec_ptr": invariant.get("spec_ptr"),
+                    "spec_ptr": inv_ptr,
                     "expr": expr,
                     "severity": invariant.get("severity", "medium")
                 })
@@ -372,6 +612,10 @@ class ChecklistGenerator:
                 all_derived.append(cycle_task)
         
         # Add derived tasks to main list
+        try:
+            logger.debug(f"ChecklistGenerator.build: derived tasks count={len(all_derived)}")
+        except Exception:
+            pass
         final_items.extend(all_derived)
         
         # Ensure interpreted items persist: append any interpreted_items not present
@@ -431,15 +675,31 @@ class ChecklistGenerator:
         grouped = group_items(decorated)
         
         # Build rollups
+        try:
+            logger.debug("ChecklistGenerator.build: building rollups")
+        except Exception:
+            pass
         rollups = build_rollups(grouped)
+        try:
+            logger.debug(f"ChecklistGenerator.build: rollups built")
+        except Exception:
+            pass
         
         # Write warnings
         write_warnings(product_id, validation_warnings)
         
         # Run preflight checks
+        try:
+            logger.debug("ChecklistGenerator.build: running preflight")
+        except Exception:
+            pass
         if schema is None:
             schema = {"type": "object"}  # default minimal schema
         preflight = run_preflight(spec, schema, decorated)
+        try:
+            logger.debug(f"ChecklistGenerator.build: preflight result={preflight}")
+        except Exception:
+            pass
         # Enforce that checklist items have attached, valid tests (halt if not)
         if run_test_gate:
             try:
@@ -478,17 +738,99 @@ class ChecklistGenerator:
                 # Apply persona constraints in the engine-controlled scope deterministically
                 for c in persona_res.get("constraints", []):
                     iid = c.get("item_id")
+                    iptr = c.get("item_ptr")
                     setter = c.get("set", {})
                     # Find matching item and apply permitted setters
+                    # Try to match by id or ptr first; otherwise fall back to matching by the original rule match
+                    matched = False
                     for item in decorated:
-                        if item.get("id") == iid:
+                        if (iid is not None and item.get("id") == iid) or (iptr is not None and item.get("ptr") == iptr):
+                            matched = True
+                            # If persona evaluator flagged this constraint as disallowed, surface it
+                            if c.get("disallowed"):
+                                item.setdefault("meta", {}).setdefault("persona_constraints_disallowed", []).append({"persona": c.get("persona"), "attempt": setter})
+                                try:
+                                    if context:
+                                        try:
+                                            from shieldcraft.util.json_canonicalizer import canonicalize
+                                            context.record_event("G15_PERSONA_CONSTRAINT_DISALLOWED", "generation", "DIAGNOSTIC", message=f"persona attempted disallowed mutation", evidence={"persona": c.get("persona"), "attempt": canonicalize(setter)})
+                                        except Exception:
+                                            pass
+                                except Exception:
+                                    pass
+                                break
+                    # If not matched by id/ptr, fall back to re-matching using the original match rule if present
+                    if not matched and c.get("match"):
+                        for item in decorated:
+                            if all(item.get(k) == v for k, v in c.get("match", {}).items()):
+                                if c.get("disallowed"):
+                                    item.setdefault("meta", {}).setdefault("persona_constraints_disallowed", []).append({"persona": c.get("persona"), "attempt": setter})
+                                    try:
+                                        if context:
+                                            try:
+                                                from shieldcraft.util.json_canonicalizer import canonicalize
+                                                context.record_event("G15_PERSONA_CONSTRAINT_DISALLOWED", "generation", "DIAGNOSTIC", message=f"persona attempted disallowed mutation", evidence={"persona": c.get("persona"), "attempt": canonicalize(setter)})
+                                            except Exception:
+                                                pass
+                                    except Exception:
+                                        pass
+                                continue
+                    # If matched above we already processed; otherwise apply permitted setters normally
+                    for item in decorated:
+                        if (iid is not None and item.get("id") == iid) or (iptr is not None and item.get("ptr") == iptr) or (c.get("match") and all(item.get(k) == v for k, v in c.get("match", {}).items())):
+                            if c.get("disallowed"):
+                                # already handled
+                                continue
                             for sk, sv in setter.items():
-                                if sk == "meta":
+                                # Forbid mutating identifiers and semantic fields that affect checklist outcomes
+                                forbidden = set(["id", "ptr", "generated", "artifact", "severity", "refusal", "outcome"])
+                                if sk in forbidden:
+                                    item.setdefault("meta", {}).setdefault("persona_constraints_disallowed", []).append({"persona": c.get("persona"), "attempt": {sk: sv}})
+                                    # Record a DIAGNOSTIC to make the disallowed attempt visible
+                                    try:
+                                        from shieldcraft.util.json_canonicalizer import canonicalize
+                                        if context:
+                                            try:
+                                                context.record_event("G15_PERSONA_CONSTRAINT_DISALLOWED", "generation", "DIAGNOSTIC", message=f"persona attempted disallowed mutation: {sk}", evidence={"persona": c.get("persona"), "attempt": canonicalize({sk: sv})})
+                                            except Exception:
+                                                pass
+                                    except Exception:
+                                        pass
+                                elif sk == "meta":
                                     item.setdefault("meta", {}).setdefault("persona_constraints_applied", []).append({"persona": c.get("persona"), "set": sv})
                                 else:
                                     item[sk] = sv
-                # Enforce vetoes if any persona emitted a veto
-                enforce_persona_veto(engine)
+                            for sk, sv in setter.items():
+                                # Forbid mutating identifiers and semantic fields that affect checklist outcomes
+                                forbidden = set(["id", "ptr", "generated", "artifact", "severity", "refusal", "outcome"])
+                                if sk in forbidden:
+                                    item.setdefault("meta", {}).setdefault("persona_constraints_disallowed", []).append({"persona": c.get("persona"), "attempt": {sk: sv}})
+                                    # Record a DIAGNOSTIC to make the disallowed attempt visible
+                                    try:
+                                        from shieldcraft.util.json_canonicalizer import canonicalize
+                                        if context:
+                                            try:
+                                                context.record_event("G15_PERSONA_CONSTRAINT_DISALLOWED", "generation", "DIAGNOSTIC", message=f"persona attempted disallowed mutation: {sk}", evidence={"persona": c.get("persona"), "attempt": canonicalize({sk: sv})})
+                                            except Exception:
+                                                pass
+                                    except Exception:
+                                        pass
+                                elif sk == "meta":
+                                    item.setdefault("meta", {}).setdefault("persona_constraints_applied", []).append({"persona": c.get("persona"), "set": sv})
+                                else:
+                                    item[sk] = sv
+                # Enforce vetoes if any persona emitted a veto (advisory-only under Phase 15)
+                sel = enforce_persona_veto(engine)
+                # If a veto was present, record advisory event in generation phase for visibility
+                if sel is not None:
+                    try:
+                        if context:
+                            try:
+                                context.record_event("G7_PERSONA_VETO", "generation", "DIAGNOSTIC", message="persona veto advisory (non-authoritative)", evidence={"persona_id": sel.get('persona_id'), "code": sel.get('code')})
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
         except RuntimeError as e:
             try:
                 if context:
@@ -504,13 +846,24 @@ class ChecklistGenerator:
             pass
 
         try:
+            try:
+                logger.debug("ChecklistGenerator.build: about to discover_tests")
+            except Exception:
+                pass
             from shieldcraft.verification.test_expander import expand_tests_for_item
             from shieldcraft.verification.test_registry import discover_tests
             test_map = discover_tests()
+            try:
+                logger.debug("ChecklistGenerator.build: discover_tests returned")
+            except Exception:
+                pass
             for it in decorated:
-                exp = expand_tests_for_item(it, test_map)
-                if exp.get("candidates"):
-                    it.setdefault("meta", {})["candidate_tests"] = exp.get("candidates")
+                try:
+                    exp = expand_tests_for_item(it, test_map)
+                    if exp.get("candidates"):
+                        it.setdefault("meta", {})["candidate_tests"] = exp.get("candidates")
+                except Exception:
+                    pass
         except Exception:
             pass
         # Determinism marker: if a run seed exists, attach a small per-item marker
@@ -527,6 +880,10 @@ class ChecklistGenerator:
 
         plan = ExecutionPlan(decorated)
         plan.stage_pass1(decorated)
+        try:
+            logger.debug(f"ChecklistGenerator.build: staged pass1 count={len(plan.pass1)}")
+        except Exception:
+            pass
 
         # pass 2: invariants
         inv_items = extract_invariants(spec)

@@ -28,8 +28,25 @@ def list_personas() -> List[Persona]:
 
 
 def find_personas_for_phase(phase: str) -> List[Persona]:
+    """Return personas applicable to a phase.
+
+    Behavior:
+    - If a static routing table is configured (see `persona.routing`), filter
+      by allowed persona names for the phase. Otherwise fall back to persona
+      `scope` rules (existing behavior).
+    - Deterministic ordering (sorted by persona.name) is preserved.
+    """
+    from shieldcraft.persona.routing import get_allowed_persona_names_for_phase
+
     res = []
     for p in list_personas():
         if not p.scope or 'all' in p.scope or phase in p.scope:
             res.append(p)
-    return res
+
+    allowed = get_allowed_persona_names_for_phase(phase)
+    if allowed is None:
+        return res
+
+    # Filter by allowed names deterministically
+    allowed_set = set(allowed)
+    return [p for p in res if p.name in allowed_set]

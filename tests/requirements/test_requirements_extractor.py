@@ -1,3 +1,13 @@
+import pytest
+
+from shieldcraft.services.checklist.extractor import SpecExtractor
+
+
+def test_extractor_runs_on_minimal_spec():
+    extractor = SpecExtractor()
+    spec = {"metadata": {"product_id": "p"}, "sections": {}}
+    res = extractor.extract(spec)
+    assert isinstance(res, dict)
 import json
 from shieldcraft.requirements.extractor import extract_requirements
 from pathlib import Path

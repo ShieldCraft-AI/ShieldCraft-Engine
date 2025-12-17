@@ -482,6 +482,25 @@ def generate_sync_files(repo_root: Path, write: bool = False) -> Dict[str, Any]:
             'dsl_version': dsl_version,
             'repo_fingerprint': repo_fingerprint,
         }
+        # Augment progress with any generated files discovered in self-host manifests
+        generated_files = []
+        candidate_manifests = [repo_root / '.selfhost_outputs' / 'selfhost_preview.json', repo_root / '.selfhost_outputs' / 'manifest.json', repo_root / 'artifacts' / 'selfhost_preview.json']
+        for mf in candidate_manifests:
+            try:
+                if mf.exists():
+                    data = json.load(open(mf))
+                    outs = data.get('outputs') or data.get('generated') or []
+                    for o in outs:
+                        p = o.get('path') if isinstance(o, dict) else None
+                        if p:
+                            generated_files.append(p)
+            except Exception:
+                # Non-fatal: ignore malformed manifests
+                pass
+
+        if generated_files:
+            shieldcraft_progress['generated_files_from_manifests'] = sorted(set(generated_files))
+
         results['shieldcraft_progress.json'] = shieldcraft_progress
         
         # Build sync_report.json

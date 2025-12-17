@@ -1,1 +1,1 @@
-This persona document has been archived to docs/persona/legacy/Fiona.txt
+This historical persona profile has been archived to `docs/persona/legacy/Fiona.txt`. It is illustrative and non-authoritative; the canonical persona contract is `docs/persona/PERSONA_PROTOCOL.md`.

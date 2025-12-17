@@ -26,8 +26,8 @@ def extract_spec_invariants(spec):
                 value = obj[key]
                 
                 # Check for invariant keys
-                if key in ("must", "require", "forbid"):
-                    invariant_type = "must" if key in ("must", "require") else "forbid"
+                if key in ("must", "require", "forbid", "invariant"):
+                    invariant_type = "must" if key in ("must", "require", "invariant") else "forbid"
                     invariants.append({
                         "type": invariant_type,
                         "spec_ptr": new_path,

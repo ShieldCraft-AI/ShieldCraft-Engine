@@ -23,7 +23,22 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install -e .
         python -m pip install pytest
+
+    - name: Regenerate deterministic codegen outputs (dry-run)
+      env:
+        SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY: '1'
+        SHIELDCRAFT_PERSONA_ENABLED: '0'
+      run: |
+        mkdir -p .selfhost_outputs
+        python -m src.shieldcraft.engine \
+          --self-host \
+          --spec spec/se_dsl_v1.spec.json \
+          --dry-run \
+          --emit-preview .selfhost_outputs/selfhost_preview.json
     
+    - name: Clean stale bytecode
+      run: python scripts/ci/clean_pycache.py
+
     - name: Run tests
       run: pytest -q
       continue-on-error: false

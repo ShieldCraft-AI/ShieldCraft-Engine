@@ -42,6 +42,24 @@ def finalize_checklist(engine, partial_result=None, exception=None):
     except Exception:
         events = []
 
+    # Defensive: ensure persona events do not attempt to override outcome fields
+    try:
+        for ev in events:
+            if ev.get('persona_id') and any(k in ev for k in ('primary_outcome', 'refusal', 'blocking_reasons')):
+                try:
+                    if engine is not None and getattr(engine, 'checklist_context', None):
+                        try:
+                            engine.checklist_context.record_event("G13_PERSONA_OUTCOME_OVERRIDE_ATTEMPT", "finalize", "DIAGNOSTIC", message="persona attempted to override outcome fields", evidence={"event": ev})
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+    # (Refusal masking diagnostics will be applied after events are translated into items)
+    pass
+
     items = []
     # Start from any existing checklist items in partial_result
     try:
@@ -67,9 +85,24 @@ def finalize_checklist(engine, partial_result=None, exception=None):
             else:
                 it['severity'] = 'medium'
             items.append(it)
-        except Exception:
-            pass
 
+            # If this is a REFUSAL gate that may mask missing authority, add an explanatory DIAGNOSTIC item
+            try:
+                mask_gates = {"G2_GOVERNANCE_PRESENCE_CHECK", "G3_REPO_SYNC_VERIFICATION", "G7_PERSONA_VETO", "G14_SELFHOST_INPUT_SANDBOX", "G15_DISALLOWED_SELFHOST_ARTIFACT", "G20_QUALITY_GATE_FAILED"}
+                if (outcome or '').upper() == 'REFUSAL' and gid in mask_gates:
+                    diag = {
+                        'ptr': '/',
+                        'text': f"REFUSAL_DIAG: {gid}: {msg}",
+                        'meta': {'gate': gid, 'phase': phase, 'source': 'diagnostic', 'justification': 'refusal_masking_explanation', 'inference_type': 'fallback'},
+                        'severity': 'medium',
+                        'classification': 'compiler'
+                    }
+                    items.append(diag)
+            except Exception:
+                pass
+        except Exception:
+            # Defensive: ensure a single bad event does not break finalization
+            pass
     # If exception occurred, record it as a diagnostic item
     error_info = None
     if exception is not None:
@@ -83,12 +116,229 @@ def finalize_checklist(engine, partial_result=None, exception=None):
     # Build checklist object and attach events for auditing
     checklist = {'items': items, 'emitted': True, 'events': events}
 
-    # Flag refusal if any REFUSAL events present
-    for ev in events:
-        if ev.get('outcome') == 'REFUSAL':
-            checklist['refusal'] = True
-            checklist['refusal_reason'] = ev.get('message') or ev.get('gate_id')
-            break
+    # Centralized primary outcome derivation (authoritative)
+    from shieldcraft.services.checklist.outcome import derive_primary_outcome
+    # Call the canonical, deterministic derivation exactly once.
+    try:
+        derived = derive_primary_outcome(checklist, events)
+    except Exception as e:
+        # Record the failure deterministically and fall back to a minimal, safe outcome
+        try:
+            if engine is not None and getattr(engine, 'checklist_context', None):
+                try:
+                    engine.checklist_context.record_event("G_INTERNAL_DERIVATION_FAILURE", "finalize", "DIAGNOSTIC", message="derive_primary_outcome raised", evidence={"error": str(e)})
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        # Minimal, deterministic fallback derived only from explicit event labels (safe, limited scope)
+        outcomes = [((ev.get('outcome') or '').upper()) for ev in events if isinstance(ev, dict)]
+        primary = None
+        if any(o == 'REFUSAL' for o in outcomes):
+            primary = 'REFUSAL'
+            refusal_flag = True
+        elif any(o == 'BLOCKER' for o in outcomes):
+            primary = 'BLOCKED'
+            refusal_flag = False
+        elif events and all((o == 'DIAGNOSTIC') for o in outcomes if o):
+            primary = 'DIAGNOSTIC'
+            refusal_flag = False
+        else:
+            primary = 'SUCCESS'
+            refusal_flag = False
+        derived = {'primary_outcome': primary, 'refusal': refusal_flag, 'blocking_reasons': [], 'confidence_level': 'low'}
+
+    # Map authoritative results into checklist/result
+    checklist['primary_outcome'] = derived.get('primary_outcome')
+    primary_outcome = checklist.get('primary_outcome')
+    checklist['blocking_reasons'] = derived.get('blocking_reasons', [])
+    checklist['confidence_level'] = derived.get('confidence_level', 'low')
+
+    # Authority ceiling assertions (Phase 12 guard)
+    try:
+        # Ensure any Tier A synthesized defaults are accompanied by a BLOCKER event
+        tier_a_items = [it for it in checklist.get('items', []) if (it.get('meta') or {}).get('source') == 'default' and (it.get('meta') or {}).get('tier') == 'A']
+        if tier_a_items:
+            # Must have at least one G_SYNTHESIZED_DEFAULT_* BLOCKER event recorded
+            has_blocker = any((ev.get('gate_id') or '').startswith('G_SYNTHESIZED_DEFAULT_') and (ev.get('outcome') or '').upper() == 'BLOCKER' for ev in events)
+            # Must also have a DIAGNOSTIC event recorded for the same synthesized default visibility
+            has_diag = any((ev.get('gate_id') or '').startswith('G_SYNTHESIZED_DEFAULT_') and (ev.get('outcome') or '').upper() == 'DIAGNOSTIC' for ev in events)
+            assert has_blocker and has_diag, 'TIER_A_SYNTHESIS_MISSING_BLOCKER_OR_DIAGNOSTIC'
+    except AssertionError:
+        # Fail fast: authority ceiling violation
+        raise
+    except Exception:
+        # Defensive: if something unexpected happens, surface it
+        raise
+
+# Preserve refusal_reason and authority if any REFUSAL event exists (for auditability)
+    if derived.get('refusal'):
+        checklist['refusal'] = True
+        # Find deterministic refusal reason: earliest non-persona REFUSAL event message
+        try:
+            non_persona_ev = next(e for e in events if (e.get('outcome') or '').upper() == 'REFUSAL' and not e.get('persona_id'))
+            checklist['refusal_reason'] = non_persona_ev.get('message') or non_persona_ev.get('gate_id')
+            # Extract refusal authority metadata and enforce presence
+            try:
+                refusal_meta = (non_persona_ev.get('evidence') or {}).get('refusal') or {}
+                # Authority must be present and be a single value
+                assert isinstance(refusal_meta.get('authority'), str) and refusal_meta.get('authority'), 'REFUSAL authority missing or invalid'
+                checklist['refusal_authority'] = refusal_meta.get('authority')
+                checklist['refusal_trigger'] = refusal_meta.get('trigger')
+                checklist['refusal_scope'] = refusal_meta.get('scope')
+                checklist['refusal_justification'] = refusal_meta.get('justification')
+            except AssertionError:
+                # Compiler assertion: REFUSAL without authority is invalid
+                raise
+            except Exception:
+                # Any other failure should be visible
+                raise
+        except StopIteration:
+            checklist['refusal_reason'] = None
+
+    result_refusal = bool(derived.get('refusal', False))
+
+    # Assign deterministic semantic roles to checklist items (exactly one role each).
+    # Roles: PRIMARY_CAUSE, CONTRIBUTING_BLOCKER, SECONDARY_DIAGNOSTIC, INFORMATIONAL
+    # Only assign a PRIMARY_CAUSE when primary_outcome != 'SUCCESS'. Determination
+    # follows strict tie-breaking rules:
+    # 1) Highest-precedence outcome (already selected)
+    # 2) Lowest gate_id lexicographically
+    # 3) Earliest event occurrence (first seen in events list)
+    gate_outcomes = {}
+    gate_first_index = {}
+    for idx, ev in enumerate(events):
+        g = ev.get('gate_id')
+        o = (ev.get('outcome') or '').upper()
+        if g:
+            gate_outcomes.setdefault(g, set()).add(o)
+            if g not in gate_first_index:
+                gate_first_index[g] = idx
+
+    # Map primary_outcome back to the decisive event outcome label
+    # Note: ACTION is not an event outcome and will fall back to deterministic selection
+    decisive_label = None
+    if checklist.get('primary_outcome') == 'REFUSAL':
+        decisive_label = 'REFUSAL'
+    elif checklist.get('primary_outcome') == 'BLOCKED':
+        decisive_label = 'BLOCKER'
+    elif checklist.get('primary_outcome') == 'DIAGNOSTIC':
+        decisive_label = 'DIAGNOSTIC'
+    items = checklist.get('items', []) or []
+
+    primary_item = None
+    if primary_outcome != 'SUCCESS' and items:
+        # Candidate gates that contributed the decisive outcome
+        candidate_gates = [g for g, outs in gate_outcomes.items() if decisive_label in outs]
+        if candidate_gates:
+            # Choose gate by lowest lexicographic id
+            selected_gate = min(candidate_gates)
+            # Find candidate items matching the selected_gate
+            candidate_items = [it for it in items if (it.get('meta') or {}).get('gate') == selected_gate]
+            if candidate_items:
+                # Choose the earliest item that matches the gate (deterministic)
+                def _item_event_index(it):
+                    g = (it.get('meta') or {}).get('gate')
+                    return gate_first_index.get(g, 0)
+                primary_item = min(candidate_items, key=lambda it: (_item_event_index(it), it.get('text') or ''))
+        else:
+            # Fallback: pick deterministic item among all items
+            primary_item = min(items, key=lambda it: ((it.get('meta') or {}).get('gate') or '', it.get('text') or ''))
+
+    # Assign roles deterministically
+    for it in items:
+        it['role'] = None
+        if primary_item is not None and it is primary_item:
+            it['role'] = 'PRIMARY_CAUSE'
+            continue
+        gate = (it.get('meta') or {}).get('gate')
+        gate_out = gate_outcomes.get(gate, set()) if gate else set()
+        if 'BLOCKER' in gate_out:
+            it['role'] = 'CONTRIBUTING_BLOCKER'
+            continue
+        if 'DIAGNOSTIC' in gate_out and primary_outcome != 'DIAGNOSTIC_ONLY':
+            it['role'] = 'SECONDARY_DIAGNOSTIC'
+            continue
+        it['role'] = 'INFORMATIONAL'
+
+    # Enforce semantic invariants now that roles are assigned
+    _assert_semantic_invariants(checklist, primary_outcome, gate_outcomes)
+
+    # Compute checklist quality score and attach to checklist meta
+    try:
+        from shieldcraft.services.checklist.quality import compute_checklist_quality
+        # Count synthesized defaults present in items
+        synthesized_count = sum(1 for it in items if (it.get('meta') or {}).get('synthesized_default'))
+        # Count insufficiency diagnostics
+        insuff_count = sum(1 for it in items if (it.get('meta') or {}).get('insufficiency'))
+        quality = compute_checklist_quality(items, synthesized_count, insuff_count)
+        # Attach deterministic meta
+        if 'meta' not in checklist:
+            checklist['meta'] = {}
+        checklist['meta']['checklist_quality'] = quality
+
+        # Emit diagnostic item if quality below threshold
+        if quality < 60:
+            items.append({
+                'ptr': '/',
+                'text': f'CHECKLIST QUALITY LOW: {quality}',
+                'meta': {'quality_score': quality, 'diagnostic': True},
+                'severity': 'medium',
+                'classification': 'compiler',
+            })
+    except Exception:
+        pass
+
+    # Persona event compression: summarize persona outputs deterministically
+    try:
+        persona_events = list(getattr(engine, '_persona_events', []) or [])
+        if persona_events:
+            # Map persona capability to nominal outcome for selection precedence
+            def _capability_to_outcome(cap):
+                if cap == 'veto':
+                    return 'REFUSAL'
+                # annotations/decisions are diagnostics/evidence
+                return 'DIAGNOSTIC'
+
+            # Build list with derived outcomes and preserve order
+            pes = []
+            for idx, pe in enumerate(persona_events):
+                outcome = _capability_to_outcome(pe.get('capability'))
+                pes.append({
+                    'persona_id': pe.get('persona_id'),
+                    'capability': pe.get('capability'),
+                    'phase': pe.get('phase'),
+                    'payload_ref': pe.get('payload_ref'),
+                    'severity': pe.get('severity'),
+                    'derived_outcome': outcome,
+                    'index': idx,
+                })
+
+            # Select primary persona cause by precedence and deterministic tie-break
+            prim = None
+            if any(p.get('derived_outcome') == 'REFUSAL' for p in pes):
+                candidates = [p for p in pes if p.get('derived_outcome') == 'REFUSAL']
+            elif any(p.get('derived_outcome') == 'DIAGNOSTIC' for p in pes):
+                candidates = [p for p in pes if p.get('derived_outcome') == 'DIAGNOSTIC']
+            else:
+                candidates = pes
+
+            if candidates:
+                # deterministic selection: lowest persona_id, then earliest index
+                prim = sorted(candidates, key=lambda p: (p.get('persona_id') or '', p.get('index')))[0]
+
+            checklist['persona_summary'] = {
+                'primary_persona': prim.get('persona_id') if prim else None,
+                'primary_capability': prim.get('capability') if prim else None,
+                'events': pes,
+            }
+    except Exception:
+        # Persona auditing must not interfere with finalization
+        pass
+
+    # Expose primary outcome at the top-level result as required by the
+    # Checklist Semantics Contract (Phase 5).
+    result_primary_outcome = primary_outcome
 
     # Compose final result preserving partial_result type if present
     result = {}
@@ -97,6 +347,9 @@ def finalize_checklist(engine, partial_result=None, exception=None):
 
     # Ensure canonical fields
     result['checklist'] = checklist
+    # Reflect primary outcome and derived refusal at the top-level for ease of consumption
+    result['primary_outcome'] = result_primary_outcome
+    result['refusal'] = result_refusal
     # Surface an explicit top-level emission flag so callers and invariants
     # can assert emission without digging into nested structures.
     result['emitted'] = True
@@ -109,6 +362,39 @@ def finalize_checklist(engine, partial_result=None, exception=None):
         raise AssertionError('Checklist emission invariant violated')
 
     return result
+
+
+def _assert_semantic_invariants(checklist_obj, primary, gate_outcomes=None):
+    """Module-level semantic invariant assertions for checklists.
+
+    This helper is testable and is invoked from `finalize_checklist` after
+    roles have been deterministically assigned.
+    """
+    items_local = checklist_obj.get('items', []) or []
+    roles = [it.get('role') for it in items_local]
+    gate_outcomes = gate_outcomes or {}
+    # Exactly one PRIMARY_CAUSE item MUST exist unless primary == 'ACTION'
+    # (ACTION represents actionable success; do not require PRIMARY_CAUSE in this case)
+    # Only enforce presence/absence of PRIMARY_CAUSE when checklist items exist
+    if items_local:
+        if primary != 'ACTION':
+            if roles.count('PRIMARY_CAUSE') != 1:
+                raise AssertionError('Semantic invariant violated: exactly one PRIMARY_CAUSE required for non-ACTION outcomes')
+        else:
+            if 'PRIMARY_CAUSE' in roles:
+                raise AssertionError('Semantic invariant violated: ACTION outcome must not contain PRIMARY_CAUSE')
+    # REFUSAL outcome MUST include refusal_reason
+    if primary == 'REFUSAL':
+        if not checklist_obj.get('refusal') or not checklist_obj.get('refusal_reason'):
+            raise AssertionError('Semantic invariant violated: REFUSAL outcome must include refusal_reason')
+    # BLOCKED outcome MUST NOT set refusal == true
+    if primary == 'BLOCKED':
+        if checklist_obj.get('refusal'):
+            raise AssertionError('Semantic invariant violated: BLOCKED outcome must not set refusal == true')
+    # DIAGNOSTIC outcome MUST NOT contain BLOCKER or REFUSAL items
+    if primary == 'DIAGNOSTIC':
+        if any(((it.get('meta') or {}).get('gate') and ('BLOCKER' in gate_outcomes.get((it.get('meta') or {}).get('gate'), set()) or 'REFUSAL' in gate_outcomes.get((it.get('meta') or {}).get('gate'), set()))) for it in items_local):
+            raise AssertionError('Semantic invariant violated: DIAGNOSTIC outcome must not contain BLOCKER or REFUSAL items')
 
 
 class Engine:
@@ -156,7 +442,8 @@ class Engine:
             try:
                 if getattr(self, 'checklist_context', None):
                     try:
-                        self.checklist_context.record_event("G1_ENGINE_READINESS_FAILURE", "preflight", "REFUSAL", message="engine readiness failure", evidence={"error": str(e)})
+                        from shieldcraft.services.governance.refusal_authority import record_refusal_event
+                        record_refusal_event(self.checklist_context, "G1_ENGINE_READINESS_FAILURE", "preflight", message="engine readiness failure", evidence={"error": str(e)}, justification="engine_readiness_failure")
                     except Exception:
                         pass
             except Exception:
@@ -212,7 +499,8 @@ class Engine:
             try:
                 if getattr(self, 'checklist_context', None):
                     try:
-                        self.checklist_context.record_event("G2_GOVERNANCE_PRESENCE_CHECK", "preflight", "REFUSAL", message="governance presence check failed", evidence={"error": str(e)})
+                        from shieldcraft.services.governance.refusal_authority import record_refusal_event
+                        record_refusal_event(self.checklist_context, "G2_GOVERNANCE_PRESENCE_CHECK", "preflight", message="governance presence check failed", evidence={"error": str(e)}, trigger="missing_authority", scope="/governance", justification="governance_presence_failed")
                     except Exception:
                         pass
             except Exception:
@@ -245,7 +533,8 @@ class Engine:
                 try:
                     if getattr(self, 'checklist_context', None):
                         try:
-                            self.checklist_context.record_event("G3_REPO_SYNC_VERIFICATION", "preflight", "REFUSAL", message="snapshot error", evidence={"error": str(e)})
+                            from shieldcraft.services.governance.refusal_authority import record_refusal_event
+                            record_refusal_event(self.checklist_context, "G3_REPO_SYNC_VERIFICATION", "preflight", message="snapshot error", evidence={"error": str(e)}, trigger="missing_authority", justification="snapshot_error")
                         except Exception:
                             pass
                 except Exception:
@@ -257,7 +546,8 @@ class Engine:
                     try:
                         if getattr(self, 'checklist_context', None):
                             try:
-                                self.checklist_context.record_event("G3_REPO_SYNC_VERIFICATION", "preflight", "REFUSAL", message="repo sync missing", evidence={"error": str(e)})
+                                from shieldcraft.services.governance.refusal_authority import record_refusal_event
+                                record_refusal_event(self.checklist_context, "G3_REPO_SYNC_VERIFICATION", "preflight", message="repo sync missing", evidence={"error": str(e)}, trigger="missing_authority", justification="repo_sync_missing")
                             except Exception:
                                 pass
                     except Exception:
@@ -360,14 +650,17 @@ class Engine:
                 try:
                     if getattr(self, 'checklist_context', None):
                         try:
-                            self.checklist_context.record_event("G7_PERSONA_VETO", "preflight", "REFUSAL", message="persona veto triggered", evidence={"persona_id": sel.get('persona_id'), "code": sel.get('code')})
+                            # Record advisory (DIAGNOSTIC) instead of refusal; persona vetoes are non-authoritative
+                            self.checklist_context.record_event("G7_PERSONA_VETO", "preflight", "DIAGNOSTIC", message="persona veto advisory (non-authoritative)", evidence={"persona_id": sel.get('persona_id'), "code": sel.get('code')})
                         except Exception:
                             pass
                 except Exception:
                     pass
-                raise RuntimeError(f"persona_veto: {sel.get('persona_id')}:{sel.get('code')}")
-        except RuntimeError:
-            raise
+                # Do not raise; personas are advisory only. Preserve selection for observability.
+                try:
+                    self._persona_veto_selected = sel
+                except Exception:
+                    pass
         except Exception:
             # Observability must not alter behavior if failing
             pass
@@ -588,7 +881,19 @@ class Engine:
         except Exception:
             pass
 
-        checklist = self.checklist_gen.build(spec, ast=ast, engine=self)
+        try:
+            checklist = self.checklist_gen.build(spec, ast=ast, engine=self)
+        except Exception as e:
+            try:
+                if getattr(self, 'checklist_context', None):
+                    try:
+                        self.checklist_context.record_event("G22_EXECUTE_INTERNAL_ERROR_RETURN", "generation", "DIAGNOSTIC", message=str(e))
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            # Ensure we finalize the run and return an emitted checklist artifact
+            return finalize_checklist(self, partial_result=None, exception=e)
 
         # Attach determinism snapshot for replayability
         try:
@@ -764,7 +1069,8 @@ class Engine:
                 try:
                     if getattr(self, 'checklist_context', None):
                         try:
-                            self.checklist_context.record_event("G14_SELFHOST_INPUT_SANDBOX", "post_generation", "REFUSAL", message="disallowed self-host input")
+                            from shieldcraft.services.governance.refusal_authority import record_refusal_event
+                            record_refusal_event(self.checklist_context, "G14_SELFHOST_INPUT_SANDBOX", "post_generation", message="disallowed self-host input", justification="disallowed_selfhost_input", trigger="missing_authority")
                         except Exception:
                             pass
                 except Exception:
@@ -777,7 +1083,8 @@ class Engine:
                 try:
                     if getattr(self, 'checklist_context', None):
                         try:
-                            self.checklist_context.record_event("G14_SELFHOST_INPUT_SANDBOX", "post_generation", "REFUSAL", message="self-host not ready")
+                            from shieldcraft.services.governance.refusal_authority import record_refusal_event
+                            record_refusal_event(self.checklist_context, "G14_SELFHOST_INPUT_SANDBOX", "post_generation", message="self-host not ready", justification="selfhost_not_ready", trigger="missing_authority")
                         except Exception:
                             pass
                 except Exception:
@@ -884,7 +1191,8 @@ class Engine:
                     try:
                         if getattr(self, 'checklist_context', None):
                             try:
-                                self.checklist_context.record_event("G15_DISALLOWED_SELFHOST_ARTIFACT", "post_generation", "REFUSAL", message=f"disallowed_selfhost_artifact: {rel_path}", evidence={"path": rel_path})
+                                from shieldcraft.services.governance.refusal_authority import record_refusal_event
+                                record_refusal_event(self.checklist_context, "G15_DISALLOWED_SELFHOST_ARTIFACT", "post_generation", message=f"disallowed_selfhost_artifact: {rel_path}", evidence={"path": rel_path}, justification="disallowed_selfhost_artifact", trigger="missing_authority", scope=f"path:{rel_path}")
                             except Exception:
                                 pass
                     except Exception:

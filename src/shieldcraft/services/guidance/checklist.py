@@ -149,6 +149,15 @@ def enrich_with_confidence_and_evidence(items: List[Dict], spec: Dict | None = N
         if is_prose and not it.get("invariants_from_spec"):
             it["confidence"] = "low"
             it["inferred_from_prose"] = True
+            # Explainability metadata for prose inference
+            it.setdefault("meta", {})
+            it["meta"].setdefault("source", "inferred")
+            it["meta"].setdefault("justification", "heuristic_prose_keyword_match")
+            it["meta"].setdefault("justification_ptr", it.get('ptr'))
+            it["meta"].setdefault("inference_type", "heuristic")
+            it["meta"].setdefault("tier", "C")
+            # Confidence provenance for auditability
+            it["confidence_meta"] = {"source": "heuristic:prose", "justification": "heuristic_prose_keyword_match"}
             # source excerpt hash for provenance
             excerpt_text = str(value) if value is not None else str(text or "")
             excerpt = excerpt_text[:512]
@@ -157,10 +166,19 @@ def enrich_with_confidence_and_evidence(items: List[Dict], spec: Dict | None = N
             # Derived from explicit fields/invariants/instructions
             if it.get("invariants_from_spec"):
                 it["confidence"] = "high"
+                it["confidence_meta"] = {"source": "invariant", "justification": "invariant_present"}
             elif "/instructions" in (ptr or "") or "/invariants" in (ptr or ""):
                 it["confidence"] = "high"
+                it["confidence_meta"] = {"source": "instruction", "justification": "explicit_instruction_or_invariant"}
             else:
                 it["confidence"] = "medium"
+                # Attach explainability for deterministic-derived confidence
+                it.setdefault("meta", {})
+                it["meta"].setdefault("source", "derived")
+                it["meta"].setdefault("justification", "explicit_fields")
+                it["meta"].setdefault("inference_type", "structural")
+                it["meta"].setdefault("tier", "B")
+                it["confidence_meta"] = {"source": "derived", "justification": "explicit_fields"}
 
         # Intent category detection (keyword-based)
         lowtxt = (text or "").lower()

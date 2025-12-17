@@ -28,6 +28,12 @@ class CodeGenerator:
     # Source Node Type: {source_node_type}
     #
     """
+        # Include placeholder provenance if template used default placeholders
+        try:
+            if (item.get("meta") or {}).get("template_placeholders"):
+                header += f"# Placeholder defaults used in template: true\n"
+        except Exception:
+            pass
         # Ensure header is the first content (strip leading newlines)
         return header + content.lstrip("\n")
 
@@ -56,6 +62,14 @@ class CodeGenerator:
                         template_path = self.template_dir / (entry["template_name"] + ".txt")
 
                     template = template_path.read_text()
+                    # Detect Jinja placeholders that use default(...) — record placeholder provenance on item meta
+                    try:
+                        if "| default(" in template:
+                            if "meta" not in source_item:
+                                source_item["meta"] = {}
+                            source_item["meta"]["template_placeholders"] = True
+                    except Exception:
+                        pass
 
                     context = {
                         "name": module.get("name", "UnknownModule"),
