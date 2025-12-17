@@ -54,10 +54,22 @@ def test_engine_refuses_on_persona_veto(monkeypatch):
     from shieldcraft.persona import PersonaContext, emit_veto
     monkeypatch.setenv("SHIELDCRAFT_PERSONA_ENABLED", "1")
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
+    # Attach a simple context to capture events
+    class StubCtx:
+        def __init__(self):
+            self._events = []
+        def record_event(self, code, phase, severity, message=None, evidence=None):
+            self._events.append({"code": code, "phase": phase, "severity": severity, "message": message, "evidence": evidence})
+        def get_events(self):
+            return self._events
+    engine.checklist_context = StubCtx()
+
     spec = json.load(open("spec/se_dsl_v1.spec.json"))
-    # Emit veto and ensure preflight raises persona_veto
+    # Emit veto and ensure preflight treats it as advisory (no exception)
     p = PersonaContext(name="x", role=None, display_name=None, scope=["preflight"], allowed_actions=["veto"], constraints={})
     emit_veto(engine, p, "preflight", "forbid", {"explanation_code": "reason", "details": "stop"}, "high")
-    with pytest.raises(RuntimeError) as e:
-        engine.preflight(spec)
-    assert "persona_veto" in str(e.value)
+    res = engine.preflight(spec)
+    assert res.get("ok") is True
+    # advisory persona veto recorded as DIAGNOSTIC event
+    evs = engine.checklist_context.get_events()
+    assert any(e.get("code") == "G7_PERSONA_VETO" and e.get("severity") == "DIAGNOSTIC" for e in evs)

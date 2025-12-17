@@ -5,6 +5,15 @@ import shutil
 from shieldcraft.engine import Engine
 from shieldcraft.persona import Persona, PersonaContext, emit_annotation, emit_veto
 
+# Reusable stub
+class StubCtx:
+    def __init__(self):
+        self._events = []
+    def record_event(self, code, phase, severity, message=None, evidence=None):
+        self._events.append({"code": code, "phase": phase, "severity": severity, "message": message, "evidence": evidence})
+    def get_events(self):
+        return self._events
+
 
 def test_persona_annotation_does_not_affect_outputs(tmp_path, monkeypatch):
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
@@ -28,15 +37,25 @@ def test_persona_veto_halts_execution_cleanly(tmp_path, monkeypatch):
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
     spec = json.load(open("spec/se_dsl_v1.spec.json"))
     monkeypatch.setenv("SHIELDCRAFT_PERSONA_ENABLED", "1")
+    # attach a simple event capturing context
+    class StubCtx:
+        def __init__(self):
+            self._events = []
+        def record_event(self, code, phase, severity, message=None, evidence=None):
+            self._events.append({"code": code, "phase": phase, "severity": severity, "message": message, "evidence": evidence})
+        def get_events(self):
+            return self._events
+    engine.checklist_context = StubCtx()
+
     persona = PersonaContext(name="fiona", role="reviewer", display_name="Fiona", scope=["preflight"], allowed_actions=["veto"], constraints={})
     # Emit veto with structured explanation
     emit_veto(engine, persona, "preflight", "forbidden", {"explanation_code": "forbidden_reason", "details": "vetoed by persona"}, "high")
 
-    try:
-        engine.preflight(spec)
-        assert False, "Expected persona_veto RuntimeError"
-    except RuntimeError as e:
-        assert "persona_veto" in str(e)
+    # Preflight proceeds; persona veto is advisory and recorded
+    res = engine.preflight(spec)
+    assert res.get("ok") is True
+    evs = engine.checklist_context.get_events()
+    assert any(e.get("code") == "G7_PERSONA_VETO" for e in evs)
 
 
 def test_multi_persona_resolution(tmp_path, monkeypatch):
@@ -47,9 +66,12 @@ def test_multi_persona_resolution(tmp_path, monkeypatch):
     p2 = PersonaContext(name="b", role=None, display_name=None, scope=["preflight"], allowed_actions=["veto"], constraints={})
     emit_veto(engine, p1, "preflight", "lowcode", {"explanation_code": "low", "details": "low severity"}, "low")
     emit_veto(engine, p2, "preflight", "highcode", {"explanation_code": "high", "details": "high severity"}, "high")
-    try:
-        engine.preflight(spec)
-        assert False, "Expected persona_veto"
-    except RuntimeError as e:
-        # Should pick the high severity veto from persona b
-        assert "b:highcode" in str(e)
+    # Preflight now treats persona vetoes as advisory; ensure selection resolves to persona b and an advisory event exists
+    engine.checklist_context = StubCtx()
+    res = engine.preflight(spec)
+    assert res.get("ok") is True
+    # highest severity veto selected should be from persona b
+    sel = getattr(engine, "_persona_veto_selected", None)
+    assert sel is not None and sel.get("persona_id") == "b" and sel.get("code") == "highcode"
+    evs = engine.checklist_context.get_events()
+    assert any(e.get("code") == "G7_PERSONA_VETO" for e in evs)

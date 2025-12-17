@@ -91,3 +91,45 @@ def classify_dsl_sections(spec: Dict[str, Any], schema_path: str) -> Dict[str, D
         }
 
     return out
+
+
+def check_spec_sufficiency(spec: Dict[str, Any]):
+    """Return a deterministic list of insufficiency diagnostics.
+
+    Criteria (deterministic):
+    - No agents defined or empty agents list -> NO_AGENTS (medium)
+    - artifact_contract exists and has no artifacts -> NO_ARTIFACTS (medium)
+    - No pipeline states -> NO_PIPELINE_STATES (low)
+    """
+    findings = []
+    if spec is None:
+        return findings
+
+    agents = spec.get('agents')
+    if agents is None or (isinstance(agents, list) and len(agents) == 0):
+        findings.append({
+            'code': 'NO_AGENTS',
+            'message': 'No agents declared in spec; nothing will execute',
+            'severity': 'medium',
+            'pointer': '/agents'
+        })
+
+    ac = spec.get('artifact_contract')
+    if ac is None or (isinstance(ac, dict) and not ac.get('artifacts')):
+        findings.append({
+            'code': 'NO_ARTIFACTS',
+            'message': 'Artifact contract has no artifacts declared',
+            'severity': 'medium',
+            'pointer': '/artifact_contract'
+        })
+
+    pipeline = spec.get('pipeline')
+    if pipeline is None or (isinstance(pipeline, dict) and not pipeline.get('states')):
+        findings.append({
+            'code': 'NO_PIPELINE_STATES',
+            'message': 'Pipeline states missing; execution order may be unspecified',
+            'severity': 'low',
+            'pointer': '/pipeline'
+        })
+
+    return findings

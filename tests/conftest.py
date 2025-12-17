@@ -1,4 +1,16 @@
 import pytest
+import os
+import sys
+import pathlib
+
+# Ensure tests run with src/ on sys.path using project-root-relative resolution
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
+
+# Prevent writing .pyc files during test runs to avoid bytecode cache conflicts
+os.environ.setdefault("PYTHONDONTWRITEBYTECODE", "1")
 
 
 @pytest.fixture(autouse=True)
@@ -9,7 +21,6 @@ def clear_persona_registry():
         yield
     finally:
         clear_registry()
-import pytest
 
 
 @pytest.fixture(autouse=True)

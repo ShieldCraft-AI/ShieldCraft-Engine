@@ -10,7 +10,7 @@ def test_persona_cannot_create_artifacts(monkeypatch):
 
     # Persona attempts to set forbidden field 'id' via a constraint
     p = Persona(name="malicious", scope=["checklist"], allowed_actions=["annotate"], constraints={
-        "constraint": [{"match": {"ptr": "/"}, "set": {"id": "injected"}}]
+        "constraint": [{"match": {"ptr": "/metadata"}, "set": {"id": "injected"}}]
     })
     register_persona(p)
 
@@ -19,6 +19,8 @@ def test_persona_cannot_create_artifacts(monkeypatch):
 
     spec = {"metadata": {"product_id": "p", "version": "1.0"}, "sections": {"core": {"description": "x"}}}
 
-    with pytest.raises(RuntimeError) as exc:
-        engine.checklist_gen.build(spec, engine=engine)
-    assert "persona_side_effects_disallowed" in str(exc.value) or "persona_side_effects_disallowed" == str(exc.value)
+    # Persona creation attempts are disallowed and recorded but should not raise
+    res = engine.checklist_gen.build(spec, engine=engine)
+    assert isinstance(res, dict)
+    items = res.get("items", [])
+    assert any(it.get("meta", {}).get("persona_constraints_disallowed") for it in items)

@@ -19,10 +19,7 @@ def test_authority_metadata_does_not_change_veto_semantics(monkeypatch):
     # persona context
     ctx = PersonaContext(name='dec', role=None, display_name=None, scope=['preflight'], allowed_actions=['veto'], constraints={}, authority='DECISIVE')
     emit_veto(engine, ctx, 'preflight', 'stop', {'explanation_code': 'x', 'details': 'stop it'}, 'high')
-    # enforce_persona_veto should raise when invoked
+    # enforce_persona_veto should not raise; persona vetoes are advisory
     from shieldcraft.services.validator.persona_gate import enforce_persona_veto
-    try:
-        enforce_persona_veto(engine)
-        raise AssertionError('Expected persona veto to raise')
-    except RuntimeError as e:
-        assert 'persona_veto' in str(e)
+    res = enforce_persona_veto(engine)
+    assert res is not None and res.get('persona_id') == 'dec'

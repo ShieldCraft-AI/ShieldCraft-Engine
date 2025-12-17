@@ -17,6 +17,8 @@ class ChecklistModel:
     def normalize_item(self, item):
         # Require explicit traceability: prefer explicit 'spec_pointer'.
         if "spec_pointer" not in item and "ptr" not in item:
+            # Preserve original value for auditability
+            original = dict(item)
             # Record validation event and synthesize a spec_pointer instead of raising
             try:
                 from shieldcraft.services.checklist.context import record_event_global
@@ -31,6 +33,14 @@ class ChecklistModel:
             item["spec_pointer"] = item["ptr"]
             item.setdefault("meta", {})
             item["meta"].setdefault("validation_errors", []).append("missing_spec_pointer")
+            # Preserve original value for provenance
+            item["meta"].setdefault("original_value", original)
+            # Explainability metadata for coercion
+            item["meta"].setdefault("source", "coerced")
+            item["meta"].setdefault("justification", "missing_spec_pointer")
+            item["meta"].setdefault("justification_ptr", item.get('ptr'))
+            item["meta"].setdefault("inference_type", "structural")
+            item["meta"].setdefault("tier", None)
             item["severity"] = "high"
             item["quality_status"] = "INVALID"
             return item
@@ -38,6 +48,17 @@ class ChecklistModel:
         if "spec_pointer" not in item and "ptr" in item:
             item["spec_pointer"] = item["ptr"]
         # Ensure test_refs field exists (may be empty until final validation)
+        # Defensive: if meta exists but is not a dict, coerce it early to avoid attribute errors
+        if "meta" in item and not isinstance(item.get("meta"), dict):
+            original_meta = item.get("meta")
+            item["meta"] = {"coerced_meta": True}
+            item["meta"].setdefault("validation_errors", []).append("item_meta_not_dict")
+            item["meta"].setdefault("original_value", original_meta)
+            item["meta"].setdefault("source", "coerced")
+            item["meta"].setdefault("justification", "item_meta_not_dict")
+            item["meta"].setdefault("inference_type", "coercion")
+            item["severity"] = "high"
+            item["quality_status"] = "INVALID"
         if "test_refs" not in item:
             item["test_refs"] = item.get("meta", {}).get("test_refs", [])
         ptr = item.get("ptr")
@@ -54,9 +75,16 @@ class ChecklistModel:
             except Exception:
                 pass
             # Convert id to string and mark validation note (do not raise)
+            orig_id = item.get("id")
             item["id"] = str(item.get("id"))
             item.setdefault("meta", {})
             item["meta"].setdefault("validation_errors", []).append("item_id_not_string")
+            # Preserve original value for auditability
+            item["meta"].setdefault("original_value", orig_id)
+            # Explainability metadata for coercion
+            item["meta"].setdefault("source", "coerced")
+            item["meta"].setdefault("justification", "item_id_not_string")
+            item["meta"].setdefault("inference_type", "coercion")
             item["severity"] = "high"
             item["quality_status"] = "INVALID"
         
@@ -71,8 +99,15 @@ class ChecklistModel:
             except Exception:
                 pass
             # Replace invalid type with 'task' fallback and mark invalid (do not raise)
+            original_type = item.get('type')
             item.setdefault("meta", {})
             item["meta"].setdefault("validation_errors", []).append(f"item_type_not_allowed:{item.get('type')}")
+            # Preserve original value for auditability
+            item["meta"].setdefault("original_value", original_type)
+            # Explainability metadata for coercion/fallback
+            item["meta"].setdefault("source", "coerced")
+            item["meta"].setdefault("justification", f"item_type_not_allowed:{original_type}")
+            item["meta"].setdefault("inference_type", "coercion")
             item["severity"] = "high"
             item["quality_status"] = "INVALID"
             item["type"] = "task"
@@ -89,9 +124,17 @@ class ChecklistModel:
                     pass
             except Exception:
                 pass
+            # Preserve original meta object for auditability
+            original_meta = item.get('meta')
             # Coerce meta to dict and mark validation error (do not raise)
             item["meta"] = {"coerced_meta": True}
             item["meta"].setdefault("validation_errors", []).append("item_meta_not_dict")
+            # Preserve original value for lineage
+            item["meta"].setdefault("original_value", original_meta)
+            # Explainability metadata for coercion
+            item["meta"].setdefault("source", "coerced")
+            item["meta"].setdefault("justification", "item_meta_not_dict")
+            item["meta"].setdefault("inference_type", "coercion")
             item["severity"] = "high"
             item["quality_status"] = "INVALID"
         

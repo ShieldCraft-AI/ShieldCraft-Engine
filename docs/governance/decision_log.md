@@ -140,3 +140,91 @@ Authoritative decisions made on 2025-12-13 (Phase 13 kickoff). All decisions rec
   - A documented inventory, gaps report, and simplification summary accompany the consolidation (`docs/governance/PERSONA_DOCUMENT_INVENTORY.md`, `PERSONA_PROTOCOL_GAPS.md`, `PERSONA_PROTOCOL_SIMPLIFICATION_SUMMARY.md`).
 - Rationale: Reduce documentation surface, make persona expectations explicit and auditable, and preserve historical artifacts for traceability; no runtime behavior was changed in Phase 7.
 - See: `docs/governance/PHASE_8_CLOSURE.md` (Phase 8 closure recorded).
+
+## Phase 10 Closed — Outcome Semantics Locked (2025-12-16)
+- Decision: LOCKED
+- Summary: Implementation and verification work to centralize and lock checklist outcome derivation is complete. The canonical function `derive_primary_outcome(checklist, events)` is the single authoritative derivation point; `finalize_checklist` calls it exactly once and records a deterministic fallback only in exceptional failure cases.
+- Evidence: Deterministic unit tests (`tests/test_primary_outcome_determinism.py`, `tests/test_outcome_semantics_lock.py`) and CI guard (`tests/ci/test_outcome_authoritative_guard.py`) verify single-call enforcement, order independence, and determinism.
+- Constraints: No new outcome types, persona semantics, or behavior were introduced as part of this lock; any future semantic changes require governance-approved RFC.
+- Status: LOCKED
+
+## Phase 11A Closed — Compiler Hardening (2025-12-16)
+- Decision: LOCKED
+- Summary: Compiler hardening measures (Tier enforcement, default synthesis, spec sufficiency diagnostics, and deterministic checklist quality scoring) have been implemented and verified. The compiler pipeline now synthesizes safe defaults for Tier A/B sections, emits deterministic checklist items for missing or synthesized fields, and computes a non-user-facing `checklist_quality` score used to surface weak outputs.
+- Evidence: Deterministic unit tests (`tests/test_template_tier_enforcement.py`, `tests/test_spec_default_synthesis.py`, `tests/test_spec_sufficiency_diagnostics.py`, `tests/test_checklist_quality_scoring.py`) and CI guards (`tests/test_compiler_hardening_guards.py`) verify behavior and determinism.
+- Constraints: No changes to persona protocols, checklist outcome semantics, or new outcome types were introduced. All enforcement is deterministic and documented in `docs/governance/TEMPLATE_COMPILATION_CONTRACT.md` and `docs/governance/INVARIANTS.md`.
+- Status: LOCKED
+
+## Phase 11B Closed — Inference Boundaries Locked (2025-12-16)
+- Decision: LOCKED
+- Summary: The Inference Explainability Contract is AUTHORITATIVE and implemented: all inferred, synthesized, coerced, or derived artifacts now include `meta.source`, `meta.justification`, `meta.inference_type`, and `meta.tier` where applicable. Tier-specific inference ceilings are enforced (Tier A requires explicit missing-item visibility); refusal masking diagnostics were added for known REFUSAL gates to surface missing authority.
+- Evidence: Tests (`tests/test_inference_explainability.py`) verify explainability metadata, invariant explainability, and refusal masking diagnostics; `docs/governance/INFERENCE_EXPLAINABILITY_CONTRACT.md` and `docs/governance/INVARIANTS.md` are updated to declare the lock.
+- Constraints: No new outcome types or persona protocol changes were introduced; all changes preserve determinism and single authoritative sources.
+- Status: LOCKED
+
+## Phase 11C Closed — Refusal Authority Locked (2025-12-17)
+- Decision: LOCKED
+- Summary: The Refusal Authority Contract is implemented: authoritative gate→authority mapping added in `src/shieldcraft/services/governance/refusal_authority.py`, `record_refusal_event` helper added and used across engine refusal gates to attach structured refusal metadata, `finalize_checklist` enforces presence of `authority` and surfaces `checklist.refusal_authority`, and paired diagnostics for missing authority are emitted.
+- Evidence: Unit tests (`tests/test_refusal_authority.py`), CI guard (`tests/ci/test_refusal_authority_persistence.py`), and the contract document `docs/governance/REFUSAL_AUTHORITY_CONTRACT.md`.
+- Status: LOCKED
+
+## Phase 11D Closed — Inference Explainability & Provenance Locked (2025-12-17)
+- Decision: LOCKED
+- Summary: The Inference Explainability Contract has been expanded and locked to require canonical metadata (`meta.source`, `meta.justification`, `meta.inference_type`) for all synthesized, coerced, derived, and inferred values. BLOCKER and REFUSAL-related inferences MUST include pointer-level provenance via `meta.justification_ptr` or by embedding the pointer in `meta.justification`.
+- Evidence: Contract `docs/governance/INFERENCE_EXPLAINABILITY_CONTRACT.md` updated to canonicalize the schema and provenance requirements; unit tests updated and new CI guards (`tests/ci/test_explainability_guards.py`) added to assert explainability presence; generator, model, derived, and guidance modules updated to attach `meta.*` fields deterministically.
+- Status: LOCKED
+
+## Phase 11E Closed — Explainability Provenance Locked (2025-12-17)
+- Decision: LOCKED
+- Summary: Phase 11E enforces comprehensive provenance: all synthesized defaults include tiered provenance and events (Tier A -> BLOCKER+DIAGNOSTIC, Tier B -> DIAGNOSTIC), all coercions preserve original values via `meta.original_value`, derived tasks include `meta.derived_from` and rule-level justifications, confidences include `confidence_meta`, and unknown invariants are surfaced as DIAGNOSTIC items with `explainability` metadata.
+- Evidence: Implementation across `src/shieldcraft/services/spec/defaults.py`, `src/shieldcraft/services/checklist/generator.py`, `src/shieldcraft/services/checklist/model.py`, `src/shieldcraft/services/checklist/derived.py`, `src/shieldcraft/services/guidance/checklist.py`, unit tests in `tests/test_explainability_phase11e.py`, and CI guards under `tests/ci/`.
+- Status: LOCKED
+
+
+## Phase 12 Closed — Authority Ceiling Locked (2025-12-17)
+- Decision: LOCKED
+- Summary: Phase 12 enforces authority ceilings via guard-only assertions: Tier A syntheses must be accompanied by BLOCKER events and REFUSAL outcomes require explicit authority metadata. The compiler will fail-fast when an authority ceiling is violated rather than silently escalating authority.
+- Evidence: Centralized assertion added to `finalize_checklist` to validate Tier A synthesis visibility, unit tests in `tests/test_authority_ceiling.py` verifying assertion behavior, and the authoritative contract at `docs/governance/AUTHORITY_CEILING_CONTRACT.md`.
+- Status: LOCKED
+
+
+## Phase 13 Closed — Over-Spec Tolerance Locked (2025-12-17)
+- Decision: LOCKED
+- Summary: Phase 13 guarantees compiler stability under redundant, overly-detailed, or large specifications. The compiler will surface explicit conflicts rather than resolving them, avoid authority escalation due to redundant content, and maintain determinism at scale.
+- Evidence: Tests added in `tests/test_over_spec_tolerance.py` covering redundancy tolerance, over-spec stability, conflict visibility, and scale invariance; authoritative contract at `docs/governance/OVER_SPEC_TOLERANCE_CONTRACT.md`.
+- Status: LOCKED
+
+
+## Phase 14 Closed — Template Swap & Versioning Locked (2025-12-17)
+- Decision: LOCKED
+- Summary: Phase 14 ensures templates are pluggable and non-authoritative: template versions and swaps affect only rendering/provenance metadata and do not change checklist outcomes or authority ceilings. Missing templates fall back deterministically without escalating authority.
+
+## Phase 16 Closed — Test & CI Stability Locked (2025-12-17)
+- Decision: AUTHORITATIVE
+- Summary: Test collection and CI stability practices are locked. Duplicate test basenames across directories are disallowed; the test runner will fail on duplicate basenames. Bytecode cache pollution (`__pycache__`, `.pyc`) is purged/ignored during CI runs. Pytest discovery is normalized via `pytest.ini` with explicit `testpaths` and `norecursedirs`.
+- Implementation: Renamed conflicting test files to deterministic names, added `pytest.ini`, added `tests/conftest.py` session setup to set `PYTHONDONTWRITEBYTECODE=1` and ensure `src/` is on `sys.path`, added guard tests `tests/ci/test_no_duplicate_test_basenames.py` and `tests/ci/test_no_relative_imports.py`, and helper script `scripts/ci/clean_pycache.py` to purge stale bytecode.
+- Cross-reference: `docs/governance/TEST_COLLECTION_STABILITY_CONTRACT.md` (AUTHORITATIVE)
+
+
+
+## Phase 15 Closed — Persona Protocol Boundary Locked (2025-12-17)
+- Decision: AUTHORITATIVE
+- Summary: Personas are locked as advisory specialists only: they may record annotations, diagnostics, and advisory constraints but MUST NOT cause refusal, inject BLOCKERs, or mutate checklist semantics. Attempts to mutate forbidden fields are recorded and surfaced as DIAGNOSTIC events; persona vetoes are recorded advisory-only and do not raise REFUSALs.
+- Implementation: Runtime guards were added to record and downgrade persona vetoes to DIAGNOSTIC events (`G7_PERSONA_VETO`) and to record disallowed constraint attempts as `G15_PERSONA_CONSTRAINT_DISALLOWED` DIAGNOSTIC events; deterministic tests (`tests/persona/*`) verify routing invariance, decision precedence, non-interference, and scale/order invariance.
+- Cross-reference: `docs/governance/PERSONA_NON_AUTHORITY_CONTRACT.md` (AUTHORITATIVE), `docs/governance/AUTHORITY_CEILING_CONTRACT.md`, `docs/governance/TEMPLATE_NON_AUTHORITY_CONTRACT.md`
+- Evidence: Tests `tests/test_template_non_authority.py` verify template-version invariance, fallback determinism, template non-authority guards, and scale invariance; authoritative contract at `docs/governance/TEMPLATE_NON_AUTHORITY_CONTRACT.md`.
+- Status: LOCKED
+
+## Phase 11B Closed — Inference Boundaries Locked (2025-12-16)
+- Decision: LOCKED
+- Summary: Inference explainability contract and enforcement are implemented. All synthesis, coercion, derivation, and inference sites attach `meta` explainability metadata in conformance with `INFERENCE_EXPLAINABILITY_CONTRACT.md`. The compiler includes assertion guards preventing Tier A inferences without explicit checklist items and explainability metadata.
+- Evidence: Deterministic unit tests (`tests/test_inference_explainability.py`, augmented `tests/test_compiler_hardening_guards.py`) and invariant assertions verify compliance.
+- Constraints: No new outcome types or persona protocol changes were introduced; all explainability metadata is deterministic and machine-readable.
+- Status: LOCKED
+
+## Phase 11B Closed — Inference Boundaries Locked (2025-12-16)
+- Decision: LOCKED
+- Summary: The Inference Explainability Contract has been implemented and enforced across compiler inference sites. All synthesized, inferred, coerced, or derived artifacts now carry machine-readable explainability metadata (`meta.source`, `meta.justification`, `meta.inference_type`, and where applicable `meta.tier`). Compiler assertions and tests ensure Tier A inferences are recorded as explicit checklist items and prevent silent semantic substitution.
+- Evidence: Added contract doc `docs/governance/INFERENCE_EXPLAINABILITY_CONTRACT.md`, unit tests (`tests/test_inference_explainability.py`), invariant updates (`docs/governance/INVARIANTS.md`), and compile-time guard assertions embedded in `ChecklistGenerator.build`.
+- Constraints: No persona protocol or outcome semantics changes were made. The changes are deterministic and auditable.
+- Status: LOCKED

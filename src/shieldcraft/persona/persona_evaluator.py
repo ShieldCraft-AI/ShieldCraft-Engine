@@ -55,16 +55,21 @@ def evaluate_personas(engine, personas: List[Any], items: List[Dict[str, Any]], 
         for rule in p.constraints.get("constraint", []):
             match = rule.get("match", {})
             setter = rule.get("set", {})
-            # Sanity: prevent persona from changing identifiers or creating artifacts
-            forbidden = set(["id", "ptr", "generated", "artifact"])
-            if any(k in forbidden for k in setter.keys()):
-                raise RuntimeError("persona_side_effects_disallowed")
+            # Sanity: prevent persona from changing identifiers, semantic outcome fields, or creating artifacts
+            forbidden = set(["id", "ptr", "generated", "artifact", "severity", "refusal", "outcome"])
+            disallowed = any(k in forbidden for k in setter.keys())
             for item in items:
                 if _matches(item, match):
-                    # Record the constraint for the caller to apply deterministically
-                    constraints_to_apply.append({"persona": p.name, "item_id": item.get("id"), "set": setter})
-                    applied += 1
-                    # Record the decision for audit (non-mutating)
-                    record_decision(engine, p.name, phase, {"action": "constraint", "match": match, "set": setter})
+                    # If the setter contains disallowed keys, record intent but do not raise;
+                    # the generator layer will surface this as a DIAGNOSTIC and will not apply the mutation.
+                    if disallowed:
+                        constraints_to_apply.append({"persona": p.name, "item_id": item.get("id"), "item_ptr": item.get("ptr"), "set": setter, "disallowed": True, "match": match})
+                        # Record the decision for audit (non-mutating, disallowed)
+                        record_decision(engine, p.name, phase, {"action": "constraint_disallowed", "match": match, "attempt": setter})
+                    else:
+                        # Record the constraint for the caller to apply deterministically
+                        constraints_to_apply.append({"persona": p.name, "item_id": item.get("id"), "item_ptr": item.get("ptr"), "set": setter, "match": match})
+                        # Record the decision for audit (non-mutating)
+                        record_decision(engine, p.name, phase, {"action": "constraint", "match": match, "set": setter})
 
     return {"vetoes": vetoes, "constraints_applied": applied, "constraints": constraints_to_apply}

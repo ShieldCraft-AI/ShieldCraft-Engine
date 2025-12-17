@@ -23,6 +23,17 @@ def test_persona_veto_halts_engine(monkeypatch, tmp_path):
     # Minimal spec that will produce at least one checklist item
     spec = {"metadata": {"product_id": "p", "version": "1.0"}, "sections": {"core": {"description": "x"}}}
 
-    with pytest.raises(RuntimeError) as exc:
-        engine.checklist_gen.build(spec, engine=engine)
-    assert "persona_veto" in str(exc.value)
+    # Persona veto is advisory; build proceeds normally and records advisory event
+    # attach a simple context to capture events
+    class StubCtx:
+        def __init__(self):
+            self._events = []
+        def record_event(self, code, phase, severity, message=None, evidence=None):
+            self._events.append({"code": code, "phase": phase, "severity": severity, "message": message, "evidence": evidence})
+        def get_events(self):
+            return self._events
+    engine.checklist_context = StubCtx()
+    res = engine.checklist_gen.build(spec, engine=engine)
+    assert isinstance(res, dict)
+    evs = engine.checklist_context.get_events()
+    assert any(e.get("code") == "G7_PERSONA_VETO" for e in evs)

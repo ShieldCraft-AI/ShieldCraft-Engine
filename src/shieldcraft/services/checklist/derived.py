@@ -61,7 +61,7 @@ def infer_tasks(item):
             "source_section": item.get("source_section", "unknown"),
             "lineage_id": parent_lineage_id,
             "source_node_type": parent_node_type,
-            "meta": {"parent_id": base_id, "derived_type": "module_test"}
+            "meta": {"parent_id": base_id, "derived_type": "module_test", "source": "derived", "derived_from": base_id, "justification": "derived_module_test", "justification_ptr": parent_spec_ptr, "inference_type": "structural"}
         })
         
         # Derive imports task
@@ -78,7 +78,7 @@ def infer_tasks(item):
             "source_section": item.get("source_section", "unknown"),
             "lineage_id": parent_lineage_id,
             "source_node_type": parent_node_type,
-            "meta": {"parent_id": base_id, "derived_type": "module_imports"}
+                "meta": {"parent_id": base_id, "derived_type": "module_imports", "source": "derived", "derived_from": base_id, "justification": "derived_module_imports", "justification_ptr": parent_spec_ptr, "inference_type": "structural"}
         })
         
         # Derive init structure task
@@ -95,7 +95,7 @@ def infer_tasks(item):
             "source_section": item.get("source_section", "unknown"),
             "lineage_id": parent_lineage_id,
             "source_node_type": parent_node_type,
-            "meta": {"parent_id": base_id, "derived_type": "module_init"}
+                "meta": {"parent_id": base_id, "derived_type": "module_init", "source": "derived", "derived_from": base_id, "justification": "derived_module_init", "justification_ptr": parent_spec_ptr, "inference_type": "structural"}
         })
     
     # Bootstrap derived tasks
@@ -113,7 +113,7 @@ def infer_tasks(item):
             "source_section": item.get("source_section", "unknown"),
             "lineage_id": parent_lineage_id,
             "source_node_type": parent_node_type,
-            "meta": {"parent_id": base_id, "derived_type": "bootstrap_impl"}
+                "meta": {"parent_id": base_id, "derived_type": "bootstrap_impl", "source": "derived", "derived_from": base_id, "justification": "derived_bootstrap_impl", "justification_ptr": parent_spec_ptr, "inference_type": "structural"}
         })
         # Add verification task for bootstrap components
         verify_payload = {"type": "verify", "ptr": ptr}
@@ -129,7 +129,7 @@ def infer_tasks(item):
             "source_section": item.get("source_section", "unknown"),
             "lineage_id": parent_lineage_id,
             "source_node_type": parent_node_type,
-            "meta": {"parent_id": base_id, "derived_type": "bootstrap_verify"}
+                "meta": {"parent_id": base_id, "derived_type": "bootstrap_verify", "source": "derived", "derived_from": base_id, "justification": "derived_bootstrap_verify", "justification_ptr": parent_spec_ptr, "inference_type": "structural"}
         })
     
     # Missing dependency derived tasks
@@ -151,7 +151,7 @@ def infer_tasks(item):
                     "source_section": item.get("source_section", "unknown"),
                     "lineage_id": parent_lineage_id,
                     "source_node_type": parent_node_type,
-                    "meta": {"parent_id": base_id, "derived_type": "fix-dependency", "dependency": dep}
+                    "meta": {"parent_id": base_id, "derived_type": "fix-dependency", "dependency": dep, "source": "derived", "derived_from": base_id, "justification": "derived_fix_dependency", "inference_type": "structural"}
                 })
     # Also detect dependencies inside value payload
     if isinstance(value, dict) and "dependencies" in value:
@@ -172,7 +172,7 @@ def infer_tasks(item):
                     "source_section": item.get("source_section", "unknown"),
                     "lineage_id": parent_lineage_id,
                     "source_node_type": parent_node_type,
-                    "meta": {"parent_id": base_id, "derived_type": "fix-dependency", "dependency": dep}
+                    "meta": {"parent_id": base_id, "derived_type": "fix-dependency", "dependency": dep, "source": "derived", "derived_from": base_id, "justification": "derived_fix_dependency", "inference_type": "structural"}
                 })
     
     # Invariant violation derived tasks
@@ -193,7 +193,16 @@ def infer_tasks(item):
                 "source_section": item.get("source_section", "unknown"),
                 "lineage_id": parent_lineage_id,
                 "source_node_type": parent_node_type,
-                "meta": {"parent_id": base_id, "derived_type": "set_product_id"}
+                "meta": {
+                    "parent_id": base_id,
+                    "derived_from": base_id,
+                    "derived_type": "set_product_id",
+                    "source": "derived",
+                    "justification": "missing_metadata_field:product_id",
+                    "justification_ptr": f"{ptr}/product_id",
+                    "inference_type": "structural",
+                    "tier": "A"
+                }
             })
         if "version" not in value:
             payload = {"type": "set", "field": "version"}
@@ -209,7 +218,16 @@ def infer_tasks(item):
                 "source_section": item.get("source_section", "unknown"),
                 "lineage_id": parent_lineage_id,
                 "source_node_type": parent_node_type,
-                "meta": {"parent_id": base_id, "derived_type": "set_version"}
+                "meta": {
+                    "parent_id": base_id,
+                    "derived_from": base_id,
+                    "derived_type": "set_version",
+                    "source": "derived",
+                    "justification": "missing_metadata_field:version",
+                    "justification_ptr": f"{ptr}/version",
+                    "inference_type": "structural",
+                    "tier": "A"
+                }
             })
     # legacy and structured invariant reporting
     invs = item.get("meta", {}).get("invariant_violations", []) or []
@@ -235,7 +253,7 @@ def infer_tasks(item):
             "source_section": item.get("source_section", "unknown"),
             "lineage_id": parent_lineage_id,
             "source_node_type": parent_node_type,
-            "meta": {"parent_id": base_id, "derived_type": "resolve-invariant", "invariant_id": invariant_id}
+            "meta": {"parent_id": base_id, "derived_type": "resolve-invariant", "invariant_id": invariant_id, "derived_from": base_id, "justification": f"resolve_invariant:{invariant_id}", "inference_type": "structural"}
         })
     
     return sorted(derived, key=lambda x: (x["ptr"], x.get("id", "")))

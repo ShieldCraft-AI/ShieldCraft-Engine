@@ -21,6 +21,9 @@ def test_persona_constraints_shape_checklist(monkeypatch):
 
     res = engine.checklist_gen.build(spec, engine=engine)
     items = res["items"]
-    # The metadata pointer should be constrained to severity 'low'
+    # Persona attempt to change severity should be disallowed and recorded
     md = [i for i in items if i.get("ptr") == "/metadata"]
-    assert md and md[0].get("severity") == "low"
+    assert md
+    assert any(it.get("meta", {}).get("persona_constraints_disallowed") for it in items)
+    # Ensure original severity retained (default behavior)
+    assert md[0].get("severity") != "low"

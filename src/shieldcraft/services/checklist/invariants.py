@@ -122,7 +122,33 @@ def evaluate_invariant(expr: str, context: dict) -> bool:
         return len(values) == len(set(values))
     
     # Default: assume true for unknown expressions (safe default)
+    # Record explainability info in context for the caller to attach to items
+    try:
+        if isinstance(context, dict):
+            ctxmap = context.setdefault('_invariant_eval_explain', {})
+            ctxmap[expr] = {'source': 'default_true', 'justification': 'unknown_expr_safe_default'}
+            try:
+                import logging
+                logging.getLogger(__name__).debug(f"evaluate_invariant: recorded safe default for expr={expr}")
+            except Exception:
+                pass
+    except Exception:
+        pass
     return True
+
+
+def is_known_expression(expr: str) -> bool:
+    """Return True if the expression matches supported expression patterns."""
+    if expr is None:
+        return False
+    expr = expr.strip()
+    if expr.startswith("exists(") and expr.endswith(")"):
+        return True
+    if expr.startswith("count("):
+        return True
+    if expr.startswith("unique(") and expr.endswith(")"):
+        return True
+    return False
 
 
 def _resolve_ptr(spec, ptr):

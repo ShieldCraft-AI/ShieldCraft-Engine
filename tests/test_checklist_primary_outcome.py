@@ -26,7 +26,8 @@ class E:
 def test_primary_outcome_success_no_events():
     engine = E()
     res = finalize_checklist(engine)
-    assert res["primary_outcome"] == "SUCCESS"
+    # No events and no items -> diagnostic by new contract
+    assert res["primary_outcome"] == "DIAGNOSTIC"
     assert res["refusal"] is False
 
 
@@ -35,7 +36,7 @@ def test_primary_outcome_diagnostic_only():
     engine.checklist_context.record_event("G6_VERIFICATION_SPINE_FAILURE", "preflight", "DIAGNOSTIC", message="d1")
     engine.checklist_context.record_event("G4_SCHEMA_VALIDATION", "preflight", "DIAGNOSTIC", message="d2")
     res = finalize_checklist(engine)
-    assert res["primary_outcome"] == "DIAGNOSTIC_ONLY"
+    assert res["primary_outcome"] == "DIAGNOSTIC"
     assert res["refusal"] is False
 
 
@@ -58,8 +59,8 @@ def test_primary_outcome_refusal_takes_precedence():
 
 def test_mixed_non_diagnostic_treated_as_success():
     engine = E()
-    # event with unknown/other outcome considered informational -> success per rules
+    # event with unknown/other outcome considered informational -> diagnostic under new contract
     engine.checklist_context.record_event("G_X_INFO", "post", "INFO", message="i1")
     res = finalize_checklist(engine)
-    assert res["primary_outcome"] == "SUCCESS"
+    assert res["primary_outcome"] == "DIAGNOSTIC"
     assert res["refusal"] is False
