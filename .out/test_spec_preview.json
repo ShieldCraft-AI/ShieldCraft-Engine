@@ -1,0 +1,2138 @@
+{
+  "fingerprint": "e182e1dd9c9198f7",
+  "output_dir": ".selfhost_outputs/e182e1dd9c9198f7",
+  "manifest": {
+    "fingerprint": "e182e1dd9c9198f7",
+    "manifest_version": "v1",
+    "spec_fingerprint": "e182e1dd9c9198f7",
+    "spec_metadata": {
+      "product_id": "unknown",
+      "spec_version": "0.0",
+      "spec_format": "canonical_json_v1",
+      "normalized": true,
+      "source_format": "text",
+      "source_material": "THE LITMUS ENGINE\n\nDeterministic Governance for Safe First Decisions\n\nInternal tagline:\nA senior reviewer that knows when not to speak.\n\n0. What This Is\n\nTHE LITMUS ENGINE is a zero-trust governance layer for code.\n\nIt is a deterministic engine that resolves structural information asymmetry before any change is committed.\n\nLitmus exists to answer one question, decisively and safely:\n\nWhat would be irresponsible to touch right now?\n\nThis repository contains an operational system that:\n\nConsumes a repository snapshot\n\nProduces signed, auditable decision artifacts\n\nExplicitly defines where action is safe, unsafe, or impossible\n\nRefuses to speak when evidence is insufficient\n\nIf this repository exists without artifacts, it is incorrect.\n\nIncorrectness should be obvious without reading documentation.\n\n1. Brutal Framing\nWho This Is For\n\nEngineers inheriting unfamiliar or legacy systems\n\nTechnical leads deciding where to apply pressure safely\n\nArchitects accountable for migration, refactor, or audit risk\n\nDue diligence reviewers assessing change exposure\n\nTeams optimizing for fewer irreversible mistakes\n\nWho This Is Not For\n\nCode style enforcement\n\nAutomated refactoring\n\nExhaustive issue discovery\n\nMetrics that reward activity\n\nTools that maximize findings\n\nNon-Negotiable Design Constraint\n\nLitmus enforces a deliberate architectural trade-off:\n\nPrecision over Exhaustivity.\n\nIt will sacrifice discovering N low-severity issues to achieve full confidence at the boundary of the Safe-to-Change Surface.\n\nIf your goal is speed through confidence, this is the wrong tool.\nIf your goal is speed through restraint, this is the tool.\n\n2. Why This Exists\n\nMost repository tools are optimized for exhaustive signal production.\n\nThey:\n\nDetect presence, not consequence\n\nConflate detection with importance\n\nSound confident where evidence is thin\n\nEncourage premature action\n\nLitmus is optimized for actionable signal suppression.\n\nFalse confidence causes more damage than missing information.\nThe most dangerous failure mode in unfamiliar systems is the wrong first change.\n\nLitmus exists to prevent that class of failure.\n\n3. Execution Boundary (Unavoidable)\n\nLitmus is not a library and not a suggestion engine.\n\nIt has a fixed execution boundary:\n\nRuns as a deterministic analysis step\n\nConsumes a repository snapshot\n\nProduces signed decision artifacts\n\nAdvisory by default\n\nBlocking only when explicitly configured\n\nBlocking is a governance choice.\nLitmus is strict only when strictness is justified.\n\n4. Proof of Seriousness (Structural, Not Aspirational)\n\nThe repository structure must make the following unavoidable.\n\n4.1 Governance Signature\n\nEvery run emits a canonical decision artifact and a SHA-256 hash.\n\nThis hash is the Litmus Governance Signature.\n\nIt binds guidance to the exact input state and makes the output auditable, reproducible, and non-repudiable.\n\nIdentical input must always produce the same signature.\n\nMissing or unstable signatures indicate failure.\n\n4.2 Refusal as a First-Class Artifact\n\nThe repository must contain a documented refusal case.\n\nExample condition:\n\nCritical migration logic exists without tests or contracts.\nNo safe change surface can be established.\n\nRefusal is a successful outcome.\n\nThe system must demonstrate more rigor around refusal than around detection.\n\n4.3 Misleading Signal Restraint\n\nThe repository must contain a case where:\n\nA na\u00efve tool would escalate\n\nLitmus explicitly does not\n\nThe restraint is evidence-anchored\n\nRestraint is treated as a capability, not an omission.\n\n5. Foundational Invariants\n5.1 Absolute Determinism\n\nNo timestamps\n\nNo randomness\n\nNo environment leakage\n\nCanonical traversal and ordering\n\nVerifiable governance signature\n\nDeterminism failures must look like broken builds, not TODOs.\n\n5.2 Observable Evidence Only\n\nPermitted signals:\n\nStructure and boundaries\n\nConfiguration and contracts\n\nTests and coverage\n\nDependency topology\n\nVersioning and migration artifacts\n\nForbidden signals:\n\nNaming interpretation\n\nComment sentiment\n\nHeuristic psychology\n\nRuntime speculation\n\n5.3 Enforced Restraint\n\nSeverity-gated output\n\nExplicit verbosity ceilings\n\n\u201cNothing notable\u201d is valid\n\nSilence is a required outcome\n\nSilence requires confidence, not laziness.\n\n6. Trust Contract\n\nEvery major conclusion must include at least one of:\n\nWhy the conclusion is reliable\n\nWhy it is explicitly bounded\n\nWhy a less disciplined tool would mislead here\n\nTrust is earned by exposing limits.\n\n7. Intent Modeling (Architectural Posture)\n\nLitmus does not infer motivation.\nIt classifies architectural posture.\n\n7.1 Permitted Signals\n\nBoundary enforcement\n\nGovernance strictness\n\nMigration and deprecation handling\n\nInvestment asymmetry\n\n7.2 Evolutionary Archetypes\n\nEach posture includes evidence, confidence, and expiration logic.\n\nExamples:\n\nThe Pressure Cooker\nPosture: High-Velocity Instability\n\nThe Museum\nPosture: Stagnant Entropy Hazard\n\nThe Construction Site\nPosture: Guarded Evolution\n\nThe Patchwork\nPosture: Uneven Maturity\n\n7.3 Calibration Effect\n\nPosture classification applies a calibration multiplier to severity gating.\n\nIdentical findings carry different weight depending on posture.\n\nPosture is the first risk filter.\n\n8. Safe-to-Change Surface (Primary Artifact)\n8.1 Conceptual Model\n\nThe Safe-to-Change Surface is a risk-aversion boundary model, not a score.\n\nIt is derived from two parameters:\n\nThe file set \n\ud835\udc39\nF\n\nThe maximum tolerable risk threshold \n\ud835\udf0f\n\u03c4\n\n8.2 Formal Definition\n\nThe Safe-to-Change Surface \n\ud835\udc39\n\ud835\udc46\n\u2282\n\ud835\udc39\nF\nS\n\t\u200b\n\n\u2282F is defined by the condition:\n\n\ud835\udc35\n(\n\ud835\udc53\n)\n\u2264\n\ud835\udf0f\nB(f)\u2264\u03c4\n\nNo-Touch Zones are the complement set \n\ud835\udc39\n\u2216\n\ud835\udc39\n\ud835\udc46\nF\u2216F\nS\n\t\u200b\n\n.\n\n8.3 Required Properties\n\nExplicit safe zones\n\nExplicit no-touch zones\n\nEvidence references\n\nExpiration logic\n\n8.4 Mandatory First Move\n\nEvery run must provide one of:\n\nA concrete safe first action\n\nAn explicit statement that no safe move exists\n\nAbsence of a safe surface is itself a finding.\n\n9. Strategic De-Prioritization Artifact\n\nLitmus must identify Negative ROI Optimization candidates.\n\nDefinition:\n\nIssues where the Cost of Change exceeds the Cost of Failure by an order of magnitude, based on observable invariants such as age, stability, and dependency isolation.\n\nThis artifact explicitly answers:\n\nWhat not to fix\n\nWhy it is benign\n\nWhen it would stop being benign\n\nThis is enforced, not optional.\n\n10. Uncertainty and Refusal\n10.1 Visible Uncertainty\n\nUncertainty must be:\n\nLocalized\n\nCalm\n\nExplicitly bounded\n\nNo absolutes where evidence is partial.\n\n10.2 Mandatory Refusal Conditions\n\nLitmus must refuse when:\n\nCritical paths lack tests or contracts\n\nBlast radius cannot be bounded\n\nConfiguration is contradictory\n\nRefusal is success.\n\n11. Multi-Language Boundary Control\n\nOne primary language per run\n\nSecondary languages analyzed structurally only\n\nNo semantic inference across boundaries\n\nThis prevents false authority.\n\n12. Output Contract\n12.1 Executive Summary\n\nConstraints:\n\nOne page maximum\n\nZero subjective adjectives\n\nEvery statement traceable to evidence\n\nMust answer:\n\nIs it safe to act\n\nWhere\n\nWhere not\n\nWhat is unknowable\n\n12.2 Decision Artifacts\n\nSafe-to-Change Surface\n\nNo-Touch Zones\n\nMisleading Signals\n\nFirst Recommended Action or Explicit Refusal\n\n12.3 Evidence Appendix\n\nEvidence references only\n\nNo commentary\n\nNo speculation\n\n13. Tone and Voice\n\nCalm\n\nDirect\n\nSenior\n\nNo hype\n\nNo AI voice\n\nReads like a VP-level technical memo.\n\n14. Deterministic Silence Requirement\n\nSeverity-gated verbosity\n\nExplicit \u201cNothing notable\u201d verdicts allowed\n\nBrevity enforced structurally\n\n15. Definition of Senior Judgment\n\nIn this system, senior judgment is defined as:\n\nCorrectly modeling second-order consequences and prioritizing structural integrity over feature velocity.\n\nLitmus supports this judgment.\nIt does not replace it.\n\n16. Final Litmus Test\n\nA senior engineer reading the output should think:\n\n\u201cThis is exactly what I would have said.\nAnd I trust it because it knows when not to speak.\u201d\n\nIf this fails, the implementation is incorrect.\n\n17. Why This Exists as a Narrow System\n\nIt prevents damage instead of producing noise\n\nIt treats restraint as a capability\n\nIt makes refusal executable\n\nIt is deterministic, auditable, and calm\n\nIt optimizes for safe first decisions\n\nThe narrowness is not a limitation.\nIt is the point."
+    },
+    "bootstrap_items": 0,
+    "codegen_bundle_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "outputs": [],
+    "provenance": {
+      "engine_version": "0.1.0",
+      "spec_fingerprint": "e182e1dd9c9198f7",
+      "snapshot_hash": null
+    }
+  },
+  "modules": [],
+  "codegen_bundle_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "lineage": {
+    "headers": {}
+  },
+  "checklist": [
+    {
+      "ptr": "/_order/agent",
+      "text": "Tasks in agent must execute after arch",
+      "value": {
+        "after": "arch",
+        "before": "agent"
+      },
+      "classification": "core",
+      "severity": "low",
+      "order_rank": [
+        3,
+        "core",
+        13,
+        "/_order/agent",
+        "Tasks in agent must execute after arch"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/_order/agent",
+          "line": 9011
+        },
+        "source_excerpt_hash": "1ce5ef78ab56",
+        "quote": "{'after': 'arch', 'before': 'agent'}"
+      },
+      "inferred_from_prose": true,
+      "confidence": "low",
+      "meta": {
+        "source": "inferred",
+        "justification": "heuristic_prose_keyword_match",
+        "justification_ptr": "/_order/agent",
+        "inference_type": "heuristic",
+        "tier": "C",
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "normalized"
+          ],
+          "chain_hash": "13f51f2bc689d35c"
+        }
+      },
+      "confidence_meta": {
+        "source": "heuristic:prose",
+        "justification": "heuristic_prose_keyword_match"
+      },
+      "intent_category": "safety",
+      "action": "Ensure Tasks in agent  execute after arch",
+      "id": "e2c3a3179e79",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/_order/agent",
+      "test_refs": [],
+      "category": "misc",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P0",
+      "blocking": false
+    },
+    {
+      "ptr": "/_order/api",
+      "text": "Tasks in api must execute after agent",
+      "value": {
+        "after": "agent",
+        "before": "api"
+      },
+      "classification": "api",
+      "severity": "low",
+      "order_rank": [
+        3,
+        "api",
+        11,
+        "/_order/api",
+        "Tasks in api must execute after agent"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/_order/api",
+          "line": 8639
+        },
+        "source_excerpt_hash": "7ed7a229fc6e",
+        "quote": "{'after': 'agent', 'before': 'api'}"
+      },
+      "inferred_from_prose": true,
+      "confidence": "low",
+      "meta": {
+        "source": "inferred",
+        "justification": "heuristic_prose_keyword_match",
+        "justification_ptr": "/_order/api",
+        "inference_type": "heuristic",
+        "tier": "C",
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "normalized"
+          ],
+          "chain_hash": "13f51f2bc689d35c"
+        }
+      },
+      "confidence_meta": {
+        "source": "heuristic:prose",
+        "justification": "heuristic_prose_keyword_match"
+      },
+      "intent_category": "safety",
+      "action": "Ensure Tasks in api  execute after agent",
+      "id": "f701bbead39f",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/_order/api",
+      "test_refs": [],
+      "category": "api",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P0",
+      "blocking": false
+    },
+    {
+      "ptr": "/_order/arch",
+      "text": "Tasks in arch must execute after meta",
+      "value": {
+        "after": "meta",
+        "before": "arch"
+      },
+      "classification": "core",
+      "severity": "low",
+      "order_rank": [
+        3,
+        "core",
+        12,
+        "/_order/arch",
+        "Tasks in arch must execute after meta"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/_order/arch",
+          "line": 5948
+        },
+        "source_excerpt_hash": "aa1fc9a3a370",
+        "quote": "{'after': 'meta', 'before': 'arch'}"
+      },
+      "inferred_from_prose": true,
+      "confidence": "low",
+      "meta": {
+        "source": "inferred",
+        "justification": "heuristic_prose_keyword_match",
+        "justification_ptr": "/_order/arch",
+        "inference_type": "heuristic",
+        "tier": "C",
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "normalized"
+          ],
+          "chain_hash": "13f51f2bc689d35c"
+        }
+      },
+      "confidence_meta": {
+        "source": "heuristic:prose",
+        "justification": "heuristic_prose_keyword_match"
+      },
+      "intent_category": "safety",
+      "action": "Ensure Tasks in arch  execute after meta",
+      "id": "a2330dec441f",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/_order/arch",
+      "test_refs": [],
+      "category": "misc",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P0",
+      "blocking": false
+    },
+    {
+      "ptr": "/agents",
+      "text": "SPEC INSUFFICIENT: No agents declared in spec; nothing will execute",
+      "meta": {
+        "insufficiency": "NO_AGENTS",
+        "source": "derived",
+        "justification": "explicit_fields",
+        "inference_type": "structural",
+        "tier": "B",
+        "candidate_tests": [
+          "test::test_spec_sufficiency_diagnostics.py::test_spec_sufficiency_finds_missing_agents_and_artifacts"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "severity": "low",
+      "classification": "core",
+      "synthesized_default": false,
+      "lineage_id": "missing_lineage:/agents",
+      "source_node_type": "unknown",
+      "_cat": "agent",
+      "order_rank": [
+        3,
+        "core",
+        7,
+        "/agents",
+        "SPEC INSUFFICIENT: No agents declared in spec; nothing will execute"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/agents",
+          "line": 8767
+        },
+        "quote": "SPEC INSUFFICIENT: No agents declared in spec; nothing will execute"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Ensure SPEC INSUFFICIENT: No agents declared in spec; nothing will execute",
+      "id": "1610279990f2",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/agents",
+      "test_refs": [],
+      "category": "agent",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P2",
+      "blocking": false
+    },
+    {
+      "ptr": "/api",
+      "text": "api depends on agents",
+      "value": {
+        "from": "agents",
+        "to": "api"
+      },
+      "_cat": "api",
+      "classification": "api",
+      "severity": "low",
+      "order_rank": [
+        3,
+        "api",
+        4,
+        "/api",
+        "api depends on agents"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/api",
+          "line": 1438
+        },
+        "quote": "{'from': 'agents', 'to': 'api'}"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "meta": {
+        "source": "derived",
+        "justification": "explicit_fields",
+        "inference_type": "structural",
+        "tier": "B",
+        "candidate_tests": [
+          "test::codegen/test_templates_render.py::test_render_api_handler_template"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "normalized"
+          ],
+          "chain_hash": "13f51f2bc689d35c"
+        }
+      },
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Ensure api depends on agents",
+      "id": "c5b7ebfd0a61",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/api",
+      "test_refs": [],
+      "category": "api",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P2",
+      "blocking": false
+    },
+    {
+      "ptr": "/architecture",
+      "text": "architecture depends on metadata",
+      "value": {
+        "from": "metadata",
+        "to": "architecture"
+      },
+      "_cat": "arch",
+      "classification": "core",
+      "severity": "low",
+      "order_rank": [
+        3,
+        "core",
+        13,
+        "/architecture",
+        "architecture depends on metadata"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/architecture",
+          "line": 465
+        },
+        "quote": "{'from': 'metadata', 'to': 'architecture'}"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "meta": {
+        "source": "derived",
+        "justification": "explicit_fields",
+        "inference_type": "structural",
+        "tier": "B",
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "normalized"
+          ],
+          "chain_hash": "13f51f2bc689d35c"
+        }
+      },
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Ensure architecture depends on metadata",
+      "id": "d63ff1bd048f",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/architecture",
+      "test_refs": [],
+      "category": "arch",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P2",
+      "blocking": false
+    },
+    {
+      "ptr": "/artifact_contract",
+      "text": "Missing template section: artifact_contract (Tier B)",
+      "meta": {
+        "section": "artifact_contract",
+        "tier": "B",
+        "synthesized_default": true,
+        "source": "default",
+        "justification": "safe_default_artifact_contract",
+        "justification_ptr": "/artifact_contract",
+        "inference_type": "safe_default",
+        "candidate_tests": [
+          "test::release/test_release_regressions.py::test_artifact_contract_summary_behavior",
+          "test::selfhost/test_artifact_contract_determinism.py::test_artifact_contract_summary_deterministic",
+          "test::services/guidance/test_artifact_contract.py::test_artifact_contract_summary_ready_guaranteed"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "severity": "low",
+      "classification": "core",
+      "lineage_id": "missing_lineage:/artifact_contract",
+      "source_node_type": "unknown",
+      "order_rank": [
+        3,
+        "core",
+        18,
+        "/artifact_contract",
+        "Missing template section: artifact_contract (Tier B)"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/artifact_contract",
+          "line": 606
+        },
+        "quote": "Missing template section: artifact_contract (Tier B)"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "output_contract",
+      "action": "Ensure Missing template section: artifact_contract (Tier B)",
+      "id": "dad37b6ca6c0",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/artifact_contract",
+      "test_refs": [],
+      "category": "misc",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P2",
+      "blocking": false
+    },
+    {
+      "ptr": "/determinism",
+      "text": "Missing template section: determinism (Tier B)",
+      "meta": {
+        "section": "determinism",
+        "tier": "B",
+        "synthesized_default": true,
+        "source": "default",
+        "justification": "safe_default_determinism",
+        "justification_ptr": "/determinism",
+        "inference_type": "safe_default",
+        "candidate_tests": [
+          "test::checklist/test_checklist_determinism.py::test_checklist_determinism_for_same_spec",
+          "test::checklist/test_derived_determinism.py::test_derived_tasks_bootstrap_category",
+          "test::checklist/test_derived_determinism.py::test_derived_tasks_deterministic_ids"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "severity": "high",
+      "classification": "determinism",
+      "lineage_id": "missing_lineage:/determinism",
+      "source_node_type": "unknown",
+      "order_rank": [
+        1,
+        "determinism",
+        12,
+        "/determinism",
+        "Missing template section: determinism (Tier B)"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/determinism",
+          "line": 5096
+        },
+        "quote": "Missing template section: determinism (Tier B)"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "determinism",
+      "action": "Verify build determinism by running repeated builds and comparing artifacts for bitwise identity.",
+      "id": "63c89dae4de1",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/determinism",
+      "test_refs": [],
+      "category": "misc",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P0",
+      "blocking": false
+    },
+    {
+      "ptr": "/evidence_bundle",
+      "text": "SPEC MISSING: Missing template section: evidence_bundle (Tier A)",
+      "meta": {
+        "section": "evidence_bundle",
+        "tier": "A",
+        "synthesized_default": true,
+        "source": "default",
+        "justification": "safe_default_evidence_bundle",
+        "justification_ptr": "/evidence_bundle",
+        "inference_type": "safe_default",
+        "candidate_tests": [
+          "test::governance/test_evidence_expanded.py::test_evidence_bundle_deterministic",
+          "test::governance/test_evidence_expanded.py::test_evidence_bundle_expanded_hashes",
+          "test::test_group_rollup_evidence.py::test_evidence_bundle"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "severity": "critical",
+      "classification": "core",
+      "lineage_id": "missing_lineage:/evidence_bundle",
+      "source_node_type": "unknown",
+      "order_rank": [
+        0,
+        "core",
+        16,
+        "/evidence_bundle",
+        "SPEC MISSING: Missing template section: evidence_bundle (Tier A)"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/evidence_bundle",
+          "line": 3519
+        },
+        "quote": "SPEC MISSING: Missing template section: evidence_bundle (Tier A)"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Ensure SPEC MISSING: Missing template section: evidence_bundle (Tier A)",
+      "id": "b66387ad4124",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/evidence_bundle",
+      "test_refs": [],
+      "category": "misc",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P1",
+      "blocking": false
+    },
+    {
+      "ptr": "/generation_mappings",
+      "text": "Missing template section: generation_mappings (Tier B)",
+      "meta": {
+        "section": "generation_mappings",
+        "tier": "B",
+        "synthesized_default": true,
+        "source": "default",
+        "justification": "safe_default_generation_mappings",
+        "justification_ptr": "/generation_mappings",
+        "inference_type": "safe_default",
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "severity": "low",
+      "classification": "core",
+      "lineage_id": "missing_lineage:/generation_mappings",
+      "source_node_type": "unknown",
+      "order_rank": [
+        3,
+        "core",
+        20,
+        "/generation_mappings",
+        "Missing template section: generation_mappings (Tier B)"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/generation_mappings",
+          "line": 5115
+        },
+        "quote": "Missing template section: generation_mappings (Tier B)"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Ensure Missing template section: generation_mappings (Tier B)",
+      "id": "20f84309058a",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/generation_mappings",
+      "test_refs": [],
+      "category": "misc",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P2",
+      "blocking": false
+    },
+    {
+      "ptr": "/metadata",
+      "key": "metadata",
+      "value": {
+        "product_id": "unknown",
+        "spec_version": "0.0",
+        "spec_format": "canonical_json_v1",
+        "normalized": true,
+        "source_format": "text",
+        "source_material": "THE LITMUS ENGINE\n\nDeterministic Governance for Safe First Decisions\n\nInternal tagline:\nA senior reviewer that knows when not to speak.\n\n0. What This Is\n\nTHE LITMUS ENGINE is a zero-trust governance layer for code.\n\nIt is a deterministic engine that resolves structural information asymmetry before any change is committed.\n\nLitmus exists to answer one question, decisively and safely:\n\nWhat would be irresponsible to touch right now?\n\nThis repository contains an operational system that:\n\nConsumes a repository snapshot\n\nProduces signed, auditable decision artifacts\n\nExplicitly defines where action is safe, unsafe, or impossible\n\nRefuses to speak when evidence is insufficient\n\nIf this repository exists without artifacts, it is incorrect.\n\nIncorrectness should be obvious without reading documentation.\n\n1. Brutal Framing\nWho This Is For\n\nEngineers inheriting unfamiliar or legacy systems\n\nTechnical leads deciding where to apply pressure safely\n\nArchitects accountable for migration, refactor, or audit risk\n\nDue diligence reviewers assessing change exposure\n\nTeams optimizing for fewer irreversible mistakes\n\nWho This Is Not For\n\nCode style enforcement\n\nAutomated refactoring\n\nExhaustive issue discovery\n\nMetrics that reward activity\n\nTools that maximize findings\n\nNon-Negotiable Design Constraint\n\nLitmus enforces a deliberate architectural trade-off:\n\nPrecision over Exhaustivity.\n\nIt will sacrifice discovering N low-severity issues to achieve full confidence at the boundary of the Safe-to-Change Surface.\n\nIf your goal is speed through confidence, this is the wrong tool.\nIf your goal is speed through restraint, this is the tool.\n\n2. Why This Exists\n\nMost repository tools are optimized for exhaustive signal production.\n\nThey:\n\nDetect presence, not consequence\n\nConflate detection with importance\n\nSound confident where evidence is thin\n\nEncourage premature action\n\nLitmus is optimized for actionable signal suppression.\n\nFalse confidence causes more damage than missing information.\nThe most dangerous failure mode in unfamiliar systems is the wrong first change.\n\nLitmus exists to prevent that class of failure.\n\n3. Execution Boundary (Unavoidable)\n\nLitmus is not a library and not a suggestion engine.\n\nIt has a fixed execution boundary:\n\nRuns as a deterministic analysis step\n\nConsumes a repository snapshot\n\nProduces signed decision artifacts\n\nAdvisory by default\n\nBlocking only when explicitly configured\n\nBlocking is a governance choice.\nLitmus is strict only when strictness is justified.\n\n4. Proof of Seriousness (Structural, Not Aspirational)\n\nThe repository structure must make the following unavoidable.\n\n4.1 Governance Signature\n\nEvery run emits a canonical decision artifact and a SHA-256 hash.\n\nThis hash is the Litmus Governance Signature.\n\nIt binds guidance to the exact input state and makes the output auditable, reproducible, and non-repudiable.\n\nIdentical input must always produce the same signature.\n\nMissing or unstable signatures indicate failure.\n\n4.2 Refusal as a First-Class Artifact\n\nThe repository must contain a documented refusal case.\n\nExample condition:\n\nCritical migration logic exists without tests or contracts.\nNo safe change surface can be established.\n\nRefusal is a successful outcome.\n\nThe system must demonstrate more rigor around refusal than around detection.\n\n4.3 Misleading Signal Restraint\n\nThe repository must contain a case where:\n\nA na\u00efve tool would escalate\n\nLitmus explicitly does not\n\nThe restraint is evidence-anchored\n\nRestraint is treated as a capability, not an omission.\n\n5. Foundational Invariants\n5.1 Absolute Determinism\n\nNo timestamps\n\nNo randomness\n\nNo environment leakage\n\nCanonical traversal and ordering\n\nVerifiable governance signature\n\nDeterminism failures must look like broken builds, not TODOs.\n\n5.2 Observable Evidence Only\n\nPermitted signals:\n\nStructure and boundaries\n\nConfiguration and contracts\n\nTests and coverage\n\nDependency topology\n\nVersioning and migration artifacts\n\nForbidden signals:\n\nNaming interpretation\n\nComment sentiment\n\nHeuristic psychology\n\nRuntime speculation\n\n5.3 Enforced Restraint\n\nSeverity-gated output\n\nExplicit verbosity ceilings\n\n\u201cNothing notable\u201d is valid\n\nSilence is a required outcome\n\nSilence requires confidence, not laziness.\n\n6. Trust Contract\n\nEvery major conclusion must include at least one of:\n\nWhy the conclusion is reliable\n\nWhy it is explicitly bounded\n\nWhy a less disciplined tool would mislead here\n\nTrust is earned by exposing limits.\n\n7. Intent Modeling (Architectural Posture)\n\nLitmus does not infer motivation.\nIt classifies architectural posture.\n\n7.1 Permitted Signals\n\nBoundary enforcement\n\nGovernance strictness\n\nMigration and deprecation handling\n\nInvestment asymmetry\n\n7.2 Evolutionary Archetypes\n\nEach posture includes evidence, confidence, and expiration logic.\n\nExamples:\n\nThe Pressure Cooker\nPosture: High-Velocity Instability\n\nThe Museum\nPosture: Stagnant Entropy Hazard\n\nThe Construction Site\nPosture: Guarded Evolution\n\nThe Patchwork\nPosture: Uneven Maturity\n\n7.3 Calibration Effect\n\nPosture classification applies a calibration multiplier to severity gating.\n\nIdentical findings carry different weight depending on posture.\n\nPosture is the first risk filter.\n\n8. Safe-to-Change Surface (Primary Artifact)\n8.1 Conceptual Model\n\nThe Safe-to-Change Surface is a risk-aversion boundary model, not a score.\n\nIt is derived from two parameters:\n\nThe file set \n\ud835\udc39\nF\n\nThe maximum tolerable risk threshold \n\ud835\udf0f\n\u03c4\n\n8.2 Formal Definition\n\nThe Safe-to-Change Surface \n\ud835\udc39\n\ud835\udc46\n\u2282\n\ud835\udc39\nF\nS\n\t\u200b\n\n\u2282F is defined by the condition:\n\n\ud835\udc35\n(\n\ud835\udc53\n)\n\u2264\n\ud835\udf0f\nB(f)\u2264\u03c4\n\nNo-Touch Zones are the complement set \n\ud835\udc39\n\u2216\n\ud835\udc39\n\ud835\udc46\nF\u2216F\nS\n\t\u200b\n\n.\n\n8.3 Required Properties\n\nExplicit safe zones\n\nExplicit no-touch zones\n\nEvidence references\n\nExpiration logic\n\n8.4 Mandatory First Move\n\nEvery run must provide one of:\n\nA concrete safe first action\n\nAn explicit statement that no safe move exists\n\nAbsence of a safe surface is itself a finding.\n\n9. Strategic De-Prioritization Artifact\n\nLitmus must identify Negative ROI Optimization candidates.\n\nDefinition:\n\nIssues where the Cost of Change exceeds the Cost of Failure by an order of magnitude, based on observable invariants such as age, stability, and dependency isolation.\n\nThis artifact explicitly answers:\n\nWhat not to fix\n\nWhy it is benign\n\nWhen it would stop being benign\n\nThis is enforced, not optional.\n\n10. Uncertainty and Refusal\n10.1 Visible Uncertainty\n\nUncertainty must be:\n\nLocalized\n\nCalm\n\nExplicitly bounded\n\nNo absolutes where evidence is partial.\n\n10.2 Mandatory Refusal Conditions\n\nLitmus must refuse when:\n\nCritical paths lack tests or contracts\n\nBlast radius cannot be bounded\n\nConfiguration is contradictory\n\nRefusal is success.\n\n11. Multi-Language Boundary Control\n\nOne primary language per run\n\nSecondary languages analyzed structurally only\n\nNo semantic inference across boundaries\n\nThis prevents false authority.\n\n12. Output Contract\n12.1 Executive Summary\n\nConstraints:\n\nOne page maximum\n\nZero subjective adjectives\n\nEvery statement traceable to evidence\n\nMust answer:\n\nIs it safe to act\n\nWhere\n\nWhere not\n\nWhat is unknowable\n\n12.2 Decision Artifacts\n\nSafe-to-Change Surface\n\nNo-Touch Zones\n\nMisleading Signals\n\nFirst Recommended Action or Explicit Refusal\n\n12.3 Evidence Appendix\n\nEvidence references only\n\nNo commentary\n\nNo speculation\n\n13. Tone and Voice\n\nCalm\n\nDirect\n\nSenior\n\nNo hype\n\nNo AI voice\n\nReads like a VP-level technical memo.\n\n14. Deterministic Silence Requirement\n\nSeverity-gated verbosity\n\nExplicit \u201cNothing notable\u201d verdicts allowed\n\nBrevity enforced structurally\n\n15. Definition of Senior Judgment\n\nIn this system, senior judgment is defined as:\n\nCorrectly modeling second-order consequences and prioritizing structural integrity over feature velocity.\n\nLitmus supports this judgment.\nIt does not replace it.\n\n16. Final Litmus Test\n\nA senior engineer reading the output should think:\n\n\u201cThis is exactly what I would have said.\nAnd I trust it because it knows when not to speak.\u201d\n\nIf this fails, the implementation is incorrect.\n\n17. Why This Exists as a Narrow System\n\nIt prevents damage instead of producing noise\n\nIt treats restraint as a capability\n\nIt makes refusal executable\n\nIt is deterministic, auditable, and calm\n\nIt optimizes for safe first decisions\n\nThe narrowness is not a limitation.\nIt is the point."
+      },
+      "text": "Implement object at /metadata",
+      "lineage_id": "8d24a38fa9cb92e4327b452d961b0c49ded7aef2dfdc0684f8348e9f9b6e4eed",
+      "source_node_type": "dict_entry",
+      "_cat": "meta",
+      "classification": "metadata",
+      "severity": "high",
+      "order_rank": [
+        1,
+        "metadata",
+        9,
+        "/metadata",
+        "Implement object at /metadata"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/metadata",
+          "line": 7911
+        },
+        "quote": "{'product_id': 'unknown', 'spec_version': '0.0', 'spec_format': 'canonical_json_v1', 'normalized': True, 'source_format': 'text', 'source_material': 'THE LITMUS ENGINE\\n\\nDeterministic Governance for "
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "meta": {
+        "source": "derived",
+        "justification": "explicit_fields",
+        "inference_type": "structural",
+        "tier": "B",
+        "candidate_tests": [
+          "test::checklist/test_derived.py::test_infer_tasks_missing_metadata",
+          "test::ci/test_spec_pipeline_smoke.py::test_spec_metadata_completeness",
+          "test::persona/test_persona_authority_no_behavior_change.py::test_authority_metadata_does_not_change_veto_semantics"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Implement object at /metadata",
+      "id": "b42e9cfb2f36",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/metadata",
+      "test_refs": [],
+      "category": "meta",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P1",
+      "blocking": false
+    },
+    {
+      "ptr": "/metadata/normalized",
+      "key": "normalized",
+      "value": true,
+      "text": "Implement boolean at /metadata/normalized: True",
+      "lineage_id": "ac4e3442b99b6460dd07b9bdad08589ad1ac975bfd1e68f6ae9d0e1c81654891",
+      "source_node_type": "dict_entry",
+      "_cat": "meta",
+      "classification": "metadata",
+      "severity": "high",
+      "order_rank": [
+        1,
+        "metadata",
+        20,
+        "/metadata/normalized",
+        "Implement boolean at /metadata/normalized: True"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/metadata/normalized",
+          "line": 6296
+        },
+        "quote": "True"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "meta": {
+        "source": "derived",
+        "justification": "explicit_fields",
+        "inference_type": "structural",
+        "tier": "B",
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Implement boolean at /metadata/normalized: True",
+      "id": "95c1a8ccdeb6",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/metadata/normalized",
+      "test_refs": [],
+      "category": "meta",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P1",
+      "blocking": false
+    },
+    {
+      "ptr": "/metadata/owner",
+      "text": "Missing required metadata field: owner",
+      "value": null,
+      "_cat": "meta",
+      "classification": "metadata",
+      "severity": "high",
+      "order_rank": [
+        1,
+        "metadata",
+        15,
+        "/metadata/owner",
+        "Missing required metadata field: owner"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/metadata/owner",
+          "line": 8726
+        },
+        "quote": "Missing required metadata field: owner"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "meta": {
+        "source": "derived",
+        "justification": "explicit_fields",
+        "inference_type": "structural",
+        "tier": "B",
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "normalized"
+          ],
+          "chain_hash": "13f51f2bc689d35c"
+        }
+      },
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Ensure Missing required metadata field: owner",
+      "id": "7172b89daf12",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/metadata/owner",
+      "test_refs": [],
+      "category": "meta",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P1",
+      "blocking": false
+    },
+    {
+      "ptr": "/metadata/product_id",
+      "key": "product_id",
+      "value": "unknown",
+      "text": "Implement value at /metadata/product_id",
+      "lineage_id": "8bcb137b8b0cbf6080fd326b0da1f18d4124153058e3e5ba4af0082f0c88af87",
+      "source_node_type": "dict_entry",
+      "_cat": "meta",
+      "classification": "metadata",
+      "severity": "high",
+      "order_rank": [
+        1,
+        "metadata",
+        20,
+        "/metadata/product_id",
+        "Implement value at /metadata/product_id"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/metadata/product_id",
+          "line": 1529
+        },
+        "quote": "unknown"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "meta": {
+        "source": "derived",
+        "justification": "explicit_fields",
+        "inference_type": "structural",
+        "tier": "B",
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Implement value at /metadata/product_id",
+      "id": "f17b05d7303a",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/metadata/product_id",
+      "test_refs": [],
+      "category": "meta",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P1",
+      "blocking": false
+    },
+    {
+      "ptr": "/metadata/source_format",
+      "key": "source_format",
+      "value": "text",
+      "text": "Implement value at /metadata/source_format",
+      "lineage_id": "7567246a4894a596f81e72f15b44aca581af789937b388205fdcab8b4eb598df",
+      "source_node_type": "dict_entry",
+      "_cat": "meta",
+      "classification": "metadata",
+      "severity": "high",
+      "order_rank": [
+        1,
+        "metadata",
+        23,
+        "/metadata/source_format",
+        "Implement value at /metadata/source_format"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/metadata/source_format",
+          "line": 5623
+        },
+        "quote": "text"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "meta": {
+        "source": "derived",
+        "justification": "explicit_fields",
+        "inference_type": "structural",
+        "tier": "B",
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Implement value at /metadata/source_format",
+      "id": "61f539bdd3da",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/metadata/source_format",
+      "test_refs": [],
+      "category": "meta",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P1",
+      "blocking": false
+    },
+    {
+      "ptr": "/metadata/source_material",
+      "key": "source_material",
+      "value": "THE LITMUS ENGINE\n\nDeterministic Governance for Safe First Decisions\n\nInternal tagline:\nA senior reviewer that knows when not to speak.\n\n0. What This Is\n\nTHE LITMUS ENGINE is a zero-trust governance layer for code.\n\nIt is a deterministic engine that resolves structural information asymmetry before any change is committed.\n\nLitmus exists to answer one question, decisively and safely:\n\nWhat would be irresponsible to touch right now?\n\nThis repository contains an operational system that:\n\nConsumes a repository snapshot\n\nProduces signed, auditable decision artifacts\n\nExplicitly defines where action is safe, unsafe, or impossible\n\nRefuses to speak when evidence is insufficient\n\nIf this repository exists without artifacts, it is incorrect.\n\nIncorrectness should be obvious without reading documentation.\n\n1. Brutal Framing\nWho This Is For\n\nEngineers inheriting unfamiliar or legacy systems\n\nTechnical leads deciding where to apply pressure safely\n\nArchitects accountable for migration, refactor, or audit risk\n\nDue diligence reviewers assessing change exposure\n\nTeams optimizing for fewer irreversible mistakes\n\nWho This Is Not For\n\nCode style enforcement\n\nAutomated refactoring\n\nExhaustive issue discovery\n\nMetrics that reward activity\n\nTools that maximize findings\n\nNon-Negotiable Design Constraint\n\nLitmus enforces a deliberate architectural trade-off:\n\nPrecision over Exhaustivity.\n\nIt will sacrifice discovering N low-severity issues to achieve full confidence at the boundary of the Safe-to-Change Surface.\n\nIf your goal is speed through confidence, this is the wrong tool.\nIf your goal is speed through restraint, this is the tool.\n\n2. Why This Exists\n\nMost repository tools are optimized for exhaustive signal production.\n\nThey:\n\nDetect presence, not consequence\n\nConflate detection with importance\n\nSound confident where evidence is thin\n\nEncourage premature action\n\nLitmus is optimized for actionable signal suppression.\n\nFalse confidence causes more damage than missing information.\nThe most dangerous failure mode in unfamiliar systems is the wrong first change.\n\nLitmus exists to prevent that class of failure.\n\n3. Execution Boundary (Unavoidable)\n\nLitmus is not a library and not a suggestion engine.\n\nIt has a fixed execution boundary:\n\nRuns as a deterministic analysis step\n\nConsumes a repository snapshot\n\nProduces signed decision artifacts\n\nAdvisory by default\n\nBlocking only when explicitly configured\n\nBlocking is a governance choice.\nLitmus is strict only when strictness is justified.\n\n4. Proof of Seriousness (Structural, Not Aspirational)\n\nThe repository structure must make the following unavoidable.\n\n4.1 Governance Signature\n\nEvery run emits a canonical decision artifact and a SHA-256 hash.\n\nThis hash is the Litmus Governance Signature.\n\nIt binds guidance to the exact input state and makes the output auditable, reproducible, and non-repudiable.\n\nIdentical input must always produce the same signature.\n\nMissing or unstable signatures indicate failure.\n\n4.2 Refusal as a First-Class Artifact\n\nThe repository must contain a documented refusal case.\n\nExample condition:\n\nCritical migration logic exists without tests or contracts.\nNo safe change surface can be established.\n\nRefusal is a successful outcome.\n\nThe system must demonstrate more rigor around refusal than around detection.\n\n4.3 Misleading Signal Restraint\n\nThe repository must contain a case where:\n\nA na\u00efve tool would escalate\n\nLitmus explicitly does not\n\nThe restraint is evidence-anchored\n\nRestraint is treated as a capability, not an omission.\n\n5. Foundational Invariants\n5.1 Absolute Determinism\n\nNo timestamps\n\nNo randomness\n\nNo environment leakage\n\nCanonical traversal and ordering\n\nVerifiable governance signature\n\nDeterminism failures must look like broken builds, not TODOs.\n\n5.2 Observable Evidence Only\n\nPermitted signals:\n\nStructure and boundaries\n\nConfiguration and contracts\n\nTests and coverage\n\nDependency topology\n\nVersioning and migration artifacts\n\nForbidden signals:\n\nNaming interpretation\n\nComment sentiment\n\nHeuristic psychology\n\nRuntime speculation\n\n5.3 Enforced Restraint\n\nSeverity-gated output\n\nExplicit verbosity ceilings\n\n\u201cNothing notable\u201d is valid\n\nSilence is a required outcome\n\nSilence requires confidence, not laziness.\n\n6. Trust Contract\n\nEvery major conclusion must include at least one of:\n\nWhy the conclusion is reliable\n\nWhy it is explicitly bounded\n\nWhy a less disciplined tool would mislead here\n\nTrust is earned by exposing limits.\n\n7. Intent Modeling (Architectural Posture)\n\nLitmus does not infer motivation.\nIt classifies architectural posture.\n\n7.1 Permitted Signals\n\nBoundary enforcement\n\nGovernance strictness\n\nMigration and deprecation handling\n\nInvestment asymmetry\n\n7.2 Evolutionary Archetypes\n\nEach posture includes evidence, confidence, and expiration logic.\n\nExamples:\n\nThe Pressure Cooker\nPosture: High-Velocity Instability\n\nThe Museum\nPosture: Stagnant Entropy Hazard\n\nThe Construction Site\nPosture: Guarded Evolution\n\nThe Patchwork\nPosture: Uneven Maturity\n\n7.3 Calibration Effect\n\nPosture classification applies a calibration multiplier to severity gating.\n\nIdentical findings carry different weight depending on posture.\n\nPosture is the first risk filter.\n\n8. Safe-to-Change Surface (Primary Artifact)\n8.1 Conceptual Model\n\nThe Safe-to-Change Surface is a risk-aversion boundary model, not a score.\n\nIt is derived from two parameters:\n\nThe file set \n\ud835\udc39\nF\n\nThe maximum tolerable risk threshold \n\ud835\udf0f\n\u03c4\n\n8.2 Formal Definition\n\nThe Safe-to-Change Surface \n\ud835\udc39\n\ud835\udc46\n\u2282\n\ud835\udc39\nF\nS\n\t\u200b\n\n\u2282F is defined by the condition:\n\n\ud835\udc35\n(\n\ud835\udc53\n)\n\u2264\n\ud835\udf0f\nB(f)\u2264\u03c4\n\nNo-Touch Zones are the complement set \n\ud835\udc39\n\u2216\n\ud835\udc39\n\ud835\udc46\nF\u2216F\nS\n\t\u200b\n\n.\n\n8.3 Required Properties\n\nExplicit safe zones\n\nExplicit no-touch zones\n\nEvidence references\n\nExpiration logic\n\n8.4 Mandatory First Move\n\nEvery run must provide one of:\n\nA concrete safe first action\n\nAn explicit statement that no safe move exists\n\nAbsence of a safe surface is itself a finding.\n\n9. Strategic De-Prioritization Artifact\n\nLitmus must identify Negative ROI Optimization candidates.\n\nDefinition:\n\nIssues where the Cost of Change exceeds the Cost of Failure by an order of magnitude, based on observable invariants such as age, stability, and dependency isolation.\n\nThis artifact explicitly answers:\n\nWhat not to fix\n\nWhy it is benign\n\nWhen it would stop being benign\n\nThis is enforced, not optional.\n\n10. Uncertainty and Refusal\n10.1 Visible Uncertainty\n\nUncertainty must be:\n\nLocalized\n\nCalm\n\nExplicitly bounded\n\nNo absolutes where evidence is partial.\n\n10.2 Mandatory Refusal Conditions\n\nLitmus must refuse when:\n\nCritical paths lack tests or contracts\n\nBlast radius cannot be bounded\n\nConfiguration is contradictory\n\nRefusal is success.\n\n11. Multi-Language Boundary Control\n\nOne primary language per run\n\nSecondary languages analyzed structurally only\n\nNo semantic inference across boundaries\n\nThis prevents false authority.\n\n12. Output Contract\n12.1 Executive Summary\n\nConstraints:\n\nOne page maximum\n\nZero subjective adjectives\n\nEvery statement traceable to evidence\n\nMust answer:\n\nIs it safe to act\n\nWhere\n\nWhere not\n\nWhat is unknowable\n\n12.2 Decision Artifacts\n\nSafe-to-Change Surface\n\nNo-Touch Zones\n\nMisleading Signals\n\nFirst Recommended Action or Explicit Refusal\n\n12.3 Evidence Appendix\n\nEvidence references only\n\nNo commentary\n\nNo speculation\n\n13. Tone and Voice\n\nCalm\n\nDirect\n\nSenior\n\nNo hype\n\nNo AI voice\n\nReads like a VP-level technical memo.\n\n14. Deterministic Silence Requirement\n\nSeverity-gated verbosity\n\nExplicit \u201cNothing notable\u201d verdicts allowed\n\nBrevity enforced structurally\n\n15. Definition of Senior Judgment\n\nIn this system, senior judgment is defined as:\n\nCorrectly modeling second-order consequences and prioritizing structural integrity over feature velocity.\n\nLitmus supports this judgment.\nIt does not replace it.\n\n16. Final Litmus Test\n\nA senior engineer reading the output should think:\n\n\u201cThis is exactly what I would have said.\nAnd I trust it because it knows when not to speak.\u201d\n\nIf this fails, the implementation is incorrect.\n\n17. Why This Exists as a Narrow System\n\nIt prevents damage instead of producing noise\n\nIt treats restraint as a capability\n\nIt makes refusal executable\n\nIt is deterministic, auditable, and calm\n\nIt optimizes for safe first decisions\n\nThe narrowness is not a limitation.\nIt is the point.",
+      "text": "Implement value at /metadata/source_material",
+      "lineage_id": "6d519555e11248d7d1f82bd278923fa2ccddb20c03dc0a2ec8f4d0ff20ed8ece",
+      "source_node_type": "dict_entry",
+      "_cat": "meta",
+      "classification": "metadata",
+      "severity": "high",
+      "order_rank": [
+        1,
+        "metadata",
+        25,
+        "/metadata/source_material",
+        "Implement value at /metadata/source_material"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/metadata/source_material",
+          "line": 5685
+        },
+        "source_excerpt_hash": "af21a5b3f556",
+        "quote": "THE LITMUS ENGINE\n\nDeterministic Governance for Safe First Decisions\n\nInternal tagline:\nA senior reviewer that knows when not to speak.\n\n0. What This Is\n\nTHE LITMUS ENGINE is a zero-trust governance l"
+      },
+      "inferred_from_prose": true,
+      "confidence": "low",
+      "meta": {
+        "source": "inferred",
+        "justification": "heuristic_prose_keyword_match",
+        "justification_ptr": "/metadata/source_material",
+        "inference_type": "heuristic",
+        "tier": "C",
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "confidence_meta": {
+        "source": "heuristic:prose",
+        "justification": "heuristic_prose_keyword_match"
+      },
+      "intent_category": "misc",
+      "action": "Implement value at /metadata/source_material",
+      "id": "2e1e91bd003c",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/metadata/source_material",
+      "test_refs": [],
+      "category": "meta",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P1",
+      "blocking": false
+    },
+    {
+      "ptr": "/metadata/spec_format",
+      "key": "spec_format",
+      "value": "canonical_json_v1",
+      "text": "Implement value at /metadata/spec_format",
+      "lineage_id": "083fb36762f1a90ae1dd006b6673266b74bbe1ac8b9a6089fe39d3823caec156",
+      "source_node_type": "dict_entry",
+      "_cat": "meta",
+      "classification": "metadata",
+      "severity": "high",
+      "order_rank": [
+        1,
+        "metadata",
+        21,
+        "/metadata/spec_format",
+        "Implement value at /metadata/spec_format"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/metadata/spec_format",
+          "line": 3791
+        },
+        "quote": "canonical_json_v1"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "meta": {
+        "source": "derived",
+        "justification": "explicit_fields",
+        "inference_type": "structural",
+        "tier": "B",
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Implement value at /metadata/spec_format",
+      "id": "123e4616aba1",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/metadata/spec_format",
+      "test_refs": [],
+      "category": "meta",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P1",
+      "blocking": false
+    },
+    {
+      "ptr": "/metadata/spec_version",
+      "key": "spec_version",
+      "value": "0.0",
+      "text": "Implement value at /metadata/spec_version",
+      "lineage_id": "01f797323e6dbea5f9b4bfac5a05849fe6887a519acfac859d5dfacf24f80413",
+      "source_node_type": "dict_entry",
+      "_cat": "meta",
+      "classification": "metadata",
+      "severity": "high",
+      "order_rank": [
+        1,
+        "metadata",
+        22,
+        "/metadata/spec_version",
+        "Implement value at /metadata/spec_version"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/metadata/spec_version",
+          "line": 9504
+        },
+        "quote": "0.0"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "meta": {
+        "source": "derived",
+        "justification": "explicit_fields",
+        "inference_type": "structural",
+        "tier": "B",
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Implement value at /metadata/spec_version",
+      "id": "f57c2d268a50",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/metadata/spec_version",
+      "test_refs": [],
+      "category": "meta",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P1",
+      "blocking": false
+    },
+    {
+      "ptr": "/metadata/version",
+      "text": "Missing required metadata field: version",
+      "value": null,
+      "_cat": "meta",
+      "classification": "metadata",
+      "severity": "high",
+      "order_rank": [
+        1,
+        "metadata",
+        17,
+        "/metadata/version",
+        "Missing required metadata field: version"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/metadata/version",
+          "line": 314
+        },
+        "quote": "Missing required metadata field: version"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "meta": {
+        "source": "derived",
+        "justification": "explicit_fields",
+        "inference_type": "structural",
+        "tier": "B",
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "normalized"
+          ],
+          "chain_hash": "13f51f2bc689d35c"
+        }
+      },
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Ensure Missing required metadata field: version",
+      "id": "512703d4ac0e",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/metadata/version",
+      "test_refs": [],
+      "category": "meta",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P1",
+      "blocking": false
+    },
+    {
+      "ptr": "/model",
+      "key": "model",
+      "value": {},
+      "text": "Implement object at /model",
+      "lineage_id": "281a480267f94335906178f4a92f91fe3b81c8b5d069c97132f84c61c67e3b84",
+      "source_node_type": "dict_entry",
+      "classification": "core",
+      "severity": "low",
+      "order_rank": [
+        3,
+        "core",
+        6,
+        "/model",
+        "Implement object at /model"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/model",
+          "line": 713
+        },
+        "quote": "{}"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "meta": {
+        "source": "derived",
+        "justification": "explicit_fields",
+        "inference_type": "structural",
+        "tier": "B",
+        "candidate_tests": [
+          "test::checklist/test_model_validation_no_raise.py::test_model_validation_records_G21_and_does_not_raise",
+          "test::ci/test_spec_pipeline_smoke.py::test_spec_model_components_defined",
+          "test::codegen/test_templates_render.py::test_render_model_template"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Implement object at /model",
+      "id": "ae2c478080a8",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/model",
+      "test_refs": [],
+      "category": "misc",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P2",
+      "blocking": false
+    },
+    {
+      "ptr": "/pipeline",
+      "text": "SPEC INSUFFICIENT: Pipeline states missing; execution order may be unspecified",
+      "meta": {
+        "insufficiency": "NO_PIPELINE_STATES",
+        "source": "derived",
+        "justification": "explicit_fields",
+        "inference_type": "structural",
+        "tier": "B",
+        "candidate_tests": [
+          "test::ci/test_spec_pipeline_smoke.py::test_spec_metadata_completeness",
+          "test::ci/test_spec_pipeline_smoke.py::test_spec_model_components_defined",
+          "test::ci/test_spec_pipeline_smoke.py::test_spec_pipeline_smoke"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "severity": "low",
+      "classification": "core",
+      "synthesized_default": false,
+      "lineage_id": "missing_lineage:/pipeline",
+      "source_node_type": "unknown",
+      "order_rank": [
+        3,
+        "core",
+        9,
+        "/pipeline",
+        "SPEC INSUFFICIENT: Pipeline states missing; execution order may be unspecified"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/pipeline",
+          "line": 8528
+        },
+        "quote": "SPEC INSUFFICIENT: Pipeline states missing; execution order may be unspecified"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Ensure SPEC INSUFFICIENT: Pipeline states missing; execution order may be unspecified",
+      "id": "7c5d81d0e31c",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/pipeline",
+      "test_refs": [],
+      "category": "misc",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P2",
+      "blocking": false
+    },
+    {
+      "ptr": "/sections",
+      "key": "sections",
+      "value": {},
+      "text": "Implement object at /sections",
+      "lineage_id": "ed6f4265a995b3777227bedfb905ec3708f334f6a475f30795197d7969315837",
+      "source_node_type": "dict_entry",
+      "classification": "core",
+      "severity": "low",
+      "order_rank": [
+        3,
+        "core",
+        9,
+        "/sections",
+        "Implement object at /sections"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/sections",
+          "line": 5285
+        },
+        "source_excerpt_hash": "44136fa355b3",
+        "quote": "{}"
+      },
+      "inferred_from_prose": true,
+      "confidence": "low",
+      "meta": {
+        "source": "inferred",
+        "justification": "heuristic_prose_keyword_match",
+        "justification_ptr": "/sections",
+        "inference_type": "heuristic",
+        "tier": "C",
+        "candidate_tests": [
+          "test::bootstrap/test_derived_tasks.py::test_bootstrap_sections_classification",
+          "test::ci/test_spec_pipeline_smoke.py::test_spec_sections_not_empty",
+          "test::services/test_sections_strictness.py::test_cli_integration_flag_writes_errors_json"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "confidence_meta": {
+        "source": "heuristic:prose",
+        "justification": "heuristic_prose_keyword_match"
+      },
+      "intent_category": "misc",
+      "action": "Implement object at /sections",
+      "id": "02f1dbfc7db1",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/sections",
+      "test_refs": [],
+      "category": "misc",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P2",
+      "blocking": false
+    },
+    {
+      "ptr": "/security",
+      "text": "Missing template section: security (Tier B)",
+      "meta": {
+        "section": "security",
+        "tier": "B",
+        "synthesized_default": true,
+        "source": "default",
+        "justification": "safe_default_security",
+        "justification_ptr": "/security",
+        "inference_type": "safe_default",
+        "candidate_tests": [
+          "test::analysis/test_semantic_gradient.py::test_semantic_gradient",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_basic",
+          "test::artifacts/test_manifest_bundle.py::test_bundle_deterministic"
+        ],
+        "ancestry": {
+          "chain": [
+            "raw",
+            "extracted",
+            "normalized"
+          ],
+          "chain_hash": "c92ef605c2993fec"
+        }
+      },
+      "severity": "low",
+      "classification": "core",
+      "lineage_id": "missing_lineage:/security",
+      "source_node_type": "unknown",
+      "order_rank": [
+        3,
+        "core",
+        9,
+        "/security",
+        "Missing template section: security (Tier B)"
+      ],
+      "applicable_states": [
+        "CONVERTIBLE",
+        "STRUCTURED",
+        "VALID",
+        "READY"
+      ],
+      "relevance_reason": "routine",
+      "evidence": {
+        "source": {
+          "ptr": "/security",
+          "line": 9266
+        },
+        "quote": "Missing template section: security (Tier B)"
+      },
+      "inferred_from_prose": false,
+      "confidence": "medium",
+      "confidence_meta": {
+        "source": "derived",
+        "justification": "explicit_fields"
+      },
+      "intent_category": "misc",
+      "action": "Ensure Missing template section: security (Tier B)",
+      "id": "6add0b67d628",
+      "invariants_from_spec": [],
+      "product_id": "unknown",
+      "timestamp_utc": "1970-01-01T00:00:00Z",
+      "generator_version": "1.0",
+      "spec_pointer": "/security",
+      "test_refs": [],
+      "category": "misc",
+      "deps": [],
+      "invariants": [],
+      "derived": false,
+      "origin": {
+        "source": "spec",
+        "parent": null
+      },
+      "readiness_impact": "neutral",
+      "priority": "P2",
+      "blocking": false
+    },
+    {
+      "ptr": "/",
+      "text": "G_VALIDATION_FAILURE: Spec validation failed: sync_not_performed",
+      "meta": {
+        "gate": "G_VALIDATION_FAILURE",
+        "phase": "preflight",
+        "evidence": null
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G_TIER_A_MISSING_AGENTS: Missing Tier A section: agents",
+      "meta": {
+        "gate": "G_TIER_A_MISSING_AGENTS",
+        "phase": "compilation",
+        "evidence": {}
+      },
+      "severity": "high",
+      "role": "CONTRIBUTING_BLOCKER"
+    },
+    {
+      "ptr": "/",
+      "text": "G_TIER_A_MISSING_EVIDENCE_BUNDLE: Missing Tier A section: evidence_bundle",
+      "meta": {
+        "gate": "G_TIER_A_MISSING_EVIDENCE_BUNDLE",
+        "phase": "compilation",
+        "evidence": {}
+      },
+      "severity": "high",
+      "role": "CONTRIBUTING_BLOCKER"
+    },
+    {
+      "ptr": "/",
+      "text": "G_TIER_B_MISSING_ARTIFACT_CONTRACT: Missing Tier B section: artifact_contract",
+      "meta": {
+        "gate": "G_TIER_B_MISSING_ARTIFACT_CONTRACT",
+        "phase": "compilation",
+        "evidence": {}
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G_TIER_B_MISSING_DETERMINISM: Missing Tier B section: determinism",
+      "meta": {
+        "gate": "G_TIER_B_MISSING_DETERMINISM",
+        "phase": "compilation",
+        "evidence": {}
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G_TIER_B_MISSING_GENERATION_MAPPINGS: Missing Tier B section: generation_mappings",
+      "meta": {
+        "gate": "G_TIER_B_MISSING_GENERATION_MAPPINGS",
+        "phase": "compilation",
+        "evidence": {}
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G_TIER_B_MISSING_SECURITY: Missing Tier B section: security",
+      "meta": {
+        "gate": "G_TIER_B_MISSING_SECURITY",
+        "phase": "compilation",
+        "evidence": {}
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G_SYNTHESIZED_DEFAULT_AGENTS: Synthesized Tier A default for missing section: agents",
+      "meta": {
+        "gate": "G_SYNTHESIZED_DEFAULT_AGENTS",
+        "phase": "compilation",
+        "evidence": {
+          "section": "agents"
+        }
+      },
+      "severity": "high",
+      "role": "CONTRIBUTING_BLOCKER"
+    },
+    {
+      "ptr": "/",
+      "text": "G_SYNTHESIZED_DEFAULT_AGENTS: Synthesized default for missing section: agents",
+      "meta": {
+        "gate": "G_SYNTHESIZED_DEFAULT_AGENTS",
+        "phase": "compilation",
+        "evidence": {
+          "section": "agents"
+        }
+      },
+      "severity": "medium",
+      "role": "CONTRIBUTING_BLOCKER"
+    },
+    {
+      "ptr": "/",
+      "text": "G_SYNTHESIZED_DEFAULT_ARTIFACT_CONTRACT: Synthesized Tier B default for missing section: artifact_contract",
+      "meta": {
+        "gate": "G_SYNTHESIZED_DEFAULT_ARTIFACT_CONTRACT",
+        "phase": "compilation",
+        "evidence": {
+          "section": "artifact_contract"
+        }
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G_SYNTHESIZED_DEFAULT_DETERMINISM: Synthesized Tier B default for missing section: determinism",
+      "meta": {
+        "gate": "G_SYNTHESIZED_DEFAULT_DETERMINISM",
+        "phase": "compilation",
+        "evidence": {
+          "section": "determinism"
+        }
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G_SYNTHESIZED_DEFAULT_GENERATION_MAPPINGS: Synthesized Tier B default for missing section: generation_mappings",
+      "meta": {
+        "gate": "G_SYNTHESIZED_DEFAULT_GENERATION_MAPPINGS",
+        "phase": "compilation",
+        "evidence": {
+          "section": "generation_mappings"
+        }
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G_SPEC_INSUFFICIENCY_NO_AGENTS: No agents declared in spec; nothing will execute",
+      "meta": {
+        "gate": "G_SPEC_INSUFFICIENCY_NO_AGENTS",
+        "phase": "compilation",
+        "evidence": {
+          "pointer": "/agents"
+        }
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G_SPEC_INSUFFICIENCY_NO_ARTIFACTS: Artifact contract has no artifacts declared",
+      "meta": {
+        "gate": "G_SPEC_INSUFFICIENCY_NO_ARTIFACTS",
+        "phase": "compilation",
+        "evidence": {
+          "pointer": "/artifact_contract"
+        }
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G_SPEC_INSUFFICIENCY_NO_PIPELINE_STATES: Pipeline states missing; execution order may be unspecified",
+      "meta": {
+        "gate": "G_SPEC_INSUFFICIENCY_NO_PIPELINE_STATES",
+        "phase": "compilation",
+        "evidence": {
+          "pointer": "/pipeline"
+        }
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G10_GENERATOR_PREP_MISSING: Missing lineage_id for item at pointer: /agents",
+      "meta": {
+        "gate": "G10_GENERATOR_PREP_MISSING",
+        "phase": "generation",
+        "evidence": null
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G10_GENERATOR_PREP_MISSING: Missing lineage_id for item at pointer: /evidence_bundle",
+      "meta": {
+        "gate": "G10_GENERATOR_PREP_MISSING",
+        "phase": "generation",
+        "evidence": null
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G10_GENERATOR_PREP_MISSING: Missing lineage_id for item at pointer: /artifact_contract",
+      "meta": {
+        "gate": "G10_GENERATOR_PREP_MISSING",
+        "phase": "generation",
+        "evidence": null
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G10_GENERATOR_PREP_MISSING: Missing lineage_id for item at pointer: /determinism",
+      "meta": {
+        "gate": "G10_GENERATOR_PREP_MISSING",
+        "phase": "generation",
+        "evidence": null
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G10_GENERATOR_PREP_MISSING: Missing lineage_id for item at pointer: /generation_mappings",
+      "meta": {
+        "gate": "G10_GENERATOR_PREP_MISSING",
+        "phase": "generation",
+        "evidence": null
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G10_GENERATOR_PREP_MISSING: Missing lineage_id for item at pointer: /security",
+      "meta": {
+        "gate": "G10_GENERATOR_PREP_MISSING",
+        "phase": "generation",
+        "evidence": null
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G10_GENERATOR_PREP_MISSING: Missing lineage_id for item at pointer: /agents",
+      "meta": {
+        "gate": "G10_GENERATOR_PREP_MISSING",
+        "phase": "generation",
+        "evidence": null
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G10_GENERATOR_PREP_MISSING: Missing lineage_id for item at pointer: /artifact_contract",
+      "meta": {
+        "gate": "G10_GENERATOR_PREP_MISSING",
+        "phase": "generation",
+        "evidence": null
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G10_GENERATOR_PREP_MISSING: Missing lineage_id for item at pointer: /determinism",
+      "meta": {
+        "gate": "G10_GENERATOR_PREP_MISSING",
+        "phase": "generation",
+        "evidence": null
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G10_GENERATOR_PREP_MISSING: Missing lineage_id for item at pointer: /generation_mappings",
+      "meta": {
+        "gate": "G10_GENERATOR_PREP_MISSING",
+        "phase": "generation",
+        "evidence": null
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G10_GENERATOR_PREP_MISSING: Missing lineage_id for item at pointer: /agents",
+      "meta": {
+        "gate": "G10_GENERATOR_PREP_MISSING",
+        "phase": "generation",
+        "evidence": null
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G10_GENERATOR_PREP_MISSING: Missing lineage_id for item at pointer: /artifact_contract",
+      "meta": {
+        "gate": "G10_GENERATOR_PREP_MISSING",
+        "phase": "generation",
+        "evidence": null
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G10_GENERATOR_PREP_MISSING: Missing lineage_id for item at pointer: /pipeline",
+      "meta": {
+        "gate": "G10_GENERATOR_PREP_MISSING",
+        "phase": "generation",
+        "evidence": null
+      },
+      "severity": "medium",
+      "role": "SECONDARY_DIAGNOSTIC"
+    },
+    {
+      "ptr": "/",
+      "text": "G13_GENERATION_CONTRACT_FAILED: generation contract failed",
+      "meta": {
+        "gate": "G13_GENERATION_CONTRACT_FAILED",
+        "phase": "generation",
+        "evidence": null
+      },
+      "severity": "high",
+      "role": "PRIMARY_CAUSE"
+    }
+  ],
+  "outputs": [],
+  "validation_ok": false,
+  "validation_issues": [
+    "No modules generated in preview"
+  ],
+  "primary_outcome": "DIAGNOSTIC"
+}

@@ -60,3 +60,11 @@ python -m src.shieldcraft.engine --spec spec/se_dsl_v1.spec.json --dry-run
 
 This generates a preview without writing files, useful for CI validation.
 
+To emit a preview JSON file during self-host:
+
+```bash
+python -m shieldcraft.main --self-host spec/se_dsl_v1.spec.json --dry-run --emit-preview preview.json
+```
+
+This runs self-host in dry-run mode and writes the preview to `preview.json`. The file is not emitted without --emit-preview.
+

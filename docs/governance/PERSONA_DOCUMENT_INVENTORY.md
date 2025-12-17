@@ -4,17 +4,20 @@ This file is a facts-only inventory of persona-related documentation in the repo
 
 Files and classification
 
-- CORE
-  - `docs/persona/PERSONA_PROTOCOL.md` — The authoritative persona protocol (canonical core). Purpose: normative contract for persona behavior, authority, routing, event rules.
+- CANONICAL (active)
+  - `docs/persona/PERSONA_PROTOCOL.md` — **Persona Protocol (Authoritative)**: the single authoritative protocol for persona behavior, routing, event emission rules, and non-interference.
+  - `docs/governance/PERSONA_NON_AUTHORITY_CONTRACT.md` — **Persona Non-Authority Contract (Authoritative)**: Phase 15 lock — personas are advisory-only and must not cause REFUSAL/BLOCKER outcomes.
+  - `docs/governance/PERSONA_DECISION_SURFACE.md` — **Persona Decision Surface (Facts-only Inventory)**: canonical, facts-only inventory of persona emission points, schema references, and observability paths.
 
-- SUPPORTING
-  - `docs/persona/PERSONA_EVENTS.md` — Operational notes about persona events and PDRs; archived pointer to legacy material.
-  - `docs/persona/PERSONA_ACTIVATION.md` — Activation and opt-in guidance; archived pointer to legacy material.
-  - `docs/governance/PERSONA_AUTHORITY_MODEL.md` — Authoritative metadata model for persona authority classes (DECISIVE|ADVISORY|ANNOTATIVE).
+- SUPPORTING (metadata / informational)
+  - `docs/governance/PERSONA_AUTHORITY_MODEL.md` — Authoritative metadata model for persona authority classes (DECISIVE|ADVISORY|ANNOTATIVE). **Metadata-only**: does not grant runtime refusal authority.
 
-- HISTORICAL
+- ARCHIVED (historical, non-authoritative)
+  - `docs/persona/PERSONA_EVENTS.md` — Archived operational notes about persona events and PDRs.
+  - `docs/persona/PERSONA_ACTIVATION.md` — Archived activation and opt-in guidance.
   - `docs/persona/Fiona.txt` — Persona profile example (historical/illustrative; non-authoritative).
   - `docs/persona/legacy/*` — Archived legacy persona docs preserved for historical reference.
+
 
 - DEPRECATION NOTES
   - `docs/governance/PERSONA_PROTOCOL_DEPRECATIONS.md` — Marked candidate mechanisms for future removal (informational only).

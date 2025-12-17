@@ -51,6 +51,16 @@ This document enumerates, facts-only, the observable persona decision points, ve
 - `shieldcraft.observability.emit_persona_annotation(engine, persona_id, phase, message, severity)`
   - Records persona annotations (`persona_annotations_v1.json`) deterministically
 
+## Notes (consolidation & semantics)
+
+- Capability tokens and usage:
+  - `decision` capability is used by `record_decision(...)` to record persona decisions as PersonaEvents and is exercised in tests (`tests/persona/test_decision_audit.py`). It serves as audit metadata only and does not influence runtime behavior.
+  - `observe` capability (defined in `PERSONA_CAPABILITY_MATRIX`) is archived and not exercised in runtime behavior; it was reserved for future use but is no longer part of the active decision surface.
+
+- Veto handling (normalized):
+  - **Standard advisory path (G7):** `enforce_persona_veto(engine)` is the standard, deterministic advisory handling — it records a **G7_PERSONA_VETO** DIAGNOSTIC on the engine checklist context and preserves a pointer (`engine._persona_veto_selected`) for observability; it does **not** raise by default.
+  - **Exceptional/legacy enforcement (G12):** `G12_PERSONA_VETO_ENFORCEMENT` is recorded and may correspond to an exception path (e.g., a generator-level RuntimeError during enforcement); this is an exceptional/legacy refusal path and not the standard advisory behavior.
+
 ## Tests and Instrumentation (examples)
 
 - Tests call `emit_veto` and `emit_annotation` directly to simulate persona-driven vetoes and annotations

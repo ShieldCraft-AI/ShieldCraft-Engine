@@ -215,6 +215,17 @@ Authoritative decisions made on 2025-12-13 (Phase 13 kickoff). All decisions rec
 - Evidence: Tests `tests/test_template_non_authority.py` verify template-version invariance, fallback determinism, template non-authority guards, and scale invariance; authoritative contract at `docs/governance/TEMPLATE_NON_AUTHORITY_CONTRACT.md`.
 - Status: LOCKED
 
+## Persona Documentation Consolidation (2025-12-17)
+- Decision: RECORD
+- Summary: Persona-related documentation has been consolidated to a minimal canonical surface consisting of:
+  - `docs/persona/PERSONA_PROTOCOL.md` (authoritative protocol)
+  - `docs/governance/PERSONA_NON_AUTHORITY_CONTRACT.md` (authoritative non-authority contract)
+  - `docs/governance/PERSONA_DECISION_SURFACE.md` (facts-only decision surface inventory)
+- Explicit note: This consolidation is documentation-only and does **not** change semantics, authority, or runtime behavior. Enforcement remains with governance and engine contracts (Phase 15 lock).
+- Action: Legacy and duplicate persona documents were moved to `docs/archive/persona/` and original locations retained as archival notices pointing to the archive and to canonical docs. No source code or tests were modified as part of this action.
+- Cross-reference: `docs/persona/README.md` (canonical index), `docs/governance/PERSONA_NON_AUTHORITY_CONTRACT.md` (AUTHORITATIVE)
+- Status: RECORD
+
 ## Phase 11B Closed — Inference Boundaries Locked (2025-12-16)
 - Decision: LOCKED
 - Summary: Inference explainability contract and enforcement are implemented. All synthesis, coercion, derivation, and inference sites attach `meta` explainability metadata in conformance with `INFERENCE_EXPLAINABILITY_CONTRACT.md`. The compiler includes assertion guards preventing Tier A inferences without explicit checklist items and explainability metadata.
@@ -228,3 +239,19 @@ Authoritative decisions made on 2025-12-13 (Phase 13 kickoff). All decisions rec
 - Evidence: Added contract doc `docs/governance/INFERENCE_EXPLAINABILITY_CONTRACT.md`, unit tests (`tests/test_inference_explainability.py`), invariant updates (`docs/governance/INVARIANTS.md`), and compile-time guard assertions embedded in `ChecklistGenerator.build`.
 - Constraints: No persona protocol or outcome semantics changes were made. The changes are deterministic and auditable.
 - Status: LOCKED
+
+## Phase 9 — Closure / Absorption (2025-12-17)
+- Summary: Phase 9 documented the intent to detrack `src/generated/`, add a CI generation step, and add regression tests asserting `codegen_bundle_hash` equality (see `docs/governance/PHASE_9_DETRACK_GENERATED.md`). There is no explicit Phase 9 closure recorded in `docs/governance/decision_log.md`. Evidence in later artifacts (Phase 14 self-hosting failure triage and the Phase 15 remediation execution plan) shows generator/codegen and self-hosting concerns were carried forward into subsequent phases; the work described in Phase 9 was absorbed into that later remediation and validation sequence rather than recorded as a standalone closed phase.
+
+## Phase 14 — CLOSED_WITH_FAIL (2025-12-17)
+- Summary: The Phase 14 closure document (`docs/archive/phases/phase_14_closure.md`) explicitly records Phase 14 as CLOSED with a non‑passing outcome (`FAIL`) and notes that no fixes were applied during the phase (the triage document is a frozen artifact). Remediation of the blocking defects identified in Phase 14 is captured in Phase 15 (see `docs/archive/phases/phase_15_contract.md` and `phase_15_execution_plan.md`), i.e., Phase 14’s non‑passing outcome is recorded and subsequent remediation work is documented in later phase artifacts.
+
+## Phases 1–3 — Disposition: SUPERSEDED (2025-12-17)
+- Disposition: SUPERSEDED — The decision log records outcomes for Phase 1 (Checklist Emission Normalization) and Phase 3 (Template Compilation Contract Locked). Subsequent phase entries and locked contracts (e.g., Phase 4, Phase 5, and later Phase 13) incorporate and extend these initial contracts, and therefore the authoritative effect of the original Phase 1–3 artifacts has been superseded by later locked phase contracts and closures.
+
+## Phase 11B — Duplicate Entry Annotation (2025-12-17)
+- Observation: `docs/governance/decision_log.md` contains duplicate Phase 11B closure headings ("Phase 11B Closed — Inference Boundaries Locked" dated 2025-12-16) appearing in two locations verbatim; both entries are present in the decision log as identical titles and dates.
+
+## Phase 17 Closed — Persona Protocol Simplification (Docs-Only) (2025-12-17)
+- Summary: Phase 17 performed documentation-only simplification and clarification of the persona protocol. No code, tests, schemas, or runtime behavior were changed. No authority semantics were altered. All changes were classification, clarification, or archival labeling only.
+- Concepts addressed: Persona Decision Records (marked RESERVED), "decision" capability (marked METADATA-ONLY), "observe" capability (ARCHIVED), G7 vs G12 distinction (CLARIFIED), Authority precedence (metadata-only), Persona purpose wording (clarified to advisory).

@@ -103,7 +103,7 @@ Persona output is data, not inference.
 
 - **ExecutionMode locking requirement**: Persona activation and operation are permitted only when the runtime `ExecutionMode` explicitly allows persona activity; persona behavior must never rely on ambient or implicit execution mode settings.
 - **Mandatory Failure Classification Gate**: Personas must not emit recommendations or approvals until a failure has been classified per the Failure Classification Gate.
-- **Persona Decision Record (PDR) requirement**: All persona decisions (annotations, vetoes, recommendations) that affect operational choices MUST be recorded as a Persona Decision Record (PDR) and linked to the corresponding persona event in `artifacts/persona_events_v1.json`.
+- **Persona Decision Record (PDR) requirement**: All persona decisions (annotations, vetoes, recommendations) that affect operational choices MUST be recorded as a Persona Decision Record (PDR; reserved for future audit extensions) and linked to the corresponding persona event in `artifacts/persona_events_v1.json`.
 - **Prohibition of runtime flags encoding process state**: Runtime flags and ad-hoc environment variables MUST NOT be used to encode or convey protocol or process state; protocol state belongs in explicit, auditable records (e.g., PDRs and persona events).
 - **Mandatory refusal and pushback behavior**: When a request violates an invariant, Failure Classification Gate, or ExecutionMode rules, personas MUST refuse and provide structured pushback according to `PERSONA_PROTOCOL.md`.
 

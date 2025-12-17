@@ -1,3 +1,1 @@
-This persona document has been archived to `docs/persona/legacy/PERSONA_ACTIVATION.md`.
-
-SUPPORTING: Activation guidance is informational only; consult `docs/persona/PERSONA_PROTOCOL.md` for authoritative rules about when and how personas may operate.
+**ARCHIVED**: This file has been archived to `docs/archive/persona/PERSONA_ACTIVATION.md` and is preserved for historical reference only. It is non-authoritative. See canonical persona docs: `docs/persona/PERSONA_PROTOCOL.md`, `docs/governance/PERSONA_NON_AUTHORITY_CONTRACT.md`, `docs/governance/PERSONA_DECISION_SURFACE.md`.

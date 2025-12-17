@@ -1,3 +1,1 @@
-This persona document has been archived to `docs/persona/legacy/PERSONA_EVENTS.md`.
-
-SUPPORTING: For normative rules about persona behavior, authority, routing, and event emission, see `docs/persona/PERSONA_PROTOCOL.md` (the canonical core). This document remains as operational reference and historical material.
+**ARCHIVED**: This file has been archived to `docs/archive/persona/PERSONA_EVENTS.md` and is preserved for historical reference only. It is non-authoritative. See canonical persona docs: `docs/persona/PERSONA_PROTOCOL.md`, `docs/governance/PERSONA_NON_AUTHORITY_CONTRACT.md`, `docs/governance/PERSONA_DECISION_SURFACE.md`.

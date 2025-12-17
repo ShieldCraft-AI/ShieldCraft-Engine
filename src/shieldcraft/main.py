@@ -20,6 +20,9 @@ def main():
                         help="Enable persona influence (opt-in, auditable and non-authoritative)")
     parser.add_argument("--validate-spec", dest="validate_spec", metavar="SPEC_FILE",
                         help="Validate spec only (run preflight checks)")
+    parser.add_argument("--dry-run", action="store_true", help="Run in dry-run mode without writing files")
+    parser.add_argument("--emit-preview", dest="emit_preview", metavar="PREVIEW_FILE",
+                        help="Emit preview JSON to specified path (only applies to --dry-run)")
     args = parser.parse_args()
 
     # Validate-spec mode
@@ -32,7 +35,7 @@ def main():
         # If persona flag provided, enable via env var for Engine to pick up deterministically
         if args.enable_persona:
             os.environ["SHIELDCRAFT_PERSONA_ENABLED"] = "1"
-        run_self_host(args.self_host, args.schema)
+        run_self_host(args.self_host, args.schema, args.emit_preview, args.dry_run)
         return
     
     # Regular modes require --spec
@@ -66,7 +69,7 @@ def main():
     print(json.dumps(result, indent=2))
 
 
-def run_self_host(spec_file, schema_path):
+def run_self_host(spec_file, schema_path, emit_preview=None, dry_run=False):
     """
     Run self-host dry-run pipeline.
     Steps:
@@ -165,7 +168,8 @@ def run_self_host(spec_file, schema_path):
                 pass
             if 'pre_scan' not in locals():
                 pre_scan = []
-            result = engine.run_self_host(spec, dry_run=False)
+            dry_run = dry_run or bool(emit_preview)
+            result = engine.run_self_host(spec, dry_run=dry_run, emit_preview=emit_preview)
             # If engine returned a finalized checklist indicating refusal or error,
             # write a refusal_report or errors.json so CLI consumers see the artifact
             try:
@@ -202,6 +206,12 @@ def run_self_host(spec_file, schema_path):
                 # serialize as a single-element `errors` list for forward compatibility
                 json.dump({"errors": [e.to_dict()]}, f, indent=2, sort_keys=True)
             print(f"[SELF-HOST] Validation errors written to: {error_path}")
+            # Emit preview if requested
+            if emit_preview:
+                try:
+                    result = engine.run_self_host(spec, dry_run=True, emit_preview=emit_preview)
+                except Exception:
+                    pass
             # Also write a minimal deterministic summary including active policy
             try:
                 from shieldcraft.services.spec.strictness_policy import SemanticStrictnessPolicy
@@ -1132,7 +1142,6 @@ def run_self_host(spec_file, schema_path):
                     cov = evaluate_spec_coverage(spec if isinstance(spec, dict) else {}, json.load(open(cl_path)).get('items', []), outdir=output_dir)
                     # persist root copy
                     try:
-                        import shutil
                         shutil.copyfile(os.path.join(output_dir, 'spec_coverage.json'), os.path.join('.selfhost_outputs', 'spec_coverage.json'))
                     except Exception:
                         pass
@@ -1159,7 +1168,6 @@ def run_self_host(spec_file, schema_path):
                     verdict = compute_implementability(output_dir)
                     # persist root copy
                     try:
-                        import shutil
                         shutil.copyfile(os.path.join(output_dir, 'implementability_verdict.json'), os.path.join('.selfhost_outputs', 'implementability_verdict.json'))
                     except Exception:
                         pass
@@ -1651,7 +1659,6 @@ def run_self_host(spec_file, schema_path):
                 evaluate_spec_coverage(spec if isinstance(spec, dict) else {}, items or [], outdir=output_dir)
                 # persist root copy
                 try:
-                    import shutil
                     shutil.copyfile(os.path.join(output_dir, 'spec_coverage.json'), os.path.join('.selfhost_outputs', 'spec_coverage.json'))
                 except Exception:
                     pass
@@ -1676,11 +1683,12 @@ def run_self_host(spec_file, schema_path):
         except Exception:
             pass
         # Final subprocess fallback to ensure spec coverage exists at root
-        try:
-            import subprocess, sys
-            subprocess.run([sys.executable, '-c', 'import json; from shieldcraft.coverage.evaluator import evaluate_spec_coverage; m=json.load(open(".selfhost_outputs/manifest.json")); s=m.get("spec_metadata",{}).get("source_material") or {}; items=json.load(open(".selfhost_outputs/checklist.json")).get("items", []); evaluate_spec_coverage(s if isinstance(s, dict) else {}, items, outdir=".selfhost_outputs")'], check=False)
-        except Exception:
-            pass
+        if not dry_run:
+            try:
+                import subprocess, sys
+                subprocess.run([sys.executable, '-c', 'import json; from shieldcraft.coverage.evaluator import evaluate_spec_coverage; m=json.load(open(".selfhost_outputs/manifest.json")); s=m.get("spec_metadata",{}).get("source_material") or {}; items=json.load(open(".selfhost_outputs/checklist.json")).get("items", []); evaluate_spec_coverage(s if isinstance(s, dict) else {}, items, outdir=".selfhost_outputs")'], check=False)
+            except Exception:
+                pass
         # Final subprocess fallback to compute implementability after coverage/sufficiency finalized
         try:
             import subprocess, sys

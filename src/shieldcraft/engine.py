@@ -31,7 +31,7 @@ def finalize_checklist(engine, partial_result=None, exception=None):
     not raise; callers should treat the returned dict as the canonical run
     outcome.
     """
-    # Collect recorded events (defensive)
+    
     events = []
     try:
         if engine is not None and getattr(engine, 'checklist_context', None):
@@ -42,7 +42,7 @@ def finalize_checklist(engine, partial_result=None, exception=None):
     except Exception:
         events = []
 
-    # Defensive: ensure persona events do not attempt to override outcome fields
+    
     try:
         for ev in events:
             if ev.get('persona_id') and any(k in ev for k in ('primary_outcome', 'refusal', 'blocking_reasons')):
@@ -57,11 +57,11 @@ def finalize_checklist(engine, partial_result=None, exception=None):
     except Exception:
         pass
 
-    # (Refusal masking diagnostics will be applied after events are translated into items)
+    
     pass
 
     items = []
-    # Start from any existing checklist items in partial_result
+    
     try:
         if partial_result and isinstance(partial_result.get('checklist'), dict):
             existing = partial_result.get('checklist', {}).get('items', []) or []
@@ -69,7 +69,7 @@ def finalize_checklist(engine, partial_result=None, exception=None):
     except Exception:
         pass
 
-    # Translate gate events into checklist items
+    
     for ev in events:
         try:
             gid = ev.get('gate_id')
@@ -77,16 +77,16 @@ def finalize_checklist(engine, partial_result=None, exception=None):
             outcome = ev.get('outcome')
             msg = ev.get('message') or gid
             evidence = ev.get('evidence')
-            # Minimal checklist item: ptr and text; allow model.normalize_item to fill defaults
+            
             it = {'ptr': '/', 'text': f"{gid}: {msg}", 'meta': {'gate': gid, 'phase': phase, 'evidence': evidence}}
-            # Severity heuristics: REFUSAL/BLOCKER -> high
+            
             if outcome and outcome.upper() in ('REFUSAL', 'BLOCKER'):
                 it['severity'] = 'high'
             else:
                 it['severity'] = 'medium'
             items.append(it)
 
-            # If this is a REFUSAL gate that may mask missing authority, add an explanatory DIAGNOSTIC item
+            
             try:
                 mask_gates = {"G2_GOVERNANCE_PRESENCE_CHECK", "G3_REPO_SYNC_VERIFICATION", "G7_PERSONA_VETO", "G14_SELFHOST_INPUT_SANDBOX", "G15_DISALLOWED_SELFHOST_ARTIFACT", "G20_QUALITY_GATE_FAILED"}
                 if (outcome or '').upper() == 'REFUSAL' and gid in mask_gates:
@@ -101,9 +101,9 @@ def finalize_checklist(engine, partial_result=None, exception=None):
             except Exception:
                 pass
         except Exception:
-            # Defensive: ensure a single bad event does not break finalization
+            
             pass
-    # If exception occurred, record it as a diagnostic item
+    
     error_info = None
     if exception is not None:
         try:
@@ -113,16 +113,16 @@ def finalize_checklist(engine, partial_result=None, exception=None):
         except Exception:
             pass
 
-    # Build checklist object and attach events for auditing
+    
     checklist = {'items': items, 'emitted': True, 'events': events}
 
-    # Centralized primary outcome derivation (authoritative)
+    
     from shieldcraft.services.checklist.outcome import derive_primary_outcome
-    # Call the canonical, deterministic derivation exactly once.
+    
     try:
         derived = derive_primary_outcome(checklist, events)
     except Exception as e:
-        # Record the failure deterministically and fall back to a minimal, safe outcome
+        
         try:
             if engine is not None and getattr(engine, 'checklist_context', None):
                 try:
@@ -131,7 +131,7 @@ def finalize_checklist(engine, partial_result=None, exception=None):
                     pass
         except Exception:
             pass
-        # Minimal, deterministic fallback derived only from explicit event labels (safe, limited scope)
+        
         outcomes = [((ev.get('outcome') or '').upper()) for ev in events if isinstance(ev, dict)]
         primary = None
         if any(o == 'REFUSAL' for o in outcomes):
@@ -148,63 +148,63 @@ def finalize_checklist(engine, partial_result=None, exception=None):
             refusal_flag = False
         derived = {'primary_outcome': primary, 'refusal': refusal_flag, 'blocking_reasons': [], 'confidence_level': 'low'}
 
-    # Map authoritative results into checklist/result
+    
     checklist['primary_outcome'] = derived.get('primary_outcome')
     primary_outcome = checklist.get('primary_outcome')
     checklist['blocking_reasons'] = derived.get('blocking_reasons', [])
     checklist['confidence_level'] = derived.get('confidence_level', 'low')
 
-    # Authority ceiling assertions (Phase 12 guard)
+    
     try:
-        # Ensure any Tier A synthesized defaults are accompanied by a BLOCKER event
+        
         tier_a_items = [it for it in checklist.get('items', []) if (it.get('meta') or {}).get('source') == 'default' and (it.get('meta') or {}).get('tier') == 'A']
         if tier_a_items:
-            # Must have at least one G_SYNTHESIZED_DEFAULT_* BLOCKER event recorded
+            
             has_blocker = any((ev.get('gate_id') or '').startswith('G_SYNTHESIZED_DEFAULT_') and (ev.get('outcome') or '').upper() == 'BLOCKER' for ev in events)
-            # Must also have a DIAGNOSTIC event recorded for the same synthesized default visibility
+            
             has_diag = any((ev.get('gate_id') or '').startswith('G_SYNTHESIZED_DEFAULT_') and (ev.get('outcome') or '').upper() == 'DIAGNOSTIC' for ev in events)
             assert has_blocker and has_diag, 'TIER_A_SYNTHESIS_MISSING_BLOCKER_OR_DIAGNOSTIC'
     except AssertionError:
-        # Fail fast: authority ceiling violation
+        
         raise
     except Exception:
-        # Defensive: if something unexpected happens, surface it
+        
         raise
 
-# Preserve refusal_reason and authority if any REFUSAL event exists (for auditability)
+
     if derived.get('refusal'):
         checklist['refusal'] = True
-        # Find deterministic refusal reason: earliest non-persona REFUSAL event message
+        
         try:
             non_persona_ev = next(e for e in events if (e.get('outcome') or '').upper() == 'REFUSAL' and not e.get('persona_id'))
             checklist['refusal_reason'] = non_persona_ev.get('message') or non_persona_ev.get('gate_id')
-            # Extract refusal authority metadata and enforce presence
+            
             try:
                 refusal_meta = (non_persona_ev.get('evidence') or {}).get('refusal') or {}
-                # Authority must be present and be a single value
+                
                 assert isinstance(refusal_meta.get('authority'), str) and refusal_meta.get('authority'), 'REFUSAL authority missing or invalid'
                 checklist['refusal_authority'] = refusal_meta.get('authority')
                 checklist['refusal_trigger'] = refusal_meta.get('trigger')
                 checklist['refusal_scope'] = refusal_meta.get('scope')
                 checklist['refusal_justification'] = refusal_meta.get('justification')
             except AssertionError:
-                # Compiler assertion: REFUSAL without authority is invalid
+                
                 raise
             except Exception:
-                # Any other failure should be visible
+                
                 raise
         except StopIteration:
             checklist['refusal_reason'] = None
 
     result_refusal = bool(derived.get('refusal', False))
 
-    # Assign deterministic semantic roles to checklist items (exactly one role each).
-    # Roles: PRIMARY_CAUSE, CONTRIBUTING_BLOCKER, SECONDARY_DIAGNOSTIC, INFORMATIONAL
-    # Only assign a PRIMARY_CAUSE when primary_outcome != 'SUCCESS'. Determination
-    # follows strict tie-breaking rules:
-    # 1) Highest-precedence outcome (already selected)
-    # 2) Lowest gate_id lexicographically
-    # 3) Earliest event occurrence (first seen in events list)
+    
+    
+    
+    
+    
+    
+    
     gate_outcomes = {}
     gate_first_index = {}
     for idx, ev in enumerate(events):
@@ -215,8 +215,8 @@ def finalize_checklist(engine, partial_result=None, exception=None):
             if g not in gate_first_index:
                 gate_first_index[g] = idx
 
-    # Map primary_outcome back to the decisive event outcome label
-    # Note: ACTION is not an event outcome and will fall back to deterministic selection
+    
+    
     decisive_label = None
     if checklist.get('primary_outcome') == 'REFUSAL':
         decisive_label = 'REFUSAL'
@@ -228,24 +228,24 @@ def finalize_checklist(engine, partial_result=None, exception=None):
 
     primary_item = None
     if primary_outcome != 'SUCCESS' and items:
-        # Candidate gates that contributed the decisive outcome
+        
         candidate_gates = [g for g, outs in gate_outcomes.items() if decisive_label in outs]
         if candidate_gates:
-            # Choose gate by lowest lexicographic id
+            
             selected_gate = min(candidate_gates)
-            # Find candidate items matching the selected_gate
+            
             candidate_items = [it for it in items if (it.get('meta') or {}).get('gate') == selected_gate]
             if candidate_items:
-                # Choose the earliest item that matches the gate (deterministic)
+                
                 def _item_event_index(it):
                     g = (it.get('meta') or {}).get('gate')
                     return gate_first_index.get(g, 0)
                 primary_item = min(candidate_items, key=lambda it: (_item_event_index(it), it.get('text') or ''))
         else:
-            # Fallback: pick deterministic item among all items
+            
             primary_item = min(items, key=lambda it: ((it.get('meta') or {}).get('gate') or '', it.get('text') or ''))
 
-    # Assign roles deterministically
+    
     for it in items:
         it['role'] = None
         if primary_item is not None and it is primary_item:
@@ -261,23 +261,23 @@ def finalize_checklist(engine, partial_result=None, exception=None):
             continue
         it['role'] = 'INFORMATIONAL'
 
-    # Enforce semantic invariants now that roles are assigned
+    
     _assert_semantic_invariants(checklist, primary_outcome, gate_outcomes)
 
-    # Compute checklist quality score and attach to checklist meta
+    
     try:
         from shieldcraft.services.checklist.quality import compute_checklist_quality
-        # Count synthesized defaults present in items
+        
         synthesized_count = sum(1 for it in items if (it.get('meta') or {}).get('synthesized_default'))
-        # Count insufficiency diagnostics
+        
         insuff_count = sum(1 for it in items if (it.get('meta') or {}).get('insufficiency'))
         quality = compute_checklist_quality(items, synthesized_count, insuff_count)
-        # Attach deterministic meta
+        
         if 'meta' not in checklist:
             checklist['meta'] = {}
         checklist['meta']['checklist_quality'] = quality
 
-        # Emit diagnostic item if quality below threshold
+        
         if quality < 60:
             items.append({
                 'ptr': '/',
@@ -289,18 +289,18 @@ def finalize_checklist(engine, partial_result=None, exception=None):
     except Exception:
         pass
 
-    # Persona event compression: summarize persona outputs deterministically
+    
     try:
         persona_events = list(getattr(engine, '_persona_events', []) or [])
         if persona_events:
-            # Map persona capability to nominal outcome for selection precedence
+            
             def _capability_to_outcome(cap):
                 if cap == 'veto':
                     return 'REFUSAL'
-                # annotations/decisions are diagnostics/evidence
+                
                 return 'DIAGNOSTIC'
 
-            # Build list with derived outcomes and preserve order
+            
             pes = []
             for idx, pe in enumerate(persona_events):
                 outcome = _capability_to_outcome(pe.get('capability'))
@@ -314,7 +314,7 @@ def finalize_checklist(engine, partial_result=None, exception=None):
                     'index': idx,
                 })
 
-            # Select primary persona cause by precedence and deterministic tie-break
+            
             prim = None
             if any(p.get('derived_outcome') == 'REFUSAL' for p in pes):
                 candidates = [p for p in pes if p.get('derived_outcome') == 'REFUSAL']
@@ -324,7 +324,7 @@ def finalize_checklist(engine, partial_result=None, exception=None):
                 candidates = pes
 
             if candidates:
-                # deterministic selection: lowest persona_id, then earliest index
+                
                 prim = sorted(candidates, key=lambda p: (p.get('persona_id') or '', p.get('index')))[0]
 
             checklist['persona_summary'] = {
@@ -333,31 +333,31 @@ def finalize_checklist(engine, partial_result=None, exception=None):
                 'events': pes,
             }
     except Exception:
-        # Persona auditing must not interfere with finalization
+        
         pass
 
-    # Expose primary outcome at the top-level result as required by the
-    # Checklist Semantics Contract (Phase 5).
+    
+    
     result_primary_outcome = primary_outcome
 
-    # Compose final result preserving partial_result type if present
+    
     result = {}
     if partial_result and isinstance(partial_result, dict):
         result.update(partial_result)
 
-    # Ensure canonical fields
+    
     result['checklist'] = checklist
-    # Reflect primary outcome and derived refusal at the top-level for ease of consumption
+    
     result['primary_outcome'] = result_primary_outcome
     result['refusal'] = result_refusal
-    # Surface an explicit top-level emission flag so callers and invariants
-    # can assert emission without digging into nested structures.
+    
+    
     result['emitted'] = True
     if error_info:
         result['error'] = error_info
 
-    # Central invariant assertion: ensure finalized result explicitly
-    # declares that emission occurred and includes the checklist payload.
+    
+    
     if not (result.get('emitted') is True and 'checklist' in result):
         raise AssertionError('Checklist emission invariant violated')
 
@@ -373,9 +373,9 @@ def _assert_semantic_invariants(checklist_obj, primary, gate_outcomes=None):
     items_local = checklist_obj.get('items', []) or []
     roles = [it.get('role') for it in items_local]
     gate_outcomes = gate_outcomes or {}
-    # Exactly one PRIMARY_CAUSE item MUST exist unless primary == 'ACTION'
-    # (ACTION represents actionable success; do not require PRIMARY_CAUSE in this case)
-    # Only enforce presence/absence of PRIMARY_CAUSE when checklist items exist
+    
+    
+    
     if items_local:
         if primary != 'ACTION':
             if roles.count('PRIMARY_CAUSE') != 1:
@@ -383,15 +383,15 @@ def _assert_semantic_invariants(checklist_obj, primary, gate_outcomes=None):
         else:
             if 'PRIMARY_CAUSE' in roles:
                 raise AssertionError('Semantic invariant violated: ACTION outcome must not contain PRIMARY_CAUSE')
-    # REFUSAL outcome MUST include refusal_reason
+    
     if primary == 'REFUSAL':
         if not checklist_obj.get('refusal') or not checklist_obj.get('refusal_reason'):
             raise AssertionError('Semantic invariant violated: REFUSAL outcome must include refusal_reason')
-    # BLOCKED outcome MUST NOT set refusal == true
+    
     if primary == 'BLOCKED':
         if checklist_obj.get('refusal'):
             raise AssertionError('Semantic invariant violated: BLOCKED outcome must not set refusal == true')
-    # DIAGNOSTIC outcome MUST NOT contain BLOCKER or REFUSAL items
+    
     if primary == 'DIAGNOSTIC':
         if any(((it.get('meta') or {}).get('gate') and ('BLOCKER' in gate_outcomes.get((it.get('meta') or {}).get('gate'), set()) or 'REFUSAL' in gate_outcomes.get((it.get('meta') or {}).get('gate'), set()))) for it in items_local):
             raise AssertionError('Semantic invariant violated: DIAGNOSTIC outcome must not contain BLOCKER or REFUSAL items')
@@ -414,17 +414,17 @@ class Engine:
         self.ast = ASTBuilder()
         self.planner = Planner()
         self.checklist_gen = ChecklistGenerator()
-        # Checklist context for recording gate events; plumbing only.
+        
         try:
             from shieldcraft.services.checklist.context import ChecklistContext, set_global_context
             self.checklist_context = ChecklistContext()
             try:
-                # Register global plumbing context for modules that cannot access engine directly
+                
                 set_global_context(self.checklist_context)
             except Exception:
                 pass
         except Exception:
-            # Keep engine usable even if context module unavailable (defensive)
+            
             self.checklist_context = None
         self.codegen = CodeGenerator()
         self.writer = FileWriter()
@@ -432,11 +432,11 @@ class Engine:
         self.prov = ProvenanceEngine()
         self.evidence = EvidenceBundle(self.det, self.prov)
         self.verifier = ChecklistVerifier()
-        # Readiness assertions: ensure required subsystems are importable and wired.
+        
         try:
             from shieldcraft.services.validator import validate_instruction_block
             from shieldcraft.services.sync import verify_repo_sync
-            # Persona optional scaffold (feature-flag guarded)
+            
             from shieldcraft.persona import is_persona_enabled
         except Exception as e:
             try:
@@ -449,9 +449,9 @@ class Engine:
             except Exception:
                 pass
             raise RuntimeError("engine_readiness_failure: missing subsystem") from e
-        # Feature flag - do not enable persona behavior by default
+        
         self.persona_enabled = is_persona_enabled()
-        # Snapshot feature flag
+        
         self.snapshot_enabled = os.getenv("SHIELDCRAFT_SNAPSHOT_ENABLED", "0") == "1"
 
     def preflight(self, spec_or_path):
@@ -460,7 +460,7 @@ class Engine:
         Accepts either a spec dict or a path to a spec file. Raises `ValidationError` on
         instruction-level failures or returns a dict with schema validation failures.
         """
-        # Load spec if a path is provided
+        
         if isinstance(spec_or_path, str):
             raw = load_spec(spec_or_path)
             if isinstance(raw, SpecModel):
@@ -470,25 +470,25 @@ class Engine:
         else:
             spec = spec_or_path
 
-        # Reset execution state trace for this invocation
+        
         try:
-            # Initialize/clear the trace to ensure idempotent runs
-            self._execution_state_entries = []  # type: ignore
+            
+            self._execution_state_entries = []  
             from shieldcraft.observability import emit_state
             emit_state(self, "preflight", "preflight", "start")
         except Exception:
-            # Observability must not interfere with behavior
+            
             pass
 
-        # Governance presence check: ensure required governance artifacts exist
-        # and meet immutability/version expectations before proceeding.
+        
+        
         try:
-            # Only enforce governance presence checks when running from the
-            # repository root (heuristic: the `spec/` directory is present).
+            
+            
             root = os.getcwd()
             if os.path.exists(os.path.join(root, "spec")):
                 from shieldcraft.services.governance.registry import check_governance_presence
-                # Derive engine major version from selfhost ENGINE_VERSION if present
+                
                 try:
                     from shieldcraft.services.selfhost import ENGINE_VERSION
                     engine_major = int(ENGINE_VERSION.split('.')[0])
@@ -505,7 +505,7 @@ class Engine:
                         pass
             except Exception:
                 pass
-            # Propagate specialized governance errors unchanged
+            
             raise
         except Exception as e:
             try:
@@ -516,17 +516,17 @@ class Engine:
                         pass
             except Exception:
                 pass
-            # Normalize unexpected failures
+            
             raise RuntimeError("governance_check_failed")
 
-        # Repository sync verification is required before any validation.
-        # Run this early to ensure the working repo state is consistent with expected sync artifacts.
+        
+        
         from shieldcraft.services.sync import verify_repo_state_authoritative, SYNC_MISSING
         try:
             verify_repo_state_authoritative(os.getcwd())
         except Exception as e:
-            # If specific sync errors (external or snapshot) occur, propagate them
-            # only for missing-sync (explicit SyncError with code==SYNC_MISSING) or SnapshotError.
+            
+            
             from shieldcraft.services.sync import SyncError
             from shieldcraft.snapshot import SnapshotError
             if isinstance(e, SnapshotError):
@@ -541,7 +541,7 @@ class Engine:
                     pass
                 raise
             if isinstance(e, SyncError):
-                # Surface missing-sync explicitly; normalize other sync failures
+                
                 if getattr(e, "code", None) == SYNC_MISSING:
                     try:
                         if getattr(self, 'checklist_context', None):
@@ -572,7 +572,7 @@ class Engine:
                 pass
             raise RuntimeError("sync_not_performed")
 
-        # Schema validation for legacy normalized specs
+        
         if isinstance(spec, dict):
             try:
                 valid, errors = validate_spec_against_schema(spec, self.schema_path)
@@ -587,10 +587,10 @@ class Engine:
                             pass
                 except Exception:
                     pass
-                # Normalize schema error to a finalized checklist return so emission is guaranteed
+                
                 return finalize_checklist(self, partial_result={"type": "schema_error", "details": errors})
 
-        # Instruction validation raises ValidationError on failures
+        
         try:
             from shieldcraft.observability import emit_state
             emit_state(self, "preflight", "validation", "start")
@@ -612,9 +612,9 @@ class Engine:
                 pass
             raise
 
-        # Verification spine hook (non-invasive): validate registered verification
-        # properties for well-formedness. This must not alter preflight outcome
-        # unless verification properties are malformed (reported as verification_failed).
+        
+        
+        
         try:
             from shieldcraft.verification import registry as _vreg, assertions as _vassert
             props = _vreg.global_registry().get_all()
@@ -628,21 +628,21 @@ class Engine:
                         pass
             except Exception:
                 pass
-            # Do not raise here; record diagnostic and allow centralized finalization to handle outcome
+            
             pass
         except Exception:
-            # Do not change preflight behavior if verification spine is unavailable
+            
             pass
 
-        # Ensure validation recorded deterministically
+        
         if isinstance(spec, dict) and "instructions" in spec:
             fp = compute_spec_fingerprint(spec)
             if getattr(self, "_last_validated_spec_fp", None) != fp:
                 raise RuntimeError("validation_not_performed")
-        # Check for persona vetoes after validation but before finishing preflight
+        
         try:
             if hasattr(self, "_persona_vetoes") and self._persona_vetoes:
-                # Deterministic resolution: sort by severity (critical>high>medium>low), then persona_id
+                
                 severity_order = {"critical": 4, "high": 3, "medium": 2, "low": 1}
                 def _key(v):
                     return (severity_order.get(v.get("severity"), 0), v.get("persona_id"))
@@ -650,31 +650,31 @@ class Engine:
                 try:
                     if getattr(self, 'checklist_context', None):
                         try:
-                            # Record advisory (DIAGNOSTIC) instead of refusal; persona vetoes are non-authoritative
+                            
                             self.checklist_context.record_event("G7_PERSONA_VETO", "preflight", "DIAGNOSTIC", message="persona veto advisory (non-authoritative)", evidence={"persona_id": sel.get('persona_id'), "code": sel.get('code')})
                         except Exception:
                             pass
                 except Exception:
                     pass
-                # Do not raise; personas are advisory only. Preserve selection for observability.
+                
                 try:
                     self._persona_veto_selected = sel
                 except Exception:
                     pass
         except Exception:
-            # Observability must not alter behavior if failing
+            
             pass
-        # Enforce Test Attachment Contract (TAC v1) before finishing preflight
-        # This enforcement is opt-in to avoid breaking existing callers; enable
-        # via env var `SHIELDCRAFT_ENFORCE_TEST_ATTACHMENT=1` or by setting
-        # `metadata.enforce_tests_attached` in the spec. Tests that validate
-        # TAC should set the env var explicitly.
+        
+        
+        
+        
+        
         try:
             enforce_flag = os.getenv("SHIELDCRAFT_ENFORCE_TEST_ATTACHMENT", "0") == "1"
             spec_enforce = isinstance(spec, dict) and spec.get("metadata", {}).get("enforce_tests_attached", False)
             if enforce_flag or spec_enforce:
                 from shieldcraft.services.validator.tests_attached_validator import verify_tests_attached, ProductInvariantFailure
-                # Build a dry-run checklist to inspect test_refs (non-emitting)
+                
                 try:
                     from shieldcraft.services.ast.builder import ASTBuilder
                     ast_local = ASTBuilder().build(spec)
@@ -684,9 +684,9 @@ class Engine:
                 try:
                     checklist_preview = self.checklist_gen.build(spec, ast=ast_local, dry_run=True, run_test_gate=False, engine=self)
                 except Exception:
-                    # If checklist generation itself fails, surface as preflight failure
+                    
                     raise RuntimeError("checklist_generation_failed")
-                # Now verify TAC
+                
                 verify_tests_attached(checklist_preview)
         except ProductInvariantFailure as e:
             try:
@@ -697,10 +697,10 @@ class Engine:
                         pass
             except Exception:
                 pass
-            # Re-raise to allow caller to see the structured failure
+            
             raise
         except Exception:
-            # Any unexpected check failure is surfaced as a preflight failure
+            
             raise RuntimeError("tests_attached_check_failed")
         try:
             from shieldcraft.observability import emit_state
@@ -720,7 +720,7 @@ class Engine:
         accidental bypasses.
         """
         if not isinstance(spec, dict):
-            # Ensure non-dict specs surface as structured validation failures
+            
             try:
                 if getattr(self, 'checklist_context', None):
                     try:
@@ -732,21 +732,7 @@ class Engine:
             from shieldcraft.services.validator import ValidationError, SPEC_NOT_DICT
             raise ValidationError(SPEC_NOT_DICT, "spec must be a dict")
 
-        # Verify repo sync first (non-bypassable) for all runs.
-        # Use the authoritative sync decision point so we have a single
-        # configurable source of truth (external vs snapshot).
-        from shieldcraft.services.sync import verify_repo_state_authoritative
-        try:
-            sync_res = verify_repo_state_authoritative(os.getcwd())
-        except Exception as e:
-            # Propagate structured SyncError or SnapshotError for callers/tests.
-            from shieldcraft.services.sync import SyncError
-            from shieldcraft.snapshot import SnapshotError
-            if isinstance(e, (SyncError, SnapshotError)):
-                raise
-            raise RuntimeError("sync_not_performed")
-
-        # If snapshot enforcement is enabled, validate snapshot early (non-branching)
+        
         if self.snapshot_enabled:
             try:
                 from shieldcraft.observability import emit_state
@@ -756,10 +742,10 @@ class Engine:
 
             try:
                 from shieldcraft.snapshot import validate_snapshot, SnapshotError
+                from shieldcraft.observability import emit_state
                 snapshot_path = os.path.join(os.getcwd(), "artifacts", "repo_snapshot.json")
                 validate_snapshot(snapshot_path, os.getcwd())
-                try:
-                    from shieldcraft.observability import emit_state
+                try:                    
                     emit_state(self, "preflight", "snapshot", "ok")
                 except Exception:
                     pass
@@ -769,26 +755,27 @@ class Engine:
                     emit_state(self, "preflight", "snapshot", "fail", getattr(e, "code", str(e)))
                 except Exception:
                     pass
-                # Propagate SnapshotError to callers so they can handle deterministic
-                # snapshot validation failures.
+                
+                
                 from shieldcraft.snapshot import SnapshotError
                 if isinstance(e, SnapshotError):
                     raise
-                # Normalize unexpected exceptions
+                
                 raise RuntimeError("snapshot_validation_failed")
 
-        # Ensure verification actually ran and returned expected structure
-        if not isinstance(sync_res, dict) or not sync_res.get("ok"):
-            raise RuntimeError("sync_not_performed")
+        
+        sync_res = getattr(self, '_last_sync_verified', None)
+        if not sync_res:
+            raise RuntimeError('sync_not_performed')
         self._last_sync_verified = sync_res.get("sha256")
 
-        # Always run the instruction-level validator to ensure a single,
-        # authoritative validation gate for specs prior to any plan/codegen.
+        
+        
         from shieldcraft.services.validator import validate_instruction_block
         validate_instruction_block(spec)
-        # Record that this spec was validated (deterministic fingerprint)
+        
         self._last_validated_spec_fp = compute_spec_fingerprint(spec)
-        # Assert validation recorded
+        
         if self._last_validated_spec_fp != compute_spec_fingerprint(spec):
             try:
                 if getattr(self, 'checklist_context', None):
@@ -801,10 +788,10 @@ class Engine:
             raise RuntimeError("validation_not_performed")
 
     def run(self, spec_path):
-        # AUTHORITATIVE DSL: se_dsl_v1.schema.json via dsl.loader. Do not introduce parallel DSLs.
+        
         
         try:
-            # Load spec using canonical DSL loader which performs the canonical mapping
+            
             raw = load_spec(spec_path)
         except Exception as e:
             try:
@@ -817,14 +804,14 @@ class Engine:
                 pass
             return finalize_checklist(self, partial_result=None, exception=e)
 
-        # Handle SpecModel or raw dict
+        
         if isinstance(raw, SpecModel):
             spec_model = raw
             normalized = spec_model.raw
             ast = spec_model.ast
             fingerprint = spec_model.fingerprint
         else:
-            # Legacy: normalize and validate
+            
             normalized = canonicalize(raw) if not isinstance(raw, dict) else raw
             valid, errors = validate_spec_against_schema(normalized, self.schema_path)
             if not valid:
@@ -836,21 +823,21 @@ class Engine:
                             pass
                 except Exception:
                     pass
-                # Create a finalized checklist result for schema errors
+                
                 return finalize_checklist(self, partial_result={"type": "schema_error", "details": errors})
             ast = self.ast.build(normalized)
             fingerprint = compute_spec_fingerprint(normalized)
             spec_model = SpecModel(normalized, ast, fingerprint)
         
-        # AST already built in spec_model
+        
         spec = normalized
 
-        # Instruction validation: enforce instruction invariants before plan creation.
-        # Use the single engine validation entrypoint to avoid duplicated validators
-        # and to ensure all code-paths that ingest `spec` are subject to the same
-        # deterministic validation behavior.
+        
+        
+        
+        
         self._validate_spec(spec)
-        # Ensure validation recorded deterministically (prevent no-op/malicious bypass)
+        
         if "instructions" in spec:
             fp = compute_spec_fingerprint(spec)
             if getattr(self, "_last_validated_spec_fp", None) != fp:
@@ -864,17 +851,17 @@ class Engine:
                     pass
                 raise RuntimeError("validation_not_performed")
         
-        # Create execution plan
+        
         plan = from_ast(ast)
         
-        # Store plan context
+        
         product_id = spec.get("metadata", {}).get("product_id", "unknown")
         plan_dir = f"products/{product_id}"
         os.makedirs(plan_dir, exist_ok=True)
         write_canonical_json(f"{plan_dir}/plan.json", plan)
         
-        # Generate checklist using AST
-        # Ensure a deterministic run seed is recorded and available to subsystems
+        
+        
         try:
             from shieldcraft.verification.seed_manager import generate_seed, snapshot
             generate_seed(self, "run")
@@ -892,17 +879,17 @@ class Engine:
                         pass
             except Exception:
                 pass
-            # Ensure we finalize the run and return an emitted checklist artifact
+            
             return finalize_checklist(self, partial_result=None, exception=e)
 
-        # Attach determinism snapshot for replayability
+        
         try:
             from shieldcraft.verification.seed_manager import snapshot
             det = snapshot(self)
             checklist["_determinism"] = {"seeds": det, "spec": spec, "ast": ast, "checklist": checklist}
         except Exception:
             pass
-        # Evaluate readiness based on verification gates and attach report
+        
         try:
             from shieldcraft.verification.readiness_evaluator import evaluate_readiness
             from shieldcraft.verification.readiness_report import render_readiness
@@ -910,14 +897,14 @@ class Engine:
             checklist_readiness = readiness
             checklist["_readiness"] = checklist_readiness
             checklist["_readiness_report"] = render_readiness(readiness)
-            # Emit observable readiness state
+            
             try:
                 from shieldcraft.observability import emit_state
                 emit_state(self, "readiness", "readiness", "ok" if readiness.get("ok") else "fail", str(readiness.get("results")))
             except Exception:
                 pass
         except Exception:
-            # If readiness evaluation fails, mark as not ready and attach minimal info
+            
             checklist["_readiness"] = {"ok": False, "results": {"readiness_eval": {"ok": False}}}
             checklist["_readiness_report"] = "Readiness evaluation failed"
         
@@ -947,13 +934,13 @@ class Engine:
     def generate_code(self, spec_path, dry_run=False):
         result = self.run(spec_path)
         
-        # Check for validation errors
+        
         if result.get("type") == "schema_error":
             return result
         try:
             outputs = self.codegen.run(result["checklist"], dry_run=dry_run)
 
-            # Support both legacy list-of-outputs and new dict-with-outputs
+            
             outputs_list = outputs.get("outputs") if isinstance(outputs, dict) and "outputs" in outputs else outputs
 
             if not dry_run:
@@ -990,22 +977,39 @@ class Engine:
         import hashlib
         from pathlib import Path
         
-        # Emit self-host start for observability
+        
         try:
-            # Reset trace for direct self-host invocations to ensure idempotency
-            self._execution_state_entries = []  # type: ignore
+            
+            self._execution_state_entries = []  
             from shieldcraft.observability import emit_state
             emit_state(self, "self_host", "self_host", "start")
         except Exception:
             pass
 
-        # Validate instructions before doing any work. This is the non-bypassable
-        # validation gate for self-host mode: do not build AST or generate code for
-        # specs that fail instruction validation.
-        try:
-            self._validate_spec(spec)
+        spec_str = json.dumps(spec, sort_keys=True)
+        fingerprint = hashlib.sha256(spec_str.encode()).hexdigest()[:16]
 
-            # Ensure validation recorded deterministically (prevent no-op/malicious bypass)
+        preview = None
+
+        
+        
+        try:
+            try:
+                self._validate_spec(spec)
+            except Exception as e:
+                if dry_run:
+                    try:
+                        if getattr(self, 'checklist_context', None):
+                            try:
+                                self.checklist_context.record_event("G_VALIDATION_FAILURE", "preflight", "DIAGNOSTIC", message=f"Spec validation failed: {str(e)}")
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
+                else:
+                    raise
+
+            
             if "instructions" in spec:
                 fp = compute_spec_fingerprint(spec)
                 if getattr(self, "_last_validated_spec_fp", None) != fp:
@@ -1017,33 +1021,55 @@ class Engine:
                                 pass
                     except Exception:
                         pass
-                    raise RuntimeError("validation_not_performed")
+                    if not dry_run:
+                        raise RuntimeError("validation_not_performed")
 
-            # Build AST and checklist
-            ast = self.ast.build(spec)
-            checklist = self.checklist_gen.build(spec, ast=ast, engine=self)
             
-            # Filter bootstrap category items
+            try:
+                ast = self.ast.build(spec)
+            except Exception as e:
+                if dry_run:
+                    try:
+                        if getattr(self, 'checklist_context', None):
+                            try:
+                                self.checklist_context.record_event("G_BUILD_FAILURE", "build", "DIAGNOSTIC", message=f"AST build failed: {str(e)}")
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
+                    ast = None
+                else:
+                    raise
+            
+            try:
+                checklist = self.checklist_gen.build(spec, ast=ast, engine=self)
+            except Exception as e:
+                if dry_run:
+                    checklist = {'items': [{'ptr': '/', 'text': f'Checklist generation failed: {str(e)}', 'severity': 'high'}]}
+                else:
+                    raise
+            
+            
             bootstrap_items = [
                 item for item in checklist.get("items", [])
                 if item.get("category") == "bootstrap"
             ]
             
-            # Generate code for bootstrap items
+            
             codegen_result = self.codegen.run({"items": bootstrap_items}, dry_run=True)
 
-            # If persona feature is enabled, expose a hook to load persona definitions
-            # (does not influence pipeline behavior). This is intentionally inert
-            # by default and will be activated via environment flag in tests.
+            
+            
+            
             if self.persona_enabled:
                 try:
                     from shieldcraft.persona import load_persona, find_persona_files, resolve_persona_files
-                    # Deterministically find persona files and resolve the chosen one.
+                    
                     files = find_persona_files(os.getcwd())
                     chosen = resolve_persona_files(files)
                     if chosen:
                         persona = load_persona(chosen)
-                        # expose read-only PersonaContext into engine context
+                        
                         try:
                             from shieldcraft.persona import PersonaContext
                             self.persona = PersonaContext(
@@ -1055,15 +1081,15 @@ class Engine:
                                 constraints=persona.constraints,
                             )
                         except Exception:
-                            # fallback: raw persona object
+                            
                             self.persona = persona
                 except Exception:
-                    # Do not let persona loading failures affect self-host pipeline.
+                    
                     pass
             else:
                 self.persona = None
             
-            # Ensure only allowed inputs are consumed by self-host
+            
             from shieldcraft.services.selfhost import is_allowed_selfhost_input, SELFHOST_READINESS_MARKER, provenance_header
             if not is_allowed_selfhost_input(spec):
                 try:
@@ -1075,9 +1101,10 @@ class Engine:
                             pass
                 except Exception:
                     pass
-                raise RuntimeError("disallowed_selfhost_input")
+                if not dry_run:
+                    raise RuntimeError("disallowed_selfhost_input")
 
-            # Assert readiness marker is present (single guarded flag that can be audited)
+            
             from shieldcraft.services.selfhost import SELFHOST_READINESS_MARKER as _READINESS
             if not _READINESS:
                 try:
@@ -1089,13 +1116,14 @@ class Engine:
                             pass
                 except Exception:
                     pass
-                raise RuntimeError("selfhost_not_ready")
+                if not dry_run:
+                    raise RuntimeError("selfhost_not_ready")
 
-            # Enforce clean worktree for self-host runs (safety precondition).
-            # By default we always enforce this check (including dry-runs) so that
-            # callers cannot bypass the safety gate. A special internal opt-in
-            # flag (`SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY`) may be set by the
-            # orchestrator to permit self-build flows in ephemeral test/CI dirs.
+            
+            
+            
+            
+            
             if os.getenv("SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY", "0") != "1":
                 try:
                     from shieldcraft.persona import _is_worktree_clean
@@ -1118,30 +1146,52 @@ class Engine:
                                 pass
                     except Exception:
                         pass
-                    raise RuntimeError("worktree_not_clean")
+                    if not dry_run:
+                        raise RuntimeError("worktree_not_clean")
 
-            # Compute fingerprint from spec content
-            spec_str = json.dumps(spec, sort_keys=True)
-            fingerprint = hashlib.sha256(spec_str.encode()).hexdigest()[:16]
             
-            # Build output directory structure
             output_dir = Path(f".selfhost_outputs/{fingerprint}")
             
-            # Prepare manifest
-            manifest = {
-                "fingerprint": fingerprint,
-                "manifest_version": "v1",
-                "spec_fingerprint": fingerprint,
-                "spec_metadata": spec.get("metadata", {}),
-                "bootstrap_items": len(bootstrap_items),
-                "codegen_bundle_hash": codegen_result.get("codegen_bundle_hash", "unknown"),
-                "outputs": [out["path"] for out in codegen_result.get("outputs", [])],
-                "provenance": {
-                    "engine_version": __import__('shieldcraft.services.selfhost', fromlist=['ENGINE_VERSION']).ENGINE_VERSION,
+            
+            try:
+                manifest = {
+                    "fingerprint": fingerprint,
+                    "manifest_version": "v1",
                     "spec_fingerprint": fingerprint,
-                    "snapshot_hash": getattr(self, '_last_sync_verified', None),
+                    "spec_metadata": spec.get("metadata", {}),
+                    "bootstrap_items": len(bootstrap_items),
+                    "codegen_bundle_hash": codegen_result.get("codegen_bundle_hash", "unknown"),
+                    "outputs": [out["path"] for out in codegen_result.get("outputs", [])],
+                    "provenance": {
+                        "engine_version": __import__('shieldcraft.services.selfhost', fromlist=['ENGINE_VERSION']).ENGINE_VERSION,
+                        "spec_fingerprint": fingerprint,
+                        "snapshot_hash": getattr(self, '_last_sync_verified', None),
+                    }
                 }
-            }
+            except Exception:
+                manifest = {
+                    "fingerprint": fingerprint,
+                    "manifest_version": "v1",
+                    "spec_fingerprint": fingerprint,
+                    "spec_metadata": {},
+                    "bootstrap_items": len(bootstrap_items),
+                    "codegen_bundle_hash": codegen_result.get("codegen_bundle_hash", "unknown"),
+                    "outputs": [],
+                    "provenance": {
+                        "engine_version": "unknown",
+                        "spec_fingerprint": fingerprint,
+                        "snapshot_hash": getattr(self, '_last_sync_verified', None),
+                    }
+                }
+            
+            if dry_run:
+                try:
+                    diag = finalize_checklist(self, partial_result=None, exception=None)
+                    diagnostic_items = diag.get("checklist", {}).get("items", [])
+                except Exception:
+                    diagnostic_items = []
+            else:
+                diagnostic_items = []
             
             preview = {
                 "fingerprint": fingerprint,
@@ -1152,26 +1202,26 @@ class Engine:
                 "lineage": {
                     "headers": checklist.get("lineage_headers", {})
                 },
-                "checklist": checklist.get("items", []),
+                "checklist": checklist.get("items", []) + diagnostic_items,
                 "outputs": codegen_result.get("outputs", [])
             }
             
             if dry_run:
-                # Validate preview
-                from shieldcraft.services.selfhost.preview_validator import validate_preview
-                validation = validate_preview(preview)
-                preview["validation_ok"] = validation["ok"]
-                preview["validation_issues"] = validation["issues"]
-                # Prepend deterministic provenance header to preview outputs
-                header = provenance_header(fingerprint, getattr(self, '_last_sync_verified', None))
-                for o in preview.get("outputs", []):
-                    o["content"] = header + o.get("content", "")
                 
-                # Write preview if path provided
-                if emit_preview:
-                    preview_path = Path(emit_preview)
-                    preview_path.parent.mkdir(parents=True, exist_ok=True)
-                    preview_path.write_text(json.dumps(preview, indent=2))
+                try:
+                    from shieldcraft.services.selfhost.preview_validator import validate_preview
+                    validation = validate_preview(preview)
+                    preview["validation_ok"] = validation["ok"]
+                    preview["validation_issues"] = validation["issues"]
+                    preview["primary_outcome"] = "SUCCESS" if validation["ok"] else "DIAGNOSTIC"
+                    
+                    header = provenance_header(fingerprint, getattr(self, '_last_sync_verified', None))
+                    for o in preview.get("outputs", []):
+                        o["content"] = header + str(o.get("content", ""))
+                except Exception as e:
+                    preview["validation_ok"] = False
+                    preview["validation_issues"] = [f"exception during preview preparation: {str(e)}"]
+                    preview["primary_outcome"] = "DIAGNOSTIC"
                 
                 try:
                     from shieldcraft.observability import emit_state
@@ -1180,9 +1230,9 @@ class Engine:
                     pass
                 return preview
             
-            # Write files
+            
             output_dir.mkdir(parents=True, exist_ok=True)
-            # Enforce artifact emission lock: only allow known prefixes/files
+            
             from shieldcraft.services.selfhost import is_allowed_selfhost_path
 
             for output in codegen_result.get("outputs", []):
@@ -1200,16 +1250,16 @@ class Engine:
                     raise RuntimeError(f"disallowed_selfhost_artifact: {rel_path}")
                 file_path = output_dir / rel_path
                 file_path.parent.mkdir(parents=True, exist_ok=True)
-                # Prepend deterministic provenance header to emitted artifacts
+                
                 header = provenance_header(fingerprint, getattr(self, '_last_sync_verified', None))
                 file_path.write_text(header + output["content"])
             
-            # Write manifest
+            
             manifest_path = output_dir / "bootstrap_manifest.json"
             manifest_path.write_text(json.dumps(manifest, indent=2))
-        # Also emit a canonical repo snapshot alongside bootstrap manifest to
-        # enable closed-loop parity checks (self-host produces an artefact that
-        # can be re-ingested for deterministic verification).
+        
+        
+        
             try:
                 from shieldcraft.observability import emit_state
                 emit_state(self, "self_host", "snapshot", "start")
@@ -1221,7 +1271,7 @@ class Engine:
                 snap = generate_snapshot(os.getcwd())
                 snapshot_path = output_dir / "repo_snapshot.json"
                 snapshot_path.write_text(json.dumps(snap, indent=2, sort_keys=True))
-                # advertise snapshot in manifest outputs and return payload
+                
                 manifest["outputs"].append("repo_snapshot.json")
                 try:
                     from shieldcraft.observability import emit_state
@@ -1234,8 +1284,8 @@ class Engine:
                     emit_state(self, "self_host", "snapshot", "fail", getattr(e, "code", str(e)))
                 except Exception:
                     pass
-                # Snapshot generation failures should not crash self-host emission;
-                # they can be handled by external validation.
+                
+                
                 pass
 
             try:
@@ -1244,9 +1294,9 @@ class Engine:
             except Exception:
                 pass
 
-            # Post-processing: enforce minimality and execution-plan invariants
+            
             try:
-                # Prefer persisted canonical requirements if available, else extract from spec
+                
                 try:
                     reqs = json.load(open(os.path.join(output_dir, 'requirements.json'))).get('requirements', [])
                 except Exception:
@@ -1255,16 +1305,16 @@ class Engine:
                     except Exception:
                         from shieldcraft.interpretation.requirements import extract_requirements
                         rtxt = spec.get('metadata', {}).get('source_material') or spec.get('raw_input') or json.dumps(spec, sort_keys=True)
-                        # ensure string input for extractor
+                        
                         if not isinstance(rtxt, str):
                             import json as _json
                             rtxt = _json.dumps(rtxt, sort_keys=True)
                         reqs = extract_requirements(rtxt)
-                # Use in-memory checklist when available (deterministic), fallback to persisted
+                
                 items = checklist.get('items', []) or json.load(open(os.path.join('.selfhost_outputs', 'checklist.json'))).get('items', [])
                 valid_items = [it for it in items if it.get('quality_status') != 'INVALID']
 
-                # Collapse redundant items deterministically and fail on invariant violations
+                
                 from shieldcraft.checklist.equivalence import detect_and_collapse
                 pruned_items, minimality_report = detect_and_collapse(valid_items, reqs)
                 violations = [p for p in minimality_report.get('proof_of_minimality', []) if not p.get('necessary')]
@@ -1284,19 +1334,19 @@ class Engine:
                         pass
                     raise RuntimeError('minimality_invariant_failed')
 
-                # Persist pruned checklist to both fingerprinted output and root outputs
+                
                 with open(os.path.join(output_dir, 'checklist.json'), 'w', encoding='utf8') as _cf:
                     json.dump({'items': pruned_items}, _cf, indent=2, sort_keys=True)
                 with open(os.path.join('.selfhost_outputs', 'checklist.json'), 'w', encoding='utf8') as _cfroot:
                     json.dump({'items': pruned_items}, _cfroot, indent=2, sort_keys=True)
 
-                # Build execution plan and enforce executability
+                
                 from shieldcraft.checklist.dependencies import infer_item_dependencies
                 from shieldcraft.checklist.execution_graph import build_execution_plan
                 from shieldcraft.requirements.coverage import compute_coverage
 
                 covers = compute_coverage(reqs, pruned_items)
-                # persist sequence artifact (build_sequence writes to outdir)
+                
                 try:
                     from shieldcraft.checklist.dependencies import build_sequence
                     build_sequence(pruned_items, infer_item_dependencies(reqs, covers), outdir='.selfhost_outputs')
@@ -1343,7 +1393,7 @@ class Engine:
                 with open(os.path.join(output_dir, 'checklist.json'), 'w', encoding='utf8') as _cf2:
                     json.dump({'items': pruned_items}, _cf2, indent=2, sort_keys=True)
             except Exception:
-                # Propagate fatal errors to caller
+                
                 raise
 
             return {
@@ -1366,7 +1416,19 @@ class Engine:
                         pass
             except Exception:
                 pass
-            return finalize_checklist(self, partial_result=None, exception=e)
+            result = finalize_checklist(self, partial_result=None, exception=e)
+            if dry_run and emit_preview:
+                preview = {"error": str(e), "validation_ok": False}
+            return result
+        finally:
+            if dry_run and emit_preview and preview is not None:
+                try:
+                    json_str = json.dumps(preview, indent=2, default=str)
+                except Exception:
+                    json_str = json.dumps({"error": "preview serialization failed", "validation_ok": False})
+                preview_path = Path(emit_preview)
+                preview_path.parent.mkdir(parents=True, exist_ok=True)
+                preview_path.write_text(json_str)
 
     def run_self_build(self, spec_path: str = "spec/se_dsl_v1.spec.json", dry_run: bool = False):
         """Run a self-build using the engine pipeline and emit a self-build bundle.
@@ -1378,40 +1440,40 @@ class Engine:
         from pathlib import Path
         from shieldcraft.services.selfhost import SELFBUILD_OUTPUT_DIR, SELFBUILD_BITWISE_ARTIFACTS, provenance_header_extended
 
-        # Recursion guard: quickly fail if a self-build is already running
+        
         if getattr(self, "_selfbuild_running", False):
             raise RuntimeError("selfbuild_recursive_invocation")
-        # Require explicit opt-in for self-build runs to avoid accidental invocation
+        
         if os.getenv("SHIELDCRAFT_SELFBUILD_ENABLED", "0") != "1" and os.getenv("GITHUB_ACTIONS", "") != "true":
             raise RuntimeError("selfbuild_disabled")
         self._selfbuild_running = True
 
         try:
-            # Load spec and validate (preflight checks include sync and validation)
+            
             spec_file = spec_path
             if not os.path.isabs(spec_file) and not os.path.exists(spec_file):
-                # resolve repo-relative
+                
                 repo_root = Path(__file__).resolve().parents[2]
                 spec_file = str(repo_root / spec_path)
             with open(spec_file) as f:
                 spec = json.load(f)
 
-            # Centralized validation gate
+            
             self._validate_spec(spec)
 
-            # Record lineage info
+            
             previous_snapshot = getattr(self, "_last_sync_verified", None)
             build_depth = int(os.getenv("SHIELDCRAFT_BUILD_DEPTH", "0"))
 
-            # Run self-host to produce outputs (dry-run first)
-            # Allow the orchestrator to bypass worktree cleanliness for both
-            # preview and real runs within this self-build invocation.
+            
+            
+            
             prev = os.getenv("SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY")
             os.environ["SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY"] = "1"
             try:
                 preview = self.run_self_host(spec, dry_run=True, emit_preview=None)
             except Exception:
-                # Ensure we restore the env var if preview fails early
+                
                 if prev is None:
                     os.environ.pop("SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY", None)
                 else:
@@ -1419,12 +1481,12 @@ class Engine:
                 raise
 
             if dry_run:
-                # Attach extended provenance and return preview
+                
                 preview["manifest"]["provenance"]["previous_snapshot"] = previous_snapshot
                 preview["manifest"]["provenance"]["build_depth"] = build_depth + 1
                 return preview
 
-            # Real run: execute and copy outputs into self-build location
+            
             try:
                 res = self.run_self_host(spec, dry_run=False)
             finally:
@@ -1432,7 +1494,7 @@ class Engine:
                     os.environ.pop("SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY", None)
                 else:
                     os.environ["SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY"] = prev
-            # If run_self_host returned a checklist error/result rather than success, propagate the finalized checklist unchanged
+            
             if not res or not res.get("output_dir"):
                 return res
             out_dir = Path(res.get("output_dir"))
@@ -1441,7 +1503,7 @@ class Engine:
                 shutil.rmtree(target_dir)
             shutil.copytree(out_dir, target_dir)
 
-            # Emit self-build manifest with extended provenance
+            
             manifest = res.get("manifest", {})
             manifest.setdefault("provenance", {})
             manifest["provenance"]["previous_snapshot"] = previous_snapshot
@@ -1449,11 +1511,11 @@ class Engine:
             manifest_path = target_dir / "self_build_manifest.json"
             manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True))
 
-            # Baseline comparison guard: if a baseline exists, compare outputs
+            
             from shieldcraft.services.selfhost import SELFBUILD_BASELINE_DIR, DEFAULT_BASELINE_NAME, SELFBUILD_BITWISE_ARTIFACTS, is_allowed_diff
             baseline_root = Path(SELFBUILD_BASELINE_DIR) / DEFAULT_BASELINE_NAME
             if baseline_root.exists():
-                # Compare bitwise artifacts
+                
                 for fname in SELFBUILD_BITWISE_ARTIFACTS:
                     emitted_path = target_dir / fname
                     baseline_path = baseline_root / fname
@@ -1462,10 +1524,10 @@ class Engine:
                     if not emitted_path.exists():
                         raise RuntimeError(f"selfbuild_missing_artifact: {fname}")
                     if emitted_path.read_bytes() != baseline_path.read_bytes():
-                        # If allowed in allowlist, continue; otherwise fail and produce forensics
+                        
                         rel = fname
                         if not is_allowed_diff(str(baseline_root), rel):
-                            # produce forensic bundle
+                            
                             forensics_dir = target_dir / "forensics"
                             forensics_dir.mkdir(exist_ok=True)
                             fb = forensics_dir / "forensics.json"
@@ -1475,7 +1537,7 @@ class Engine:
                                 "baseline_sha256": hashlib.sha256(baseline_path.read_bytes()).hexdigest(),
                             }, indent=2, sort_keys=True))
                             raise RuntimeError("selfbuild_mismatch: emitted artifact does not match baseline")
-                # Compare snapshot tree_hash semantically
+                
                 try:
                     from shieldcraft.snapshot import generate_snapshot
                     current = generate_snapshot(os.getcwd())
@@ -1487,19 +1549,19 @@ class Engine:
                 except FileNotFoundError:
                     raise RuntimeError("selfbuild_missing_snapshot")
             else:
-                # Baseline not present: allow explicit establishment only
+                
                 if os.getenv("SHIELDCRAFT_SELFBUILD_ESTABLISH_BASELINE", "0") == "1":
                     baseline_root.mkdir(parents=True, exist_ok=True)
                     shutil.copytree(target_dir, baseline_root, dirs_exist_ok=True)
                 else:
-                    # Baseline not present: allow run to proceed but do not establish
-                    # unless explicitly requested by environment. This lets first-time
-                    # runs emit outputs without failing; tests may then establish or
-                    # compare subsequently.
+                    
+                    
+                    
+                    
                     if os.getenv("SHIELDCRAFT_SELFBUILD_ESTABLISH_BASELINE", "0") == "1":
                         baseline_root.mkdir(parents=True, exist_ok=True)
                         shutil.copytree(target_dir, baseline_root, dirs_exist_ok=True)
-                    # otherwise: continue without failing
+                    
 
             return {"ok": True, "output_dir": str(target_dir), "manifest": manifest}
         finally:
@@ -1530,7 +1592,7 @@ class Engine:
             engine_version="0.1.0",
             checklist_hash=checklist_hash
         )
-        # Load spec to extract invariants and graph for evidence building
+        
         import json
         import pathlib
         spec_obj = {}
@@ -1552,7 +1614,7 @@ class Engine:
 
     def execute(self, spec_path):
         try:
-            # Load and validate using canonical DSL
+            
             raw = load_spec(spec_path)
         except Exception as e:
             try:
@@ -1565,25 +1627,25 @@ class Engine:
                 pass
             return finalize_checklist(self, partial_result=None, exception=e)
         
-        # Handle SpecModel or raw dict
+        
         if isinstance(raw, SpecModel):
             spec_model = raw
             spec = spec_model.raw
             ast = spec_model.ast
-            # Ensure instruction validation even when loader returns a SpecModel.
+            
             self._validate_spec(spec)
             if "instructions" in spec:
                 fp = compute_spec_fingerprint(spec)
                 if getattr(self, "_last_validated_spec_fp", None) != fp:
                     raise RuntimeError("validation_not_performed")
         else:
-            # Legacy: normalize and validate
+            
             spec = canonicalize(raw) if not isinstance(raw, dict) else raw
             valid, errors = validate_spec_against_schema(spec, self.schema_path)
             if not valid:
                 return finalize_checklist(self, partial_result={"type": "schema_error", "details": errors})
-            # Enforce instruction validation before building AST or creating plans
-            # to ensure we do not process invalid instruction specs.
+            
+            
             self._validate_spec(spec)
             if "instructions" in spec:
                 fp = compute_spec_fingerprint(spec)
@@ -1591,7 +1653,7 @@ class Engine:
                     raise RuntimeError("validation_not_performed")
             ast = self.ast.build(spec)
         
-        # Check for spec evolution
+        
         product_id = spec.get("metadata", {}).get("product_id", "unknown")
         prev_spec_path = f"products/{product_id}/last_spec.json"
         spec_evolution = None
@@ -1602,27 +1664,27 @@ class Engine:
                 previous_spec = json.load(f)
             spec_evolution = compute_evolution(previous_spec, spec)
         
-        # AST already built above
-        # Create execution plan with spec for self-host detection
+        
+        
         plan = from_ast(ast, spec)
         product_id = spec.get("metadata", {}).get("product_id", "unknown")
         plan_dir = f"products/{product_id}"
         os.makedirs(plan_dir, exist_ok=True)
         write_canonical_json(f"{plan_dir}/plan.json", plan)
         
-        # Run pipeline
+        
         result = self.run(spec_path)
         if result.get("type") == "schema_error":
             return result
         
-        # Extract checklist items from result
+        
         checklist_data = result["checklist"]
         if isinstance(checklist_data, dict) and "items" in checklist_data:
             checklist_items = checklist_data["items"]
         elif isinstance(checklist_data, list):
             checklist_items = checklist_data
         else:
-            # Unexpected format
+            
             try:
                 if getattr(self, 'checklist_context', None):
                     try:
@@ -1635,28 +1697,28 @@ class Engine:
             bootstrap_items = [item for item in checklist_items if item.get("classification") == "bootstrap"]
             
             if bootstrap_items:
-                # Write bootstrap modules to .selfhost_outputs/modules/
+                
                 bootstrap_dir = ".selfhost_outputs/modules"
                 os.makedirs(bootstrap_dir, exist_ok=True)
                 
                 bootstrap_outputs = []
                 for item in bootstrap_items:
-                    # Generate bootstrap code
+                    
                     item_id = item.get("id", "unknown")
                     module_name = item_id.replace(".", "_")
                     module_path = os.path.join(bootstrap_dir, f"{module_name}.py")
                     
-                    # Use simple template for bootstrap
-                    bootstrap_code = f"""# Bootstrap module: {item_id}
-# Generated from: {item.get('ptr', 'unknown')}
+                    
+                    bootstrap_code = f"""
+
 
 class BootstrapModule:
     def __init__(self):
         self.id = "{item_id}"
     
     def execute(self):
-        # INTENTIONAL: Empty execute method in generated template.
-        # User implementations will override this method.
+        
+        
         pass
 """
                     with open(module_path, "w") as f:
@@ -1667,7 +1729,7 @@ class BootstrapModule:
                         "path": module_path
                     })
                 
-                # Emit bootstrap manifest
+                
                 bootstrap_manifest = {
                     "modules": bootstrap_outputs,
                     "count": len(bootstrap_outputs)
@@ -1676,11 +1738,13 @@ class BootstrapModule:
                 with open(manifest_path, "w") as f:
                     json.dump(bootstrap_manifest, f, indent=2, sort_keys=True)
         
+        outputs = []
+        outputs_list = []
         try:
-            # Generate evidence
+            
             evidence = self.generate_evidence(spec_path, checklist_items)
             
-            # Compute lineage bundle
+            
             spec_fp = canonicalize(json.dumps(spec))
             items_fp = canonicalize(json.dumps(result["checklist"]))
             plan_fp = canonicalize(json.dumps(plan))
@@ -1688,7 +1752,7 @@ class BootstrapModule:
             
             lineage_bundle = bundle(spec_fp, items_fp, plan_fp, code_fp)
             
-            # Write manifest
+            
             manifest_data = {
                 "checklist": result["checklist"],
                 "plan": plan,
@@ -1698,7 +1762,7 @@ class BootstrapModule:
             }
             write_manifest_v2(manifest_data, plan_dir)
             
-            # Stability verification
+            
             current_run = {
                 "manifest": manifest_data,
                 "signature": lineage_bundle["signature"]
@@ -1714,7 +1778,7 @@ class BootstrapModule:
                 pass
             return finalize_checklist(self, partial_result=None, exception=e)
 
-        # Compare with previous run if exists
+        
         prev_manifest_path = f"{plan_dir}/manifest.json"
         stable = True
         if os.path.exists(prev_manifest_path):
@@ -1722,12 +1786,12 @@ class BootstrapModule:
                 prev_run = json.load(f)
             stable = compare(prev_run, current_run)
         
-        # Compute spec metrics
+        
         from shieldcraft.services.spec.metrics import compute_metrics
         checklist_items = result["checklist"].get("items", [])
         spec_metrics = compute_metrics(spec, ast, checklist_items)
         
-        # Persist current spec as last_spec.json
+        
         last_spec_path = f"products/{product_id}/last_spec.json"
         write_canonical_json(last_spec_path, spec)
         
