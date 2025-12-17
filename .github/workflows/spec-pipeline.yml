@@ -36,6 +36,9 @@ jobs:
           --dry-run \
           --emit-preview .selfhost_outputs/selfhost_preview.json
     
+    - name: Clean stale bytecode
+      run: python scripts/ci/clean_pycache.py
+
     - name: Run tests
       run: pytest -q
       continue-on-error: false

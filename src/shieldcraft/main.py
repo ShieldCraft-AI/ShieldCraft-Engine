@@ -495,6 +495,18 @@ def run_self_host(spec_file, schema_path):
                     items = bind_dimensions_to_items(reqs, items)
                     results, summary = evaluate_completeness(reqs, items)
                     write_completeness_report(results, summary, outdir=output_dir)
+                    # Backwards compatibility: also write legacy verification completeness report
+                    try:
+                        from shieldcraft.verification.completeness_gate import write_completeness_report as write_comp_compat
+                        # build compat report dict expected by verification.write_completeness_report
+                        comp_report = {'total_must': summary.get('total_requirements', 0), 'covered_must': summary.get('complete_count', 0), 'uncovered_must': [r for r in [getattr(rr, 'requirement_id', None) for rr in results] if r is not None], 'weak_must': [], 'complete': (summary.get('complete_pct', 0.0) == 1.0)}
+                        try:
+                            write_comp_compat(comp_report, outdir=output_dir)
+                        except Exception:
+                            pass
+                    except Exception:
+                        # compatibility writer unavailable; ignore
+                        pass
                     impl = is_implementable(summary, reqs)
                     manifest['implementability'] = {'implementable': impl, 'complete_pct': summary.get('complete_pct')}
                 except Exception:

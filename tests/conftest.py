@@ -32,4 +32,7 @@ def default_external_sync(monkeypatch):
     """
     monkeypatch.setenv("SHIELDCRAFT_SYNC_AUTHORITY", "external")
     monkeypatch.setenv("SHIELDCRAFT_ALLOW_EXTERNAL_SYNC", "1")
+    # Ensure worktree cleanliness checks used by persona runtime return True in tests
+    import shieldcraft.persona as pmod
+    monkeypatch.setattr(pmod, '_is_worktree_clean', lambda: True)
     yield
