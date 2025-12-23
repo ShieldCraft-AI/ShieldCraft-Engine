@@ -1,7 +1,6 @@
 def test_template_versions_do_not_change_checklist_outcome(tmp_path):
     from shieldcraft.services.checklist.generator import ChecklistGenerator
     from shieldcraft.engine import Engine
-    import os
 
     # Create two template directories with different contents
     t1 = tmp_path / "templates_v1"
@@ -47,14 +46,22 @@ def test_missing_template_fallback_and_no_authority_escalation(tmp_path):
 
     cg = CodeGenerator(template_dir=str(tdir))
     engine = Engine(schema_path='')
-    engine.checklist_context = type('S', (), {'_events': [], 'record_event': lambda *a, **k: None, 'get_events': lambda self=[]: []})()
+    engine.checklist_context = type('S',
+                                    (),
+                                    {'_events': [],
+                                     'record_event': lambda *a,
+                                     **k: None,
+                                     'get_events': lambda self=[]: []})()
 
     # Try rendering a typical module item; should not raise or emit REFUSAL/BLOCKER
     item = {'id': 'm1', 'ptr': '/module', 'category': 'module', 'text': 'do X', 'meta': {}}
     # Use generator to render; ensure fallback not causing authority events
     _ = cg.generate_for_item(item) if hasattr(cg, 'generate_for_item') else cg
     evs = engine.checklist_context.get_events()
-    assert not any((e.get('outcome') or '').upper() in ('REFUSAL', 'BLOCKER') and 'TEMPLATE' in (e.get('gate_id') or '') for e in evs)
+    assert not any(
+        (e.get('outcome') or '').upper() in (
+            'REFUSAL', 'BLOCKER') and 'TEMPLATE' in (
+            e.get('gate_id') or '') for e in evs)
 
 
 def test_templates_cannot_emit_blocker_or_refusal():
@@ -63,7 +70,12 @@ def test_templates_cannot_emit_blocker_or_refusal():
     engine = Engine(schema_path='')
     # ensure no template-related gates exist that can issue authority
     evs = engine.checklist_context.get_events() if getattr(engine, 'checklist_context', None) else []
-    assert not any('TEMPLATE' in (e.get('gate_id') or '') and (e.get('outcome') or '').upper() in ('REFUSAL', 'BLOCKER') for e in evs)
+    assert not any(
+        'TEMPLATE' in (
+            e.get('gate_id') or '') and (
+            e.get('outcome') or '').upper() in (
+                'REFUSAL',
+            'BLOCKER') for e in evs)
 
 
 def test_template_scale_does_not_change_outcome(tmp_path):

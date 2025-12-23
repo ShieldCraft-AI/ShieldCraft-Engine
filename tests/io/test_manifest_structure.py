@@ -9,9 +9,9 @@ def test_manifest_structure():
     """Test that generated manifest has correct structure."""
     # Create minimal test data
     from shieldcraft.services.io.manifest_writer import write_manifest
-    
+
     product_id = "test_manifest"
-    
+
     # Minimal result structure
     result = {
         "preflight": {
@@ -49,24 +49,24 @@ def test_manifest_structure():
             "codegen_bundle_hash": "codegen_hash_ghi789"
         }
     }
-    
+
     # Write manifest
     write_manifest(product_id, result)
-    
+
     # Read generated manifest
     manifest_path = Path(f"products/{product_id}/manifest.json")
     assert manifest_path.exists(), "Manifest file not created"
-    
+
     with open(manifest_path) as f:
         manifest = json.load(f)
-    
+
     # Validate structure
     assert "manifest_version" in manifest, "manifest_version missing"
     assert "timestamp" in manifest, "timestamp missing"
     assert "spec_fingerprint" in manifest, "spec_fingerprint missing"
     assert "pointer_coverage_summary" in manifest, "pointer_coverage_summary missing"
     assert "metrics" in manifest, "metrics missing"
-    
+
     # Cleanup
     import shutil
     shutil.rmtree("products", ignore_errors=True)
@@ -76,18 +76,18 @@ def test_manifest_with_bootstrap_spec():
     """Test manifest generation with bootstrap spec example."""
     from shieldcraft.services.io.manifest_writer import write_manifest
     import json
-    
+
     # Load bootstrap spec
     bootstrap_spec_path = Path(__file__).parent.parent.parent / "examples" / "selfhost" / "bootstrap_spec.json"
-    
+
     if not bootstrap_spec_path.exists():
         pytest.skip("Bootstrap spec not found")
-    
+
     with open(bootstrap_spec_path) as f:
         spec = json.load(f)
-    
+
     product_id = spec.get("metadata", {}).get("product_id", "test_bootstrap")
-    
+
     # Create minimal result with bootstrap spec
     result = {
         "preflight": {
@@ -121,21 +121,21 @@ def test_manifest_with_bootstrap_spec():
             "codegen_bundle_hash": "bootstrap_codegen_hash"
         }
     }
-    
+
     # Write manifest
     write_manifest(product_id, result)
-    
+
     # Verify manifest created
     manifest_path = Path(f"products/{product_id}/manifest.json")
     assert manifest_path.exists()
-    
+
     with open(manifest_path) as f:
         manifest = json.load(f)
-    
+
     # Verify bootstrap-specific fields
     assert "manifest_version" in manifest
     assert "spec_fingerprint" in manifest
-    
+
     # Cleanup
     import shutil
     shutil.rmtree(f"products/{product_id}", ignore_errors=True)
@@ -147,7 +147,7 @@ def test_manifest_validates_against_schema():
     schema_path = Path(__file__).parent.parent.parent / "src/shieldcraft/dsl/schema/manifest.schema.json"
     with open(schema_path) as f:
         schema = json.load(f)
-    
+
     # Create test manifest
     manifest = {
         "manifest_version": "1.0",
@@ -160,7 +160,7 @@ def test_manifest_validates_against_schema():
             "coverage_percentage": 100.0
         }
     }
-    
+
     # Validate
     try:
         validate(instance=manifest, schema=schema)
@@ -171,9 +171,9 @@ def test_manifest_validates_against_schema():
 def test_manifest_pointer_coverage_summary():
     """Test that pointer_coverage_summary has required fields."""
     from shieldcraft.services.io.manifest_writer import write_manifest
-    
+
     product_id = "test_coverage"
-    
+
     result = {
         "preflight": {
             "spec_fingerprint": "fp_123",
@@ -191,24 +191,24 @@ def test_manifest_pointer_coverage_summary():
         "checklist": {"items": []},
         "spec": {"metadata": {"product_id": product_id}}
     }
-    
+
     write_manifest(product_id, result)
-    
+
     manifest_path = Path(f"products/{product_id}/manifest.json")
     with open(manifest_path) as f:
         manifest = json.load(f)
-    
+
     summary = manifest["pointer_coverage_summary"]
-    
+
     assert "total_pointers" in summary
     assert "missing_count" in summary
     assert "ok_count" in summary
     assert "coverage_percentage" in summary
-    
+
     assert summary["total_pointers"] == 15
     assert summary["missing_count"] == 2
     assert summary["ok_count"] == 13
-    
+
     # Cleanup
     import shutil
     shutil.rmtree("products", ignore_errors=True)
@@ -217,9 +217,9 @@ def test_manifest_pointer_coverage_summary():
 def test_manifest_metrics_structure():
     """Test that metrics field has expected structure."""
     from shieldcraft.services.io.manifest_writer import write_manifest
-    
+
     product_id = "test_metrics"
-    
+
     result = {
         "preflight": {
             "spec_fingerprint": "fp_metrics",
@@ -245,20 +245,20 @@ def test_manifest_metrics_structure():
             "dependency_fragility": 0.2
         }
     }
-    
+
     write_manifest(product_id, result)
-    
+
     manifest_path = Path(f"products/{product_id}/manifest.json")
     with open(manifest_path) as f:
         manifest = json.load(f)
-    
+
     assert "metrics" in manifest
     metrics = manifest["metrics"]
-    
+
     expected_fields = ["section_count", "pointer_count", "invariant_count"]
     for field in expected_fields:
         assert field in metrics, f"Missing metrics field: {field}"
-    
+
     # Cleanup
     import shutil
     shutil.rmtree("products", ignore_errors=True)

@@ -1,7 +1,6 @@
 from shieldcraft.engine import Engine
 import json
 import tempfile
-import pathlib
 
 
 def test_engine_pipeline():

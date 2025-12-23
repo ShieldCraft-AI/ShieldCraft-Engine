@@ -1,4 +1,3 @@
-import pytest
 import tempfile
 import json
 import os
@@ -21,20 +20,20 @@ def test_basic_selfhost_pipeline():
         }
         json.dump(spec, tmp)
         tmp_path = tmp.name
-    
+
     try:
         # Run self-host
         run_self_host(tmp_path, "src/shieldcraft/dsl/schema/se_dsl.schema.json")
-        
+
         # Check output directory exists
         assert os.path.exists(".selfhost_outputs")
-        
+
         # Check manifest exists
         assert os.path.exists(".selfhost_outputs/manifest.json")
-        
+
         # Check summary exists
         assert os.path.exists(".selfhost_outputs/summary.json")
-        
+
     finally:
         os.unlink(tmp_path)
         if os.path.exists(".selfhost_outputs"):
@@ -55,17 +54,17 @@ def test_selfhost_output_structure():
         }
         json.dump(spec, tmp)
         tmp_path = tmp.name
-    
+
     try:
         run_self_host(tmp_path, "src/shieldcraft/dsl/schema/se_dsl.schema.json")
-        
+
         # Load summary
         with open(".selfhost_outputs/summary.json") as f:
             summary = json.load(f)
-        
+
         assert "status" in summary
         assert "stable" in summary
-        
+
     finally:
         os.unlink(tmp_path)
         if os.path.exists(".selfhost_outputs"):
@@ -86,16 +85,16 @@ def test_selfhost_isolation():
         }
         json.dump(spec, tmp)
         tmp_path = tmp.name
-    
+
     # Track products directory before
     products_exists_before = os.path.exists("products/test-isolation")
-    
+
     try:
         run_self_host(tmp_path, "src/shieldcraft/dsl/schema/se_dsl.schema.json")
-        
+
         # Self-host should not create products directory
         assert os.path.exists(".selfhost_outputs")
-        
+
     finally:
         os.unlink(tmp_path)
         if os.path.exists(".selfhost_outputs"):

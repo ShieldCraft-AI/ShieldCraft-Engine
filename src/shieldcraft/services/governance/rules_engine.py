@@ -7,21 +7,20 @@ Evaluates spec compliance against governance policies.
 def evaluate_governance(spec_model, checklist_items):
     """
     Evaluate governance rules for spec and checklist.
-    
+
     Checks:
-    - Presence of required sections
+    - Presence of required _sections
     - Forbidden patterns (from invariants)
     - Missing provenance tags
-    
+
     Returns: {ok: bool, violations: []}
     """
     violations = []
-    
-    # Check required sections
-    required_sections = ["metadata", "model", "sections"]
-    sections = spec_model.get_sections()
+
+    # Check required _sections
+    required_sections = ["metadata", "model", "_sections"]
     raw_spec = spec_model.raw
-    
+
     for req_section in required_sections:
         if req_section not in raw_spec:
             violations.append({
@@ -29,7 +28,7 @@ def evaluate_governance(spec_model, checklist_items):
                 "section": req_section,
                 "severity": "high"
             })
-    
+
     # Check for forbidden patterns from invariants
     invariants = spec_model.get_invariants()
     for inv in invariants:
@@ -48,10 +47,10 @@ def evaluate_governance(spec_model, checklist_items):
                             "pointer": inv["pointer"],
                             "severity": inv.get("severity", "error")
                         })
-    
+
     # Missing provenance fields are advisory and not enforced by default.
     # If stricter provenance enforcement is desired, enable via configuration.
-    
+
     # Check checklist items for missing metadata
     for item in checklist_items:
         if "id" not in item:
@@ -60,17 +59,17 @@ def evaluate_governance(spec_model, checklist_items):
                 "item_ptr": item.get("ptr", "unknown"),
                 "severity": "high"
             })
-        
+
         if "classification" not in item:
             violations.append({
                 "type": "missing_classification",
                 "item_id": item.get("id", "unknown"),
                 "severity": "medium"
             })
-        
+
         # Note: missing lineage is advisory and not treated as a governance violation
         # by default. Lineage enforcement can be enabled via configuration if needed.
-        
+
         # Check section reference validity (must_have_section_reference_valid rule)
         section_status = item.get("meta", {}).get("section_status")
         if section_status == "missing":
@@ -80,11 +79,11 @@ def evaluate_governance(spec_model, checklist_items):
                 "item_ptr": item.get("ptr", "unknown"),
                 "severity": "high"
             })
-    
+
     # Determine overall status. Treat missing lineage as advisory (non-fatal)
     fatal_violations = [v for v in violations if v.get("type") != "missing_lineage"]
     ok = len(fatal_violations) == 0
-    
+
     return {
         "ok": ok,
         "violations": sorted(violations, key=lambda v: (v.get("severity", "low"), v.get("type", "")))

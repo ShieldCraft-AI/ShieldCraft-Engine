@@ -12,7 +12,14 @@ def test_conversion_path_structured_from_convertible():
 
 
 def test_conversion_path_ready_from_valid_reads_readiness():
-    readiness = {"results": {"tests_attached": {"ok": False, "blocking": True}, "determinism_replay": {"ok": True, "blocking": True}}}
+    readiness = {
+        "results": {
+            "tests_attached": {
+                "ok": False,
+                "blocking": True},
+            "determinism_replay": {
+                "ok": True,
+                "blocking": True}}}
     conv = build_conversion_path("VALID", [], readiness)
     assert conv["current_state"] == "VALID"
     assert conv["next_state"] == "READY"
@@ -39,4 +46,3 @@ def test_conversion_path_no_schema_changes_suggested():
     for b in conv["blocking_requirements"]:
         s = b.get("suggestion", "").lower()
         assert "schema" not in s and "modify schema" not in s and "change schema" not in s
-

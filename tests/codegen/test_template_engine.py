@@ -1,5 +1,4 @@
 import tempfile
-import os
 from pathlib import Path
 from shieldcraft.services.codegen.template_engine import TemplateEngine
 
@@ -23,7 +22,7 @@ def test_template_engine_safe_write():
         te = TemplateEngine()
         output = Path(tmpdir) / "subdir" / "output.txt"
         te.safe_write(str(output), "test content\nline2")
-        
+
         assert output.exists()
         content = output.read_text()
         assert content == "test content\nline2"

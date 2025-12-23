@@ -1,4 +1,3 @@
-import copy
 from unittest.mock import patch
 
 from shieldcraft.services.checklist.outcome import derive_primary_outcome

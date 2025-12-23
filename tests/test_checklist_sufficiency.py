@@ -24,7 +24,16 @@ def test_litmus_checklist_covers_requirements():
 
     # map and evaluate coverage
     res = map_requirements_to_checklist(reqs, items)
-    uncovered = [r for r in res['uncovered'] if any(k in (r.get('text') or '').lower() for k in ['must', 'shall', 'requires', 'mandatory', 'enforced', 'every run must'])]
+    uncovered = [
+        r for r in res['uncovered'] if any(
+            k in (
+                r.get('text') or '').lower() for k in [
+                'must',
+                'shall',
+                'requires',
+                'mandatory',
+                'enforced',
+                'every run must'])]
 
     report = {
         'total_requirements': len(reqs),

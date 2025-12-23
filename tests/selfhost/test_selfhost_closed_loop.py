@@ -118,7 +118,8 @@ def test_selfhost_provenance_headers_included(monkeypatch, tmp_path):
 def test_engine_selfhost_rejects_disallowed_inputs(monkeypatch, tmp_path):
     from shieldcraft.engine import Engine
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
-    bad_spec = {"metadata": {"self_host": True}, "weird": "not_allowed", "sections": [{"id": "core"}], "model": {"version": "1.0"}}
+    bad_spec = {"metadata": {"self_host": True}, "weird": "not_allowed",
+                "sections": [{"id": "core"}], "model": {"version": "1.0"}}
     try:
         engine.run_self_host(bad_spec, dry_run=True)
         assert False, "Expected disallowed_selfhost_input"
@@ -134,7 +135,13 @@ def test_engine_selfhost_requires_sync(monkeypatch, tmp_path):
     spec["metadata"]["spec_format"] = "canonical_json_v1"
 
     # Force sync failure
-    monkeypatch.setattr("shieldcraft.services.sync.verify_repo_state_authoritative", lambda root: (_ for _ in ()).throw(SyncError("sync_missing", "missing sync")))
+    monkeypatch.setattr(
+        "shieldcraft.services.sync.verify_repo_state_authoritative",
+        lambda root: (
+            _ for _ in ()).throw(
+            SyncError(
+                "sync_missing",
+                "missing sync")))
 
     try:
         engine.run_self_host(spec, dry_run=True)

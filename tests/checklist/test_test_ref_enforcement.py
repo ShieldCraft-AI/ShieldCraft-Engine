@@ -1,4 +1,3 @@
-import pytest
 from shieldcraft.services.checklist.generator import ChecklistGenerator
 
 

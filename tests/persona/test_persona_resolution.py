@@ -1,9 +1,6 @@
 import json
-import os
-import tempfile
-import pathlib
 
-from shieldcraft.persona import find_persona_files, resolve_persona_files, load_persona
+from shieldcraft.persona import find_persona_files, resolve_persona_files
 
 
 def test_find_and_resolve_order(tmp_path):

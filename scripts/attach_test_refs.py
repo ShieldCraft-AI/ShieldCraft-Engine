@@ -14,6 +14,7 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 registry = []
 hex_id_re = re.compile(r"[0-9a-f]{10,}")
 
+
 def extract_tests_from_file(p: Path):
     txt = p.read_text()
     functions = re.findall(r"def\s+(test_[A-Za-z0-9_]+)", txt)
@@ -27,6 +28,7 @@ def extract_tests_from_file(p: Path):
         'tests_full': tests,
         'content': txt,
     }
+
 
 for f in sorted(TEST_ROOT.rglob('test_*.py')):
     registry.append(extract_tests_from_file(f))

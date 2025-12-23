@@ -1,6 +1,9 @@
-import os, json, ast
+import os
+import json
+import ast
 
 TARGET_FILE = "artifacts/dsl_field_usage.json"
+
 
 def extract_keys_from_dict_nodes(node):
     keys = []
@@ -9,6 +12,7 @@ def extract_keys_from_dict_nodes(node):
             if isinstance(k, ast.Constant) and isinstance(k.value, str):
                 keys.append(k.value)
     return keys
+
 
 def walk_file(path):
     keys = []
@@ -21,6 +25,7 @@ def walk_file(path):
         pass
     return keys
 
+
 def list_python_files():
     result = []
     for root, dirs, files in os.walk("src/shieldcraft"):
@@ -28,6 +33,7 @@ def list_python_files():
             if f.endswith(".py"):
                 result.append(os.path.join(root, f))
     return result
+
 
 def main():
     files = list_python_files()
@@ -63,6 +69,7 @@ def main():
 
     with open(TARGET_FILE, "w", encoding="utf-8") as f:
         json.dump(final, f, indent=2)
+
 
 if __name__ == "__main__":
     main()

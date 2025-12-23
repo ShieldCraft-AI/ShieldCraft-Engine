@@ -1,4 +1,4 @@
-from shieldcraft.engine import finalize_checklist, _assert_semantic_invariants
+from shieldcraft.engine import _assert_semantic_invariants
 
 
 class DummyContext:

@@ -21,7 +21,7 @@ def cross_section_checks(spec, items=None):
             "text": "API requires schemas section",
             "value": None
         })
-    
+
     # Validate dependency ordering if items provided
     if items:
         # Build item index by id
@@ -30,16 +30,16 @@ def cross_section_checks(spec, items=None):
         section_order_map = {}
         for idx, item in enumerate(items):
             section_order_map[item["id"]] = idx
-        
+
         # Check each item's dependencies
         for item in items:
             item_id = item.get("id")
             deps = item.get("deps", [])
             if not deps:
                 continue
-            
+
             item_position = section_order_map.get(item_id, 0)
-            
+
             for dep_id in deps:
                 if dep_id not in item_index:
                     # Dependency doesn't exist
@@ -59,7 +59,7 @@ def cross_section_checks(spec, items=None):
                             "dep": dep_id,
                             "reason": "dependency must come before dependent"
                         })
-    
+
     # Legacy consumers expect a simple list of generated tasks
     # If caller provided `items`, return detailed structure including violations
     if items:

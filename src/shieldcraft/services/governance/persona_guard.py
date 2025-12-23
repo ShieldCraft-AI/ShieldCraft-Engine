@@ -32,7 +32,8 @@ def enforce_manifest_emission_ok() -> None:
         if cap in ("annotate", "veto"):
             key = (e.get("persona_id"), e.get("phase"))
             if key not in decisions:
-                violations.append(f"persona_unlogged_action:{e.get('persona_id')}:{e.get('capability')}@{e.get('phase')}")
+                violations.append(
+                    f"persona_unlogged_action:{e.get('persona_id')}:{e.get('capability')}@{e.get('phase')}")
 
     if violations:
         # Halt emission by raising a deterministic RuntimeError

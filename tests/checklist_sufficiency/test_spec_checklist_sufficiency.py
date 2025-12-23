@@ -2,9 +2,7 @@ import json
 import os
 import re
 import shutil
-import tempfile
 import pathlib
-import pytest
 
 
 NORM_KEYWORDS = ["must", "shall", "requires", "mandatory", "enforced", "every run must"]
@@ -14,9 +12,9 @@ def _prepare_env():
     os.makedirs('artifacts', exist_ok=True)
     open('artifacts/repo_sync_state.json', 'w').write('{}')
     import hashlib
-    h = hashlib.sha256(open('artifacts/repo_sync_state.json','rb').read()).hexdigest()
-    with open('repo_state_sync.json','w') as f:
-        json.dump({"files":[{"path":"artifacts/repo_sync_state.json","sha256":h}]}, f)
+    h = hashlib.sha256(open('artifacts/repo_sync_state.json', 'rb').read()).hexdigest()
+    with open('repo_state_sync.json', 'w') as f:
+        json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)
     import importlib
     importlib.import_module('shieldcraft.persona')
     import shieldcraft.persona as pmod
@@ -161,7 +159,7 @@ def _assert_spec_sufficiency(spec_path='spec/test_spec.yml', tmp_path=None):
     text = None
     try:
         text = open(spec_path, 'r', encoding='utf8').read()
-    except Exception:
+    except Exception: # type: ignore
         # fallback: try to read metadata.source_material from ingested spec
         from shieldcraft.services.spec.ingestion import ingest_spec
         sp = ingest_spec(spec_path)
@@ -199,7 +197,8 @@ def _assert_spec_sufficiency(spec_path='spec/test_spec.yml', tmp_path=None):
     high_uncovered = [r for r in uncovered if r['is_high']]
     msgs = []
     if high_uncovered:
-        msgs.append(f"Uncovered high-priority requirements:\n" + "\n".join([f"{h['id']}: {h['text']}" for h in high_uncovered]))
+        msgs.append(f"Uncovered high-priority requirements:\n" +
+                    "\n".join([f"{h['id']}: {h['text']}" for h in high_uncovered]))
 
     # Allow up to 2% uncovered among prose-only labeled requirements
     prose_reqs = [r for r in req_meta if r['is_prose']]
@@ -271,7 +270,8 @@ def test_checklist_item_actionability_and_terminal_outcomes():
 
     assert terminal_governance, 'Missing governance signature emission item'
     assert terminal_artifact, 'Missing decision artifact production item'
-    assert terminal_safe or any(it.get('risk_if_false') == 'unsafe_to_act' for it in items), 'Missing safe-to-change surface or explicit refusal'
+    assert terminal_safe or any(it.get('risk_if_false') ==
+                                'unsafe_to_act' for it in items), 'Missing safe-to-change surface or explicit refusal'
 
 
 def test_incomplete_spec_fails_sufficiency(tmp_path):

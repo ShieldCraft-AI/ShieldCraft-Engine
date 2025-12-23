@@ -1,13 +1,11 @@
 import json
-import os
-import shutil
 from shieldcraft.engine import Engine
 from shieldcraft.services.selfhost import load_artifact_manifest
 
 
 def test_selfhost_writes_only_manifested_files(tmp_path):
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
-    spec = json.load(open('spec/se_dsl_v1.spec.json'))
+    spec = json.load(open('spec/se_dsl_v1.spec.json', encoding='utf-8'))
 
     manifest = load_artifact_manifest()
     allowed_prefixes = manifest.get('allowed_prefixes', [])

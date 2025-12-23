@@ -1,7 +1,6 @@
 """
 Test pointer locality warnings.
 """
-import pytest
 from shieldcraft.services.ast.builder import ASTBuilder
 from shieldcraft.services.spec.pointer_auditor import pointer_audit
 
@@ -39,11 +38,11 @@ def test_pointer_locality_warning_cross_section():
             }
         ]
     }
-    
+
     # Build AST
     ast_builder = ASTBuilder()
     ast = ast_builder.build(spec)
-    
+
     # Create checklist items with cross-section reference
     checklist_items = [
         {
@@ -58,15 +57,15 @@ def test_pointer_locality_warning_cross_section():
             "depends_on": ["/sections/0/items/0"]  # Reference to different section
         }
     ]
-    
+
     # Run audit
     audit_result = pointer_audit(spec, ast, checklist_items)
-    
+
     # Check for locality warnings
     locality_warnings = audit_result.get("locality_warnings", [])
-    
+
     assert len(locality_warnings) > 0, "Should detect cross-section pointer reference"
-    
+
     # Verify warning details
     warning = locality_warnings[0]
     assert warning["item_section"] != warning["reference_section"], \
@@ -100,11 +99,11 @@ def test_pointer_locality_no_warning_same_section():
             }
         ]
     }
-    
+
     # Build AST
     ast_builder = ASTBuilder()
     ast = ast_builder.build(spec)
-    
+
     # Create checklist items with same-section reference
     checklist_items = [
         {
@@ -119,13 +118,13 @@ def test_pointer_locality_no_warning_same_section():
             "depends_on": ["/sections/0/items/0"]  # Same section
         }
     ]
-    
+
     # Run audit
     audit_result = pointer_audit(spec, ast, checklist_items)
-    
+
     # Check for locality warnings
     locality_warnings = audit_result.get("locality_warnings", [])
-    
+
     # Should have no warnings for same-section references
     assert len(locality_warnings) == 0, "Should not warn for same-section references"
 
@@ -152,11 +151,11 @@ def test_pointer_locality_multiple_violations():
             }
         ]
     }
-    
+
     # Build AST
     ast_builder = ASTBuilder()
     ast = ast_builder.build(spec)
-    
+
     # Create items with multiple cross-section references
     checklist_items = [
         {
@@ -166,10 +165,10 @@ def test_pointer_locality_multiple_violations():
             "depends_on": ["/sections/0", "/sections/2"]  # Multiple cross-refs
         }
     ]
-    
+
     # Run audit
     audit_result = pointer_audit(spec, ast, checklist_items)
-    
+
     # Should detect both violations
     locality_warnings = audit_result.get("locality_warnings", [])
     assert len(locality_warnings) >= 2, "Should detect multiple cross-section references"

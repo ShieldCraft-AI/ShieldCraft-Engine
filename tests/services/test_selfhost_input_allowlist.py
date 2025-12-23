@@ -1,4 +1,3 @@
-import pytest
 
 
 def test_allowlist_accepts_normal_spec_keys():

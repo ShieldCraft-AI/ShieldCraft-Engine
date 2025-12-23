@@ -17,7 +17,8 @@ class SufficiencyResult:
     partial_requirements: List[str]
 
 
-def evaluate_sufficiency(requirements: List[Dict[str, Any]], covers: List[Any], reachable_items: List[str] | None = None) -> SufficiencyResult:
+def evaluate_sufficiency(requirements: List[Dict[str, Any]], covers: List[Any],
+                         reachable_items: List[str] | None = None) -> SufficiencyResult:
     """Evaluate checklist sufficiency.
 
     A checklist is sufficient iff every mandatory requirement has FULL coverage.

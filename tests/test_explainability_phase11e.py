@@ -11,8 +11,11 @@ def test_tier_a_default_records_blocker_and_diagnostic():
     class StubContext:
         def __init__(self):
             self._events = []
+
         def record_event(self, gate_id, phase, outcome, message=None, evidence=None, **kwargs):
-            self._events.append({'gate_id': gate_id, 'phase': phase, 'outcome': outcome, 'message': message, 'evidence': evidence})
+            self._events.append({'gate_id': gate_id, 'phase': phase, 'outcome': outcome,
+                                'message': message, 'evidence': evidence})
+
         def get_events(self):
             return list(self._events)
 
@@ -64,8 +67,11 @@ def test_invariant_safe_default_emits_diagnostic_and_event():
     class StubContext:
         def __init__(self):
             self._events = []
+
         def record_event(self, gate_id, phase, outcome, message=None, evidence=None, **kwargs):
-            self._events.append({'gate_id': gate_id, 'phase': phase, 'outcome': outcome, 'message': message, 'evidence': evidence})
+            self._events.append({'gate_id': gate_id, 'phase': phase, 'outcome': outcome,
+                                'message': message, 'evidence': evidence})
+
         def get_events(self):
             return list(self._events)
 

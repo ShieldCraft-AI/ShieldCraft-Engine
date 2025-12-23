@@ -6,7 +6,7 @@ Primary precedence: REFUSAL > BLOCKER > ACTION > DIAGNOSTIC
 
 This module must be deterministic and not rely on persona annotations to set outcomes.
 """
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Any
 
 
 def _agg_confidence_level(items: List[Dict[str, Any]]) -> str:
@@ -49,7 +49,8 @@ def derive_primary_outcome(checklist: Dict[str, Any], events: List[Dict[str, Any
 
     # Blocking reasons: messages from REFUSAL or BLOCKER events (deterministic order by gate_id then message)
     brs = []
-    for e in sorted([e for e in non_persona_events if (e.get('outcome') or '').upper() in ('REFUSAL', 'BLOCKER')], key=lambda x: (x.get('gate_id') or '', str(x.get('message') or ''))):
+    for e in sorted([e for e in non_persona_events if (e.get('outcome') or '').upper() in (
+            'REFUSAL', 'BLOCKER')], key=lambda x: (x.get('gate_id') or '', str(x.get('message') or ''))):
         msg = e.get('message') or e.get('gate_id') or ''
         brs.append(msg)
 

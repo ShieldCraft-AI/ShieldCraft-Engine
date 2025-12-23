@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any
 import json
 import os
 
-from shieldcraft.checklist.dependencies import build_graph, detect_cycles, topological_sort
+from shieldcraft.checklist.dependencies import detect_cycles, topological_sort
 
 
 def _priority_val(it: Dict[str, Any]) -> int:
@@ -67,7 +67,8 @@ def check_priority_violations(items: List[Dict[str, Any]], requires_map: Dict[st
     return violations
 
 
-def build_execution_plan(items: List[Dict[str, Any]], inferred_deps: Dict[str, List[str]], outdir: str = '.selfhost_outputs') -> Dict[str, Any]:
+def build_execution_plan(items: List[Dict[str, Any]], inferred_deps: Dict[str,
+                         List[str]], outdir: str = '.selfhost_outputs') -> Dict[str, Any]:
     requires_map = build_requires_map(items, inferred_deps)
     # build dependency graph in same shape as dependencies.build_graph (node->set(deps))
     graph = {it.get('id'): set(requires_map.get(it.get('id'), [])) for it in items}
@@ -106,8 +107,8 @@ def build_execution_plan(items: List[Dict[str, Any]], inferred_deps: Dict[str, L
                 levels[nid] = 1 + max(levels[d] for d in deps)
         # group by level
         max_lvl = max(levels.values()) if levels else -1
-        for l in range(0, max_lvl + 1):
-            group = [nid for nid, lvl in sorted(levels.items()) if lvl == l]
+        for level in range(0, max_lvl + 1):
+            group = [nid for nid, lvl in sorted(levels.items()) if lvl == level]
             if group:
                 parallel_groups.append(sorted(group))
 

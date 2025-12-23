@@ -3,7 +3,18 @@ import hashlib
 import re
 from typing import List, Dict
 
-KEYWORDS = ["must", "must not", "must never", "requires", "should", "refuse", "refusal", "unsafe", "no-touch", "no touch", "no safe"]
+KEYWORDS = [
+    "must",
+    "must not",
+    "must never",
+    "requires",
+    "should",
+    "refuse",
+    "refusal",
+    "unsafe",
+    "no-touch",
+    "no touch",
+    "no safe"]
 
 
 def _det_hash(s: str) -> str:

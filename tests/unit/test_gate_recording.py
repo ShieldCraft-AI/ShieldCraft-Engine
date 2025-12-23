@@ -1,5 +1,4 @@
 import json
-import os
 
 from shieldcraft.engine import Engine
 from shieldcraft.services.checklist.context import ChecklistContext, set_global_context
@@ -26,7 +25,7 @@ def test_model_missing_spec_pointer_records_G21():
     model = ChecklistModel()
     try:
         model.normalize_item({})
-    except Exception:
+    except Exception: # type: ignore
         pass
     evs = ctx.get_events()
     assert any(e.get("gate_id") == "G21_CHECKLIST_MODEL_VALIDATION_ERRORS" for e in evs)

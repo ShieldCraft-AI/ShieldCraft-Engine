@@ -42,7 +42,7 @@ def test_error_surface_consistency_across_paths():
         run_self_host(tmp_path, "src/shieldcraft/dsl/schema/se_dsl.schema.json")
         err_path = os.path.join(".selfhost_outputs", "errors.json")
         assert os.path.exists(err_path)
-        with open(err_path) as f:
+        with open(err_path, encoding='utf-8') as f:
             cli = json.load(f)["errors"][0]
 
         assert pre == val == cli

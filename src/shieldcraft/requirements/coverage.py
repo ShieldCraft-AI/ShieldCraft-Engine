@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from enum import Enum
 from typing import List, Dict, Any
 import json
@@ -34,10 +34,10 @@ def _overlap_ratio(req_text: str, quote: str) -> float:
     return overlap / len(req_toks)
 
 
-def compute_coverage(requirements: List[Dict[str, Any]], checklist_items: List[Dict[str, Any]]) -> List[RequirementCoverage]:
+def compute_coverage(requirements: List[Dict[str, Any]],
+                     checklist_items: List[Dict[str, Any]]) -> List[RequirementCoverage]:
     res: List[RequirementCoverage] = []
     # Build quick indices
-    items_by_id = {it.get('id'): it for it in checklist_items}
 
     for r in sorted(requirements, key=lambda x: x.get('id')):
         rid = r.get('id')
@@ -81,7 +81,12 @@ def compute_coverage(requirements: List[Dict[str, Any]], checklist_items: List[D
         else:
             status = CoverageStatus.PARTIAL
 
-        res.append(RequirementCoverage(requirement_id=rid, checklist_item_ids=sorted(set(matched_ids)), coverage_status=status))
+        res.append(
+            RequirementCoverage(
+                requirement_id=rid,
+                checklist_item_ids=sorted(
+                    set(matched_ids)),
+                coverage_status=status))
 
     return res
 
@@ -89,7 +94,9 @@ def compute_coverage(requirements: List[Dict[str, Any]], checklist_items: List[D
 def write_coverage_report(covers: List[RequirementCoverage], outdir: str = '.selfhost_outputs') -> str:
     os.makedirs(outdir, exist_ok=True)
     p = os.path.join(outdir, 'coverage.json')
-    data = [ {'requirement_id': c.requirement_id, 'checklist_item_ids': c.checklist_item_ids, 'coverage_status': c.coverage_status.value} for c in covers]
+    data = [{'requirement_id': c.requirement_id,
+             'checklist_item_ids': c.checklist_item_ids,
+             'coverage_status': c.coverage_status.value} for c in covers]
     with open(p, 'w', encoding='utf8') as f:
         json.dump({'coverage': data}, f, indent=2, sort_keys=True)
     return p

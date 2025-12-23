@@ -8,7 +8,6 @@ from __future__ import annotations
 import json
 import hashlib
 import os
-from pathlib import Path
 
 # Canonical list of frozen artifacts to include in release manifest
 FROZEN_ARTIFACTS = [
@@ -39,12 +38,12 @@ def generate_release_manifest(output: str = "RELEASE_MANIFEST.json") -> None:
         data["artifacts"].append({"path": p, "sha256": _sha256_of_file(p)})
 
     # Write deterministically
-    with open(output, "w") as f:
+    with open(output, "w", encoding='utf-8') as f:
         json.dump(data, f, indent=2, sort_keys=True)
 
 
 def verify_release_manifest(manifest_path: str = "RELEASE_MANIFEST.json") -> bool:
-    with open(manifest_path) as f:
+    with open(manifest_path, encoding='utf-8') as f:
         data = json.load(f)
     for a in data.get("artifacts", []):
         path = a.get("path")

@@ -28,7 +28,8 @@ def test_normalized_skeleton_is_convertible():
 def test_valid_spec_sets_valid_state():
     from shieldcraft.engine import Engine
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
-    spec = {"metadata": {"product_id": "t", "spec_format": "canonical_json_v1", "spec_version": "1.0"}, "model": {"version": "1.0"}, "sections": [{"id": "s"}]}
+    spec = {"metadata": {"product_id": "t", "spec_format": "canonical_json_v1",
+                         "spec_version": "1.0"}, "model": {"version": "1.0"}, "sections": [{"id": "s"}]}
     engine.preflight(spec)
     assert engine.conversion_state == engine._ConversionState.VALID
 
@@ -38,16 +39,21 @@ def test_ready_spec_sets_ready_state(monkeypatch, tmp_path):
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
     # Ensure readiness gates succeed
     monkeypatch.setattr('shieldcraft.verification.readiness_evaluator.enforce_tests_attached', lambda items: None)
-    monkeypatch.setattr('shieldcraft.verification.readiness_evaluator.enforce_spec_fuzz_stability', lambda s, g, max_variants=3: None)
+    monkeypatch.setattr(
+        'shieldcraft.verification.readiness_evaluator.enforce_spec_fuzz_stability',
+        lambda s,
+        g,
+        max_variants=3: None)
     monkeypatch.setattr('shieldcraft.verification.readiness_evaluator.enforce_persona_veto', lambda e: None)
-    monkeypatch.setattr('shieldcraft.verification.readiness_evaluator.replay_and_compare', lambda engine, det: {'match': True})
+    monkeypatch.setattr(
+        'shieldcraft.verification.readiness_evaluator.replay_and_compare',
+        lambda engine,
+        det: {
+            'match': True})
 
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as tmp:
-        spec = {
-            "metadata": {"product_id": "ready-product", "version": "1.0", "spec_format": "canonical_json_v1", "self_host": True},
-            "model": {"version": "1.0"},
-            "sections": [{"id": "core"}],
-        }
+        spec = {"metadata": {"product_id": "ready-product", "version": "1.0", "spec_format": "canonical_json_v1",
+                             "self_host": True}, "model": {"version": "1.0"}, "sections": [{"id": "core"}], }
         json.dump(spec, tmp)
         tmp_path = tmp.name
 

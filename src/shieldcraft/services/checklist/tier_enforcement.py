@@ -4,7 +4,7 @@ Implements executable enforcement of the `TEMPLATE_COMPILATION_CONTRACT.md` tier
 
 This module is deterministic, pure (no filesystem I/O), and idempotent.
 """
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List
 
 # Authoritative tier mapping (kept minimal and deterministic)
 TIER_A = ["metadata", "agents", "evidence_bundle"]
@@ -20,7 +20,8 @@ def _make_item_for_missing_section(section: str, tier: str) -> Dict[str, Any]:
     else:
         text = f"Missing template section: {section} (Tier {tier})"
     severity = "high" if tier == "A" else "medium"
-    classification = "metadata" if section == "metadata" else ("determinism" if section == "determinism" else "compiler")
+    classification = "metadata" if section == "metadata" else (
+        "determinism" if section == "determinism" else "compiler")
     return {
         "ptr": f"/{section}",
         "text": text,

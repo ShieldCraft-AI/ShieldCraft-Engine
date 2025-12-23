@@ -21,8 +21,11 @@ def test_tier_a_synthesized_default_emits_blocker_and_has_provenance():
     class StubContext:
         def __init__(self):
             self._events = []
+
         def record_event(self, gate_id, phase, outcome, message=None, evidence=None, **kwargs):
-            self._events.append({'gate_id': gate_id, 'phase': phase, 'outcome': outcome, 'message': message, 'evidence': evidence})
+            self._events.append({'gate_id': gate_id, 'phase': phase, 'outcome': outcome,
+                                'message': message, 'evidence': evidence})
+
         def get_events(self):
             return list(self._events)
 
@@ -35,9 +38,13 @@ def test_tier_a_synthesized_default_emits_blocker_and_has_provenance():
     items = chk.get('items', [])
     synths = [it for it in items if (it.get('meta') or {}).get('synthesized_default')]
     # Either an explicit synthesized item with a justification_ptr exists OR spec-level synthesized metadata records it
-    has_item_prov = any(it.get('meta', {}).get('justification_ptr') == '/agents' and it.get('meta', {}).get('source') == 'default' for it in synths)
-    # The generator records synthesized defaults as gate events if not visible in final items. Check for the recorded event evidence as an alternative
-    has_event_prov = any(e.get('gate_id') == 'G_SYNTHESIZED_DEFAULT_AGENTS' and e.get('evidence', {}).get('section') == 'agents' for e in evs)
+    has_item_prov = any(it.get('meta', {}).get('justification_ptr') ==
+                        '/agents' and it.get('meta', {}).get('source') == 'default' for it in synths)
+    # The generator records synthesized defaults as gate events if not visible
+    # in final items. Check for the recorded event evidence as an alternative
+    has_event_prov = any(
+        e.get('gate_id') == 'G_SYNTHESIZED_DEFAULT_AGENTS' and e.get(
+            'evidence', {}).get('section') == 'agents' for e in evs)
     assert has_item_prov or has_event_prov
 
 
@@ -50,7 +57,8 @@ def test_tier_b_synthesized_default_emits_diagnostic_and_has_provenance():
     chk = ChecklistGenerator().build(spec, ast=ast, dry_run=True)
     items = chk.get('items', [])
     synths = [it for it in items if (it.get('meta') or {}).get('synthesized_default')]
-    assert any(it.get('meta', {}).get('justification_ptr') == '/determinism' and it.get('meta', {}).get('tier') == 'B' for it in synths)
+    assert any(it.get('meta', {}).get('justification_ptr') ==
+               '/determinism' and it.get('meta', {}).get('tier') == 'B' for it in synths)
 
 
 def test_synthesized_defaults_do_not_change_upstream_shape_when_present():

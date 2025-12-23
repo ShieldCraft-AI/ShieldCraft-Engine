@@ -1,7 +1,5 @@
 import json
 import os
-import shutil
-import tempfile
 from pathlib import Path
 
 from scripts.run_spec_trials import run_trials
@@ -11,9 +9,9 @@ def _prepare_env():
     os.makedirs('artifacts', exist_ok=True)
     open('artifacts/repo_sync_state.json', 'w').write('{}')
     import hashlib
-    h = hashlib.sha256(open('artifacts/repo_sync_state.json','rb').read()).hexdigest()
+    h = hashlib.sha256(open('artifacts/repo_sync_state.json', 'rb').read()).hexdigest()
     with open('repo_state_sync.json', 'w') as f:
-        json.dump({"files":[{"path":"artifacts/repo_sync_state.json","sha256":h}]}, f)
+        json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)
     import importlib
     importlib.import_module('shieldcraft.persona')
     import shieldcraft.persona as pmod
@@ -26,7 +24,7 @@ def test_runner_handles_empty_directory(tmp_path):
     artifacts = tmp_path / "artifacts"
     out_path = run_trials(str(tmp_path), out_report=str(out), raw_artifacts_dir=str(artifacts))
     assert os.path.exists(out_path)
-    r = json.loads(open(out_path).read())
+    r = json.loads(open(out_path, encoding='utf-8').read())
     assert r["results"] == []
 
 
@@ -42,7 +40,7 @@ def test_runner_records_checklist_fields(tmp_path):
     artifacts = tmp_path / "artifacts"
     out_path = run_trials(str(specdir), out_report=str(out), raw_artifacts_dir=str(artifacts))
     assert os.path.exists(out_path)
-    r = json.loads(open(out_path).read())
+    r = json.loads(open(out_path, encoding='utf-8').read())
     assert len(r["results"]) == 1
     res = r["results"][0]
     assert res.get("error_codes")
@@ -94,7 +92,7 @@ def test_runner_handles_invalid_spec(tmp_path):
     artifacts = tmp_path / "artifacts"
     out_path = run_trials(str(specdir), out_report=str(out), raw_artifacts_dir=str(artifacts))
     assert os.path.exists(out_path)
-    r = json.loads(open(out_path).read())
+    r = json.loads(open(out_path, encoding='utf-8').read())
     assert len(r["results"]) == 1
     res = r["results"][0]
     # For invalid spec we should have error_codes and an errors.json artifact

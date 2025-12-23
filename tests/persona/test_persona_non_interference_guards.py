@@ -15,7 +15,8 @@ def test_personas_cannot_add_or_remove_items(monkeypatch):
     engine.persona_enabled = True
     engine.checklist_context = type("_", (), {"_events": [], "record_event": lambda *a, **k: None})()
 
-    chk = engine.checklist_gen.build({"metadata": {"product_id": "p", "version": "1.0"}, "sections": {"core": {"description": "x"}}}, dry_run=True, engine=engine)
+    chk = engine.checklist_gen.build({"metadata": {"product_id": "p", "version": "1.0"}, "sections": {
+                                     "core": {"description": "x"}}}, dry_run=True, engine=engine)
     # Ensure no item with injected id exists and attempt is disallowed
     items = chk.get("items", [])
     assert not any(it.get("id") == "injected-id" for it in items)
@@ -33,5 +34,6 @@ def test_personas_cannot_modify_refusal_or_outcome_flags(monkeypatch):
     engine.persona_enabled = True
     engine.checklist_context = type("_", (), {"_events": [], "record_event": lambda *a, **k: None})()
 
-    chk = engine.checklist_gen.build({"metadata": {"product_id": "p", "version": "1.0"}, "sections": {"core": {"description": "x"}}}, dry_run=True, engine=engine)
+    chk = engine.checklist_gen.build({"metadata": {"product_id": "p", "version": "1.0"}, "sections": {
+                                     "core": {"description": "x"}}}, dry_run=True, engine=engine)
     assert any(it.get("meta", {}).get("persona_constraints_disallowed") for it in chk.get("items", []))

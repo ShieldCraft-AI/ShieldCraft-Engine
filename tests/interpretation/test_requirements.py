@@ -1,4 +1,3 @@
-import json
 from shieldcraft.interpretation.requirements import extract_requirements
 
 

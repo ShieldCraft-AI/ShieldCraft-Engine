@@ -14,14 +14,14 @@ Contract notes:
     is False.
 """
 from typing import Dict, Any
-from shieldcraft.verification.readiness_contract import REQUIRED_GATES
 from shieldcraft.services.validator.spec_gate import enforce_spec_fuzz_stability
 from shieldcraft.services.validator.test_gate import enforce_tests_attached
 from shieldcraft.services.validator.persona_gate import enforce_persona_veto
 from shieldcraft.verification.replay_engine import replay_and_compare
 
 
-def evaluate_readiness(engine, spec: Dict[str, Any], checklist_result: Dict[str, Any], validity_passed: bool = True) -> Dict[str, Any]:
+def evaluate_readiness(engine, spec: Dict[str, Any], checklist_result: Dict[str,
+                       Any], validity_passed: bool = True) -> Dict[str, Any]:
     """Run readiness gates and return structured pass/fail report.
 
     Parameters:
@@ -53,7 +53,8 @@ def evaluate_readiness(engine, spec: Dict[str, Any], checklist_result: Dict[str,
             except Exception:
                 gov = None
             from shieldcraft.services.guidance.readiness import is_blocking
-            results["spec_fuzz_stability"] = {"ok": True, "governance": gov, "blocking": is_blocking("spec_fuzz_stability")}
+            results["spec_fuzz_stability"] = {"ok": True, "governance": gov,
+                                              "blocking": is_blocking("spec_fuzz_stability")}
         except RuntimeError as e:
             gov = None
             try:

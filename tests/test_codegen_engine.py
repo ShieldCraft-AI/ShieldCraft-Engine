@@ -1,7 +1,5 @@
 from shieldcraft.services.codegen.generator import CodeGenerator
 from shieldcraft.services.codegen.emitter.writer import FileWriter
-import pathlib
-import shutil
 
 
 def test_codegen_outputs():

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List, Tuple, Set, Any
+from typing import Dict, List, Set, Any
 import json
 import os
 
@@ -118,14 +118,22 @@ def topological_sort(graph: Dict[str, Set[str]]) -> List[str]:
     return order
 
 
-def build_sequence(items: List[Dict[str, Any]], inferred_deps: Dict[str, List[str]], outdir: str = '.selfhost_outputs') -> Dict[str, Any]:
+def build_sequence(
+    items: List[Dict[str, Any]],
+    inferred_deps: Dict[str, List[str]],
+    outdir: str = '.selfhost_outputs'
+) -> Dict[str, Any]:
     graph = build_graph(items, inferred_deps)
     cycles = detect_cycles(graph)
-    cycle_groups = {f"cycle_{i}": sorted(group) for i, group in enumerate(sorted(cycles, key=lambda g: sorted(g)))}
+    cycle_groups = {
+        f"cycle_{i}": sorted(group)
+        for i, group in enumerate(sorted(cycles, key=lambda g: sorted(g)))
+    }
 
     # remove cycle edges by collapsing cycle nodes (we don't auto-resolve cycles)
     cyclic_nodes = {n for grp in cycles for n in grp}
-    contracted_graph = {n: {d for d in deps if d not in cyclic_nodes} for n, deps in graph.items() if n not in cyclic_nodes}
+    contracted_graph = {n: {d for d in deps if d not in cyclic_nodes}
+                        for n, deps in graph.items() if n not in cyclic_nodes}
 
     order = topological_sort(contracted_graph)
     execution_order = {}
@@ -157,19 +165,30 @@ def build_sequence(items: List[Dict[str, Any]], inferred_deps: Dict[str, List[st
     longest_chain = max(depth.values()) if depth else 0
 
     # orphan items: items with no depends_on, no blocks, and no evident requirement coverage
-    id_set = {it.get('id') for it in items}
     orphan_count = 0
     for s in sequence:
         if not s.get('depends_on') and not s.get('blocks'):
             # heuristic: check for requirement_refs or evidence on original items
             orig = next((it for it in items if it.get('id') == s.get('id')), {})
-            if not orig.get('requirement_refs') and not ((orig.get('evidence') or {}).get('source_excerpt_hash') or (orig.get('evidence') or {}).get('source', {}).get('ptr')):
+            if not orig.get('requirement_refs') and not (
+                (orig.get('evidence') or {}).get('source_excerpt_hash') or (
+                    orig.get('evidence') or {}).get(
+                    'source', {}).get('ptr')):
                 orphan_count += 1
 
     # persist
     os.makedirs(outdir, exist_ok=True)
     p = os.path.join(outdir, 'checklist_sequence.json')
     with open(p, 'w', encoding='utf8') as f:
-        json.dump({'sequence': sequence, 'cycle_groups': cycle_groups, 'longest_chain': longest_chain, 'orphan_count': orphan_count}, f, indent=2, sort_keys=True)
+        json.dump({
+            'sequence': sequence,
+            'cycle_groups': cycle_groups,
+            'longest_chain': longest_chain,
+            'orphan_count': orphan_count
+        }, f, indent=2, sort_keys=True)
 
-    return {'sequence': sequence, 'cycle_groups': cycle_groups, 'longest_chain': longest_chain, 'orphan_count': orphan_count}
+    return {
+        'sequence': sequence,
+        'cycle_groups': cycle_groups,
+        'longest_chain': longest_chain,
+        'orphan_count': orphan_count}

@@ -1,4 +1,3 @@
-import hashlib
 from shieldcraft.services.governance import map as govmap
 
 

@@ -39,19 +39,19 @@ def generate_system_health(out_path: str = "artifacts/SYSTEM_HEALTH.md") -> None
     lines.append("")
     # Stability marker
     try:
-        with open("STABLE") as f:
+        with open("STABLE", encoding='utf-8') as f:
             marker = f.read().strip()
-    except Exception:
+    except (IOError, OSError, ValueError):
         marker = "MISSING"
     lines.append(f"## Stability Marker: {marker}")
     try:
-        with open("RELEASE_READY") as f:
+        with open("RELEASE_READY", encoding='utf-8') as f:
             release = f.read().strip()
-    except Exception:
+    except (IOError, OSError, ValueError):
         release = "MISSING"
     lines.append(f"## Release Marker: {release}")
 
-    with open(out_path, "w") as f:
+    with open(out_path, "w", encoding='utf-8') as f:
         f.write("\n".join(lines) + "\n")
 
 

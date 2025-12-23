@@ -9,9 +9,9 @@ def _prepare_env():
     os.makedirs('artifacts', exist_ok=True)
     open('artifacts/repo_sync_state.json', 'w').write('{}')
     import hashlib
-    h = hashlib.sha256(open('artifacts/repo_sync_state.json','rb').read()).hexdigest()
+    h = hashlib.sha256(open('artifacts/repo_sync_state.json', 'rb').read()).hexdigest()
     with open('repo_state_sync.json', 'w') as f:
-        json.dump({"files":[{"path":"artifacts/repo_sync_state.json","sha256":h}]}, f)
+        json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)
     import importlib
     importlib.import_module('shieldcraft.persona')
     import shieldcraft.persona as pmod
@@ -43,10 +43,11 @@ def test_senior_engineer_sanity_with_prose_spec():
     fb_path = Path('.selfhost_outputs') / 'spec_feedback.json'
     assert fb_path.exists(), 'spec_feedback.json missing'
     fb = json.loads(fb_path.read_text())
-    assert 'suggested_next_edits' in fb and isinstance(fb.get('suggested_next_edits'), list), 'spec_feedback missing suggested_next_edits'
+    assert 'suggested_next_edits' in fb and isinstance(
+        fb.get('suggested_next_edits'), list), 'spec_feedback missing suggested_next_edits'
 
     # Human-facing summary fields
-    s = json.loads(open('.selfhost_outputs/summary.json').read())
+    s = json.loads(open('.selfhost_outputs/summary.json', encoding='utf-8').read())
     assert 'is_it_safe_to_act' in s and s.get('is_it_safe_to_act') in ('yes', 'no', 'unknown')
     if s.get('is_it_safe_to_act') == 'yes':
         assert 'where_is_safe' in s and isinstance(s.get('where_is_safe'), list) and len(s.get('where_is_safe')) > 0

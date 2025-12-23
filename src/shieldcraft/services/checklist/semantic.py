@@ -2,36 +2,36 @@ def compute_context_radius(item, ast):
     """
     Compute context radius for an item.
     Context radius = number of AST ancestors + siblings referenced.
-    
+
     Args:
         item: Checklist item
         ast: AST root node
-    
+
     Returns:
         int: Context radius value
     """
     ptr = item.get("ptr", "/")
-    
+
     # Find node in AST
     node = ast.find(ptr) if ast and hasattr(ast, 'find') else None
-    
+
     if not node:
         return 0
-    
+
     # Count ancestors
     ancestors = 0
     current = node
     while hasattr(current, 'parent') and current.parent:
         ancestors += 1
         current = current.parent
-    
+
     # Count siblings (nodes at same level)
     siblings = 0
     if hasattr(node, 'parent') and node.parent:
         parent = node.parent
         if hasattr(parent, 'children'):
             siblings = len(parent.children) - 1  # Exclude self
-    
+
     return ancestors + siblings
 
 
@@ -81,13 +81,13 @@ def semantic_validations(spec, items=None):
                     "value": aid
                 })
             seen.add(aid)
-    
+
     # Validate items if provided
     if items:
         allowed_severities = ["low", "medium", "high", "critical"]
         for item in items:
             item_id = item.get("id", "unknown")
-            
+
             # Check severity
             severity = item.get("severity")
             if severity and severity not in allowed_severities:
@@ -96,7 +96,7 @@ def semantic_validations(spec, items=None):
                     "text": f"Invalid severity '{severity}' for item {item_id}, must be one of {allowed_severities}",
                     "value": severity
                 })
-            
+
             # Check category
             category = item.get("category", "")
             if not category:
@@ -111,7 +111,7 @@ def semantic_validations(spec, items=None):
                     "text": f"Category must be ASCII for item {item_id}",
                     "value": category
                 })
-            
+
             # Check ptr format
             ptr = item.get("ptr")
             if ptr is not None and ptr != "" and not ptr.startswith("/"):
@@ -120,12 +120,12 @@ def semantic_validations(spec, items=None):
                     "text": f"Pointer must start with / for item {item_id}",
                     "value": ptr
                 })
-    
+
     # Cross-section semantic checks
     # Verify that items referencing sections actually exist
     sections = spec.get("sections", [])
     section_ids = set()
-    
+
     if isinstance(sections, list):
         for sec in sections:
             sec_id = sec.get("id")
@@ -133,7 +133,7 @@ def semantic_validations(spec, items=None):
                 section_ids.add(sec_id)
     elif isinstance(sections, dict):
         section_ids = set(sections.keys())
-    
+
     # Check all section references in the spec
     def check_section_refs(obj, path=""):
         """Recursively check for section references."""
@@ -141,7 +141,7 @@ def semantic_validations(spec, items=None):
             for key in obj.keys():
                 value = obj[key]
                 new_path = f"{path}/{key}"
-                
+
                 # Check for section reference fields
                 if key in ("section", "section_ref", "section_id"):
                     if isinstance(value, str) and value not in section_ids:
@@ -155,20 +155,20 @@ def semantic_validations(spec, items=None):
                         # INTENTIONAL: Valid section reference, no action needed.
                         # Metadata will be added by subsequent processing.
                         pass
-                
+
                 # Continue recursion
                 check_section_refs(value, new_path)
         elif isinstance(obj, list):
             for idx, item in enumerate(obj):
                 new_path = f"{path}/{idx}"
                 check_section_refs(item, new_path)
-    
+
     check_section_refs(spec)
-    
+
     # AST → checklist consistency check
     # INTENTIONAL: AST integration deferred.
     # Future: Pass AST as parameter and compare nodes to checklist coverage.
     # Current behavior: Returns all semantic tasks without AST cross-validation.
-    missing_nodes = []  # Would be populated by AST comparison
-    
+    # _missing_nodes = []  # Would be populated by AST comparison
+
     return tasks

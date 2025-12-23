@@ -22,6 +22,7 @@ class SyncError(ValueError):
     Carries structured `code`, `message`, and optional `location` and provides
     `to_dict()` for deterministic serialization consistent with `ValidationError`.
     """
+
     def __init__(self, code: str, message: str, location: str | None = None):
         super().__init__(f"{code}: {message}")
         self.code = code
@@ -62,7 +63,7 @@ def verify_repo_sync(repo_root: str = ".") -> Dict[str, str]:
         raise SyncError(SYNC_MISSING, "repo_state_sync.json not found", "/repo_state_sync.json")
 
     try:
-        with open(sync_path) as f:
+        with open(sync_path, encoding='utf-8') as f:
             try:
                 data = json.load(f)
             except json.JSONDecodeError as e:
@@ -88,7 +89,10 @@ def verify_repo_sync(repo_root: str = ".") -> Dict[str, str]:
                     try:
                         data = json.loads(raw[: end_idx + 1])
                     except Exception:
-                        raise SyncError(SYNC_INVALID_FORMAT, f"invalid repo_state_sync.json: {e}", "/repo_state_sync.json")
+                        raise SyncError(
+                            SYNC_INVALID_FORMAT,
+                            f"invalid repo_state_sync.json: {e}",
+                            "/repo_state_sync.json")
                 else:
                     raise SyncError(SYNC_INVALID_FORMAT, f"invalid repo_state_sync.json: {e}", "/repo_state_sync.json")
     except Exception as e:
@@ -120,10 +124,14 @@ def verify_repo_sync(repo_root: str = ".") -> Dict[str, str]:
     # a precomputed `repo_tree_hash`, verify it matches an aggregate computed
     # from the listed files (deterministic concatenation of path:sha256).
     if "repo_tree_hash" in data:
-        agg = "".join(f"{e.get('path')}:{e.get('sha256','')}" for e in sorted(data.get("files", []), key=lambda x: x.get('path')))
+        agg = "".join(f"{e.get('path')}:{e.get('sha256','')}" for e in sorted(
+            data.get("files", []), key=lambda x: x.get('path')))
         tree_hash = hashlib.sha256(agg.encode()).hexdigest()
         if tree_hash != data.get("repo_tree_hash"):
-            raise SyncError(SYNC_TREE_MISMATCH, "repo_tree_hash mismatch: repo snapshot appears stale", "/repo_tree_hash")
+            raise SyncError(
+                SYNC_TREE_MISMATCH,
+                "repo_tree_hash mismatch: repo snapshot appears stale",
+                "/repo_tree_hash")
 
     return {"ok": True, "artifact": target, "sha256": actual}
 
@@ -154,8 +162,12 @@ def verify_repo_state_authoritative(repo_root: str = ".") -> Dict[str, str]:
         # External scanning is opt-in only. Require explicit override to allow.
         allow = os.getenv("SHIELDCRAFT_ALLOW_EXTERNAL_SYNC", "0") == "1"
         if not allow:
-            raise SyncError("external_deprecated", "external sync mode is deprecated and not allowed without override", "/repo_state_sync.json")
-        logging.getLogger("shieldcraft.snapshot").warning("snapshot_deprecation_notice: external sync mode enabled via override (deprecated)")
+            raise SyncError(
+                "external_deprecated",
+                "external sync mode is deprecated and not allowed without override",
+                "/repo_state_sync.json")
+        logging.getLogger("shieldcraft.snapshot").warning(
+            "snapshot_deprecation_notice: external sync mode enabled via override (deprecated)")
         res = verify_repo_sync(repo_root)
         res["authority"] = "external"
         return res
@@ -172,7 +184,6 @@ def verify_repo_state_authoritative(repo_root: str = ".") -> Dict[str, str]:
         except Exception as e:
             # If it's a SyncError due to missing artifact, relax and proceed;
             # otherwise re-raise to preserve strict failure modes for other errors.
-            from inspect import getmodule
             # Detect SyncError by attribute presence (class imported above)
             if getattr(e, "code", None) == SYNC_MISSING:
                 return {"ok": True, "authority": "repo_state_sync", "artifact": None}
@@ -194,7 +205,11 @@ def verify_repo_state_authoritative(repo_root: str = ".") -> Dict[str, str]:
         # Same as snapshot but treat missing snapshot as fatal (validate_snapshot will raise)
         validate_snapshot(snapshot_path, repo_root)
         manifest = generate_snapshot(repo_root)
-        return {"ok": True, "authority": "snapshot_mandatory", "sha256": manifest.get("tree_hash"), "artifact": snapshot_path}
+        return {
+            "ok": True,
+            "authority": "snapshot_mandatory",
+            "sha256": manifest.get("tree_hash"),
+            "artifact": snapshot_path}
 
     if authority == "compare":
         # Verify both external and snapshot, then compare a canonical manifest hash
@@ -203,10 +218,12 @@ def verify_repo_state_authoritative(repo_root: str = ".") -> Dict[str, str]:
         # read external artifact (assumed to contain canonical manifest JSON) and compare structure
         artifact_path = os.path.join(repo_root, REPO_SYNC_ARTIFACT)
         try:
-            with open(artifact_path) as af:
+            with open(artifact_path, encoding='utf-8') as af:
                 external_manifest = json.load(af)
-        except Exception:
-            raise SnapshotError("snapshot_invalid", "could not read external sync artifact for comparison", {"artifact": artifact_path})
+        except (IOError, OSError, json.JSONDecodeError, ValueError):
+            raise SnapshotError("snapshot_invalid",
+                                "could not read external sync artifact for comparison",
+                                {"artifact": artifact_path})
 
         # compare canonical manifest hashes for deterministic parity
         # Exclude volatile repo-state file from parity checks to avoid
@@ -225,8 +242,13 @@ def verify_repo_state_authoritative(repo_root: str = ".") -> Dict[str, str]:
         internal_hash = _canonical_manifest_hash(_sanitize(manifest))
         external_hash = _canonical_manifest_hash(_sanitize(external_manifest))
         if internal_hash != external_hash:
-            raise SnapshotError("snapshot_mismatch", "external sync artifact does not match internal snapshot", {"external_manifest_hash": external_hash, "internal_manifest_hash": internal_hash})
-        return {"ok": True, "authority": "compare", "sha256": sync_res.get("sha256"), "artifact": sync_res.get("artifact")}
+            raise SnapshotError("snapshot_mismatch", "external sync artifact does not match internal snapshot", {
+                                "external_manifest_hash": external_hash, "internal_manifest_hash": internal_hash})
+        return {
+            "ok": True,
+            "authority": "compare",
+            "sha256": sync_res.get("sha256"),
+            "artifact": sync_res.get("artifact")}
 
     # Unknown authority
     raise SyncError(SYNC_INVALID_FORMAT, f"unsupported sync authority: {authority}", "/")

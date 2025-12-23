@@ -7,7 +7,7 @@ class ChecklistVerifier:
             for f in self.REQUIRED_FIELDS:
                 if f not in item:
                     errors.append({"item": item.get("id"), "missing": f})
-        
+
         # Verify resolution chains if present
         if isinstance(checklist, dict) and "resolution_chains" in checklist:
             from shieldcraft.services.checklist.resolution_chain import verify_chains
@@ -19,7 +19,7 @@ class ChecklistVerifier:
                         "issue": violation["issue"],
                         "type": "resolution_chain"
                     })
-        
+
         # Verify ancestry if present in items
         if isinstance(checklist, list):
             from shieldcraft.services.checklist.ancestry import build_ancestry, verify_ancestry
@@ -32,7 +32,7 @@ class ChecklistVerifier:
                         "issue": violation["issue"],
                         "type": "ancestry"
                     })
-        
+
         # Check for duplicate IDs
         if isinstance(checklist, list):
             from shieldcraft.services.checklist.id_registry import create_registry
@@ -44,5 +44,5 @@ class ChecklistVerifier:
                         "issue": "duplicate_id",
                         "type": "id_collision"
                     })
-        
+
         return errors

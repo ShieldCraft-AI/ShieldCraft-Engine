@@ -67,7 +67,14 @@ def _risk_from_readiness(readiness: Optional[Dict[str, Any]]) -> str:
     return "low"
 
 
-def build_execution_preview(conversion_state: Optional[str], checklist_items: Optional[List[Dict[str, Any]]], readiness: Optional[Dict[str, Any]], missing_next: Optional[List[Dict[str, Any]]]) -> Optional[Dict[str, Any]]:
+def build_execution_preview(conversion_state: Optional[str],
+                            checklist_items: Optional[List[Dict[str,
+                                                                Any]]],
+                            readiness: Optional[Dict[str,
+                                                     Any]],
+                            missing_next: Optional[List[Dict[str,
+                                                             Any]]]) -> Optional[Dict[str,
+                                                                                      Any]]:
     """Return execution_preview dict or None.
 
     - Only eligible for conversion_state in STRUCTURED or VALID.

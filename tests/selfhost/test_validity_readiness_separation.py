@@ -2,7 +2,6 @@ import json
 import os
 import tempfile
 import shutil
-import pytest
 
 
 def _write_spec(tmpfile, spec):
@@ -53,11 +52,8 @@ def test_valid_but_not_ready(monkeypatch):
     from shieldcraft.main import run_self_host
 
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as t:
-        spec = {
-            "metadata": {"product_id": "valid-not-ready", "version": "1.0", "spec_format": "canonical_json_v1", "self_host": True},
-            "model": {"version": "1.0"},
-            "sections": [{"id": "core", "description": "Core"}],
-        }
+        spec = {"metadata": {"product_id": "valid-not-ready", "version": "1.0", "spec_format": "canonical_json_v1",
+                             "self_host": True}, "model": {"version": "1.0"}, "sections": [{"id": "core", "description": "Core"}], }
         _write_spec(t.name, spec)
         tmp_path = t.name
 
@@ -66,7 +62,11 @@ def test_valid_but_not_ready(monkeypatch):
             shutil.rmtree('.selfhost_outputs')
 
         # Force tests_attached gate to fail
-        monkeypatch.setattr('shieldcraft.verification.readiness_evaluator.enforce_tests_attached', lambda items: (_ for _ in ()).throw(RuntimeError('no tests')))
+        monkeypatch.setattr(
+            'shieldcraft.verification.readiness_evaluator.enforce_tests_attached',
+            lambda items: (
+                _ for _ in ()).throw(
+                RuntimeError('no tests')))
 
         # Allow dirty worktree for test isolation
         os.environ['SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY'] = '1'
@@ -89,11 +89,8 @@ def test_valid_and_ready(monkeypatch):
     from shieldcraft.main import run_self_host
 
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as t:
-        spec = {
-            "metadata": {"product_id": "valid-ready", "version": "1.0", "spec_format": "canonical_json_v1", "self_host": True},
-            "model": {"version": "1.0"},
-            "sections": [{"id": "core", "description": "Core"}],
-        }
+        spec = {"metadata": {"product_id": "valid-ready", "version": "1.0", "spec_format": "canonical_json_v1",
+                             "self_host": True}, "model": {"version": "1.0"}, "sections": [{"id": "core", "description": "Core"}], }
         _write_spec(t.name, spec)
         tmp_path = t.name
 
@@ -103,9 +100,17 @@ def test_valid_and_ready(monkeypatch):
 
         # Make readiness gates no-ops / succeed
         monkeypatch.setattr('shieldcraft.verification.readiness_evaluator.enforce_tests_attached', lambda items: None)
-        monkeypatch.setattr('shieldcraft.verification.readiness_evaluator.enforce_spec_fuzz_stability', lambda s, g, max_variants=3: None)
+        monkeypatch.setattr(
+            'shieldcraft.verification.readiness_evaluator.enforce_spec_fuzz_stability',
+            lambda s,
+            g,
+            max_variants=3: None)
         monkeypatch.setattr('shieldcraft.verification.readiness_evaluator.enforce_persona_veto', lambda e: None)
-        monkeypatch.setattr('shieldcraft.verification.readiness_evaluator.replay_and_compare', lambda engine, det: {'match': True})
+        monkeypatch.setattr(
+            'shieldcraft.verification.readiness_evaluator.replay_and_compare',
+            lambda engine,
+            det: {
+                'match': True})
 
         # Allow dirty worktree for test isolation
         os.environ['SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY'] = '1'

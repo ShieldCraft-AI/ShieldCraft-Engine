@@ -38,7 +38,14 @@ def synthesize_missing_spec_fields(spec: Dict[str, Any]) -> Tuple[Dict[str, Any]
                 'source': 'default',
                 'justification': f'safe_default_{k}',
                 'inference_type': 'safe_default',
-                'tier': 'A' if k in ("metadata", "agents", "evidence_bundle") else ('B' if k in ("determinism", "artifact_contract", "generation_mappings", "security") else 'C')
-            }
+                'tier': 'A' if k in (
+                    "metadata",
+                    "agents",
+                    "evidence_bundle") else (
+                    'B' if k in (
+                        "determinism",
+                        "artifact_contract",
+                        "generation_mappings",
+                        "security") else 'C')}
     # Return deterministic list of synthesized keys
     return new_spec, sorted(synthesized)

@@ -54,10 +54,10 @@ def test_quality_deterministic():
     if os.path.exists('.selfhost_outputs'):
         shutil.rmtree('.selfhost_outputs')
     run_self_host('spec/se_dsl_v1.spec.json', 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
-    a = open('.selfhost_outputs/checklist_quality.json','rb').read()
+    a = open('.selfhost_outputs/checklist_quality.json', 'rb').read()
     if os.path.exists('.selfhost_outputs'):
         shutil.rmtree('.selfhost_outputs')
     _prepare_env()
     run_self_host('spec/se_dsl_v1.spec.json', 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
-    b = open('.selfhost_outputs/checklist_quality.json','rb').read()
+    b = open('.selfhost_outputs/checklist_quality.json', 'rb').read()
     assert hashlib.sha256(a).hexdigest() == hashlib.sha256(b).hexdigest()

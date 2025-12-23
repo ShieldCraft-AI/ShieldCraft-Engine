@@ -1,7 +1,8 @@
 def test_quality_score_penalizes_blockers_and_synthesized_defaults():
     from shieldcraft.services.checklist.quality import compute_checklist_quality
     items = [
-        {'text': 'SPEC MISSING: Missing template section: agents (Tier A)', 'meta': {'tier': 'A', 'synthesized_default': True}},
+        {'text': 'SPEC MISSING: Missing template section: agents (Tier A)', 'meta': {
+            'tier': 'A', 'synthesized_default': True}},
         {'text': 'SPEC INSUFFICIENT: No agents declared', 'meta': {'insufficiency': 'NO_AGENTS'}},
     ]
     q = compute_checklist_quality(items, synthesized_count=1, insufficiency_count=1)
@@ -41,7 +42,15 @@ def test_finalize_attaches_quality_and_appends_diagnostic():
     chk = ChecklistGenerator().build(spec, ast=ast, dry_run=True, engine=engine)
     # finalize_checklist would normally compute quality; simulate by calling finalize_checklist
     from shieldcraft.engine import finalize_checklist
-    res = finalize_checklist(engine, partial_result={'checklist': {'items': chk.get('items', []), 'events': engine.checklist_context.get_events(), 'emitted': True}})
+    res = finalize_checklist(
+        engine,
+        partial_result={
+            'checklist': {
+                'items': chk.get(
+                    'items',
+                    []),
+                'events': engine.checklist_context.get_events(),
+                'emitted': True}})
     assert 'meta' in res['checklist'] and 'checklist_quality' in res['checklist']['meta']
     q = res['checklist']['meta']['checklist_quality']
     assert isinstance(q, int)

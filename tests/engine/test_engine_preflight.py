@@ -1,6 +1,5 @@
 import json
 import os
-import tempfile
 import pytest
 
 
@@ -54,7 +53,8 @@ def test_execute_no_side_effects_on_sync_failure(tmp_path, monkeypatch):
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
 
     # Use canonical sample spec to get past schema
-    import pathlib, json
+    import pathlib
+    import json
     data = json.loads(pathlib.Path("spec/se_dsl_v1.spec.json").read_text())
     data["metadata"]["spec_format"] = "canonical_json_v1"
 
@@ -70,4 +70,3 @@ def test_execute_no_side_effects_on_sync_failure(tmp_path, monkeypatch):
         engine.execute(str(spec_path))
 
     assert not os.path.exists(plan_dir), "No artifacts should be written when sync verification fails"
-

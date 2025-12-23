@@ -35,7 +35,16 @@ def _short(h: str) -> str:
 
 def _classify_strength(norm: str) -> str:
     # structural if determinism, artifact, refusal, safety
-    structural_kw = ['determin', 'artifact', 'signature', 'refuse', 'refusal', 'safety', 'no-touch', 'no-touch', 'no-touch-zone']
+    structural_kw = [
+        'determin',
+        'artifact',
+        'signature',
+        'refuse',
+        'refusal',
+        'safety',
+        'no-touch',
+        'no-touch',
+        'no-touch-zone']
     behavioral_kw = ['runtime', 'behavior', 'performance', 'response', 'behavioral']
     governance_kw = ['policy', 'govern', 'enforce', 'blocking', 'contract', 'tests', 'contract']
     for k in structural_kw:
@@ -79,7 +88,9 @@ def extract_requirements(raw_text: str) -> List[Dict]:
         if not modality:
             # Ignore narrative-only prose (no action verb)
             # Heuristic: require a verb-like token
-            if not re.search(r"\b(is|are|be|have|provide|include|emit|produce|refuse|enforce|require|must|should|may)\b", low):
+            if not re.search(
+                r"\b(is|are|be|have|provide|include|emit|produce|refuse|enforce|require|must|should|may)\b",
+                    low):
                 continue
             else:
                 modality = 'MAY'

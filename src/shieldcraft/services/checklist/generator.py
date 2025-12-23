@@ -1,9 +1,9 @@
+from .sections import ordered_sections
+from .extractor import SpecExtractor
+from .model import ChecklistModel
 import hashlib
 import logging
 logger = logging.getLogger(__name__)
-from .model import ChecklistModel
-from .extractor import SpecExtractor
-from .sections import SECTION_TITLES, ordered_sections
 
 
 class ChecklistGenerator:
@@ -28,7 +28,7 @@ class ChecklistGenerator:
 
     def extract_items(self, spec):
         raw_items = self.extractor.extract(spec)
-        
+
         checklist = []
         for item in raw_items:
             ptr = item["ptr"]
@@ -44,18 +44,22 @@ class ChecklistGenerator:
     def normalize_item(self, item):
         return self.model.normalize_item(item)
 
-    def build(self, spec, schema=None, ast=None, dry_run: bool = False, run_fuzz: bool = False, run_test_gate: bool = False, engine=None, interpreted_items=None):
+    def build(
+            self,
+            spec,
+            schema=None,
+            ast=None,
+            dry_run: bool = False,
+            run_fuzz: bool = False,
+            run_test_gate: bool = False,
+            engine=None,
+            interpreted_items=None):
         # Trace entry
         logger.debug("ChecklistGenerator.build: ENTRY")
         import json
-        import os
         import hashlib
-        import time
         from shieldcraft.services.preflight.preflight import run_preflight
-        
-        # Track timings for each pass
-        timings = {}
-        from shieldcraft.services.io.canonical_writer import write_canonical_json
+
         from shieldcraft.services.artifacts.lineage import build_lineage as build_artifact_lineage
         from shieldcraft.services.generator.invariants import check_invariants
         from shieldcraft.services.io.manifest_writer import write_manifest
@@ -86,7 +90,7 @@ class ChecklistGenerator:
         from shieldcraft.services.diff.canonical_diff import diff
         from shieldcraft.services.diff.impact import impact_summary
         from shieldcraft.services.mapping.pointer_map import resolve
-        from shieldcraft.services.rules.graph import build_graph, detect_cycles
+        from shieldcraft.services.rules.graph import detect_cycles
         from shieldcraft.services.spec.dependency_contract import validate_dependencies
         from shieldcraft.services.plan.execution_plan import build_execution_plan
         from shieldcraft.services.ast.lineage import get_lineage_map
@@ -135,20 +139,46 @@ class ChecklistGenerator:
             try:
                 if context:
                     try:
-                        tier = "A" if key in ("metadata", "agents", "evidence_bundle") else ("B" if key in ("determinism", "artifact_contract", "generation_mappings", "security") else "C")
+                        tier = "A" if key in (
+                            "metadata",
+                            "agents",
+                            "evidence_bundle") else (
+                            "B" if key in (
+                                "determinism",
+                                "artifact_contract",
+                                "generation_mappings",
+                                "security") else "C")
                         ev_name = f"G_SYNTHESIZED_DEFAULT_{key.upper()}"
                         if tier == "A":
                             try:
-                                context.record_event(ev_name, "compilation", "BLOCKER", message=f"Synthesized Tier A default for missing section: {key}", evidence={"section": key})
+                                context.record_event(
+                                    ev_name,
+                                    "compilation",
+                                    "BLOCKER",
+                                    message=f"Synthesized Tier A default for missing section: {key}",
+                                    evidence={
+                                        "section": key})
                             except Exception:
                                 pass
                             try:
-                                context.record_event(ev_name, "compilation", "DIAGNOSTIC", message=f"Synthesized default for missing section: {key}", evidence={"section": key})
+                                context.record_event(
+                                    ev_name,
+                                    "compilation",
+                                    "DIAGNOSTIC",
+                                    message=f"Synthesized default for missing section: {key}",
+                                    evidence={
+                                        "section": key})
                             except Exception:
                                 pass
                         elif tier == "B":
                             try:
-                                context.record_event(ev_name, "compilation", "DIAGNOSTIC", message=f"Synthesized Tier B default for missing section: {key}", evidence={"section": key})
+                                context.record_event(
+                                    ev_name,
+                                    "compilation",
+                                    "DIAGNOSTIC",
+                                    message=f"Synthesized Tier B default for missing section: {key}",
+                                    evidence={
+                                        "section": key})
                             except Exception:
                                 pass
                     except Exception:
@@ -157,7 +187,15 @@ class ChecklistGenerator:
                 pass
 
             # Determine tier for the synthesized key (ensure tier is set for later use)
-            tier = "A" if key in ("metadata", "agents", "evidence_bundle") else ("B" if key in ("determinism", "artifact_contract", "generation_mappings", "security") else "C")
+            tier = "A" if key in (
+                "metadata",
+                "agents",
+                "evidence_bundle") else (
+                "B" if key in (
+                    "determinism",
+                    "artifact_contract",
+                    "generation_mappings",
+                    "security") else "C")
 
             # Build a deterministic checklist diagnostic for the synthesized default (include provenance metadata)
             synth_item = {
@@ -177,7 +215,8 @@ class ChecklistGenerator:
             }
             synthesized_items.append(synth_item)
 
-        # We'll append both tier-enforcement missing items and synthesized items to raw_items after extraction so they flow through the pipeline
+        # We'll append both tier-enforcement missing items and synthesized items
+        # to raw_items after extraction so they flow through the pipeline
         _pre_extraction_missing_items = missing_items + synthesized_items
 
         # Inference ceiling enforcement: ensure Tier A syntheses have an accompanying explicit missing-item
@@ -188,7 +227,8 @@ class ChecklistGenerator:
                 if k in TIER_A:
                     # There must be a pre-extraction missing item for this section
                     if not any(((it.get('meta') or {}).get('section') == k) for it in _pre_extraction_missing_items):
-                        raise AssertionError(f"Compiler invariant violated: Tier A synthesized key {k} without explicit missing-item explainability")
+                        raise AssertionError(
+                            f"Compiler invariant violated: Tier A synthesized key {k} without explicit missing-item explainability")
                 # Attach provenance of the synthesized defaults into spec-level metadata so finalizer can expose it
                 if hasattr(spec, 'setdefault'):
                     if '_synthesized_metadata' in spec:
@@ -197,7 +237,10 @@ class ChecklistGenerator:
                     else:
                         spec.setdefault('_synthesized_metadata', {})
                         for k2 in synthesized_keys:
-                            spec['_synthesized_metadata'][k2] = {'source': 'default', 'justification': f'safe_default_{k2}', 'inference_type': 'safe_default'}
+                            spec['_synthesized_metadata'][k2] = {
+                                'source': 'default',
+                                'justification': f'safe_default_{k2}',
+                                'inference_type': 'safe_default'}
         except Exception:
             # Failures here must be visible during testing; do not silently continue in production
             raise
@@ -212,7 +255,13 @@ class ChecklistGenerator:
                 try:
                     if context:
                         try:
-                            context.record_event("G9_GENERATOR_RUN_FUZZ_GATE", "generation", "BLOCKER", message="spec fuzz stability failed", evidence={"error": str(e)})
+                            context.record_event(
+                                "G9_GENERATOR_RUN_FUZZ_GATE",
+                                "generation",
+                                "BLOCKER",
+                                message="spec fuzz stability failed",
+                                evidence={
+                                    "error": str(e)})
                         except Exception:
                             pass
                 except Exception:
@@ -227,10 +276,10 @@ class ChecklistGenerator:
             except Exception:
                 # Non-fatal: if fuzzing/gate unavailable, continue
                 pass
-        
+
         # Build lineage map from AST
         lineage_map = get_lineage_map(ast)
-        
+
         # Extract items using AST traversal
         raw_items = self._extract_from_ast(ast)
         try:
@@ -257,7 +306,13 @@ class ChecklistGenerator:
                 try:
                     if context:
                         try:
-                            context.record_event(f"G_SPEC_INSUFFICIENCY_{f['code']}", "compilation", "DIAGNOSTIC", message=f['message'], evidence={"pointer": f.get('pointer')})
+                            context.record_event(
+                                f"G_SPEC_INSUFFICIENCY_{f['code']}",
+                                "compilation",
+                                "DIAGNOSTIC",
+                                message=f['message'],
+                                evidence={
+                                    "pointer": f.get('pointer')})
                         except Exception:
                             pass
                 except Exception:
@@ -273,7 +328,7 @@ class ChecklistGenerator:
                 })
         except Exception:
             pass
-        
+
         # Attach lineage_id to each item
         try:
             logger.debug("ChecklistGenerator.build: attaching lineage and extracting items")
@@ -310,7 +365,11 @@ class ChecklistGenerator:
                     try:
                         if context:
                             try:
-                                context.record_event("G10_GENERATOR_PREP_MISSING", "generation", "DIAGNOSTIC", message=f"Missing lineage_id for item at pointer: {ptr}")
+                                context.record_event(
+                                    "G10_GENERATOR_PREP_MISSING",
+                                    "generation",
+                                    "DIAGNOSTIC",
+                                    message=f"Missing lineage_id for item at pointer: {ptr}")
                             except Exception:
                                 pass
                     except Exception:
@@ -318,7 +377,7 @@ class ChecklistGenerator:
                     # Attach a synthetic lineage id to allow generation to continue
                     item["lineage_id"] = f"missing_lineage:{ptr}"
                     item["source_node_type"] = item.get("source_node_type") or "unknown"
-        
+
         # Add constraint tasks
         constraint_items = propagate_constraints(spec)
         raw_items.extend(constraint_items)
@@ -329,7 +388,7 @@ class ChecklistGenerator:
                 # Map interpreted ChecklistItem v1 to internal raw item shape
                 ri = {
                     "ptr": it.get("evidence_ref", {}).get("ptr") or "/",
-                    "id": str(it.get("id") or _det_hash(it.get("claim", "")[:24])),
+                    "id": str(it.get("id") or hashlib.sha256(it.get("claim", "")[:24].encode()).hexdigest()[:12]),
                     "text": it.get("claim") or it.get("obligation"),
                     "origin": {"source": "interpreted"},
                     "obligation": it.get("obligation"),
@@ -340,29 +399,29 @@ class ChecklistGenerator:
                     "meta": {},
                 }
                 raw_items.append(ri)
-        
+
         # Add semantic validation tasks
         semantic_items = semantic_validations(spec)
         raw_items.extend(semantic_items)
-        
+
         # Add dependency tasks
         dep_edges = extract_dependencies(spec)
         dep_items = dependency_tasks(dep_edges)
         raw_items.extend(dep_items)
-        
+
         # Add cross-section checks
         cross_items = cross_section_checks(spec)
         raw_items.extend(cross_items)
-        
+
         # Add flow tasks
         flows = compute_flow(spec)
         flow_items = flow_tasks(flows)
         raw_items.extend(flow_items)
-        
+
         # Add ordering constraints
         order_items = ordering_constraints(raw_items)
         raw_items.extend(order_items)
-        
+
         # Enrich with classification and severity
         enriched = []
         for it in raw_items:
@@ -376,7 +435,7 @@ class ChecklistGenerator:
             logger.debug(f"ChecklistGenerator.build: enriched count={len(enriched)}")
         except Exception:
             pass
-        
+
         # Dedupe, collapse, and canonically sort
         merged = enriched
         merged = dedupe_items(merged)
@@ -394,11 +453,11 @@ class ChecklistGenerator:
             logger.debug(f"ChecklistGenerator.build: after canonical_sort final_items count={len(final_items)}")
         except Exception:
             pass
-        
+
         # Assign order rank
         for it in final_items:
             it["order_rank"] = assign_order_rank(it)
-        
+
         # Annotate items with guidance before synthesizing a final stable id
         try:
             from shieldcraft.services.guidance.checklist import annotate_items, enrich_with_confidence_and_evidence
@@ -426,18 +485,18 @@ class ChecklistGenerator:
         namespace = spec.get("metadata", {}).get("id_namespace", "default")
         for it in final_items:
             it["id"] = synthesize_id(it, namespace)
-        
+
         # Invariant validation pass
         # Extract invariants from AST if available, otherwise from spec
         spec_invariants = extract_invariants(ast if ast else spec)
-        
+
         # Also extract spec-level invariants
         from shieldcraft.services.spec.invariants import extract_spec_invariants
         spec_level_invariants = extract_spec_invariants(spec)
-        
+
         # Merge AST and spec invariants
         all_invariants = spec_invariants + spec_level_invariants
-        
+
         # Attach spec invariants to items
         for item in final_items:
             item["invariants_from_spec"] = []
@@ -447,10 +506,10 @@ class ChecklistGenerator:
                 inv_ptr = inv.get("spec_ptr", "")
                 if item_ptr.startswith(inv_ptr) or inv_ptr.startswith(item_ptr):
                     item["invariants_from_spec"].append(inv)
-        
+
         # Evaluate invariants using evaluate_invariant
         from .invariants import evaluate_invariant
-        
+
         invariant_violations = []
         for invariant in all_invariants:
             # Normalize invariant fields (support mixed shapes from different extractors)
@@ -481,11 +540,17 @@ class ChecklistGenerator:
             pending_diag = None
             explainability = None
             if not (expr.startswith("exists(") or expr.startswith("count(") or expr.startswith("unique(")):
-                explainability = {"source": "default_true", "justification": "unknown_expr_safe_default", "inference_type": "safe_default"}
+                explainability = {
+                    "source": "default_true",
+                    "justification": "unknown_expr_safe_default",
+                    "inference_type": "safe_default"}
                 pending_diag = {
                     "ptr": inv_ptr or "/",
                     "text": f"INVARIANT_SAFE_DEFAULT: {expr}",
-                    "meta": {"invariant_expr": expr, "explainability": explainability, "inference_type": "safe_default"},
+                    "meta": {
+                        "invariant_expr": expr,
+                        "explainability": explainability,
+                        "inference_type": "safe_default"},
                     "severity": "medium",
                     "classification": "compiler",
                 }
@@ -503,7 +568,10 @@ class ChecklistGenerator:
                     if explainability:
                         inv_record["explainability"] = explainability
                     else:
-                        inv_record["explainability"] = {"source": "evaluated_expr", "justification": "expr_evaluated", "inference_type": "structural"}
+                        inv_record["explainability"] = {
+                            "source": "evaluated_expr",
+                            "justification": "expr_evaluated",
+                            "inference_type": "structural"}
                     item["meta"]["invariant_results"].append(inv_record)
 
             # If we prepared a diagnostic, append it once and record an event
@@ -516,16 +584,23 @@ class ChecklistGenerator:
                 try:
                     pending_diag["ptr"] = f"/_diagnostics/invariant/{pending_diag['id']}"
                 except Exception:
-                    pending_diag["ptr"] = f"/_diagnostics/invariant/unknown"
+                    pending_diag["ptr"] = "/_diagnostics/invariant/unknown"
                 final_items.append(pending_diag)
                 try:
-                    logger.debug(f"ChecklistGenerator.build: appended invariant diag item id={pending_diag.get('id')} expr={expr}")
+                    logger.debug(
+                        f"ChecklistGenerator.build: appended invariant diag item id={pending_diag.get('id')} expr={expr}")
                 except Exception:
                     pass
                 try:
                     if context and getattr(context, 'record_event', None):
                         try:
-                            context.record_event(f"G_INVARIANT_SAFE_DEFAULT", "compilation", "DIAGNOSTIC", message=f"Invariant defaulted: {expr}", evidence={"pointer": inv_ptr})
+                            context.record_event(
+                                "G_INVARIANT_SAFE_DEFAULT",
+                                "compilation",
+                                "DIAGNOSTIC",
+                                message=f"Invariant defaulted: {expr}",
+                                evidence={
+                                    "pointer": inv_ptr})
                         except Exception:
                             pass
                 except Exception:
@@ -543,7 +618,7 @@ class ChecklistGenerator:
                     "expr": expr,
                     "severity": invariant.get("severity", "medium")
                 })
-        
+
         # Legacy violation checking for backward compatibility
         for invariant in all_invariants:
             # Check each invariant against checklist items
@@ -567,13 +642,13 @@ class ChecklistGenerator:
                             "invariant_type": invariant["type"],
                             "constraint": invariant["constraint"]
                         })
-        
+
         # Cycle detection pass - before derived tasks
         from .graph import build_graph, get_cycle_members
         graph_result = build_graph(final_items)
         cycles = graph_result["cycles"]
         cycle_members = get_cycle_members(cycles)
-        
+
         # Mark items involved in cycles
         for item in final_items:
             item_id = item.get("id")
@@ -581,7 +656,7 @@ class ChecklistGenerator:
                 if "meta" not in item:
                     item["meta"] = {}
                 item["meta"]["cycle"] = True
-        
+
         # Derived tasks pass - after invariants and cycles
         all_derived = []
         for item in final_items:
@@ -594,7 +669,7 @@ class ChecklistGenerator:
                 if "order_rank" not in derived:
                     derived["order_rank"] = assign_order_rank(derived)
                 all_derived.append(derived)
-        
+
         # Create resolve-cycle tasks if cycles detected
         if cycles:
             for cycle in cycles:
@@ -610,14 +685,14 @@ class ChecklistGenerator:
                     }
                 }
                 all_derived.append(cycle_task)
-        
+
         # Add derived tasks to main list
         try:
             logger.debug(f"ChecklistGenerator.build: derived tasks count={len(all_derived)}")
         except Exception:
             pass
         final_items.extend(all_derived)
-        
+
         # Ensure interpreted items persist: append any interpreted_items not present
         try:
             if interpreted_items:
@@ -652,10 +727,10 @@ class ChecklistGenerator:
         decorated = []
         for it in final_items:
             decorated.append(attach_metadata(it, product_id))
-        
+
         # Sanity check
         decorated = sanity_check(decorated)
-        
+
         # Cross-item validation
         decorated, validation_warnings = validate_cross_item_constraints(decorated)
 
@@ -670,10 +745,10 @@ class ChecklistGenerator:
                 pass
         except Exception:
             pass
-        
+
         # Group items
         grouped = group_items(decorated)
-        
+
         # Build rollups
         try:
             logger.debug("ChecklistGenerator.build: building rollups")
@@ -681,13 +756,13 @@ class ChecklistGenerator:
             pass
         rollups = build_rollups(grouped)
         try:
-            logger.debug(f"ChecklistGenerator.build: rollups built")
+            logger.debug("ChecklistGenerator.build: rollups built")
         except Exception:
             pass
-        
+
         # Write warnings
         write_warnings(product_id, validation_warnings)
-        
+
         # Run preflight checks
         try:
             logger.debug("ChecklistGenerator.build: running preflight")
@@ -710,7 +785,13 @@ class ChecklistGenerator:
                 try:
                     if context:
                         try:
-                            context.record_event("G11_RUN_TEST_GATE", "generation", "BLOCKER", message="tests missing or invalid", evidence={"error": str(e)})
+                            context.record_event(
+                                "G11_RUN_TEST_GATE",
+                                "generation",
+                                "BLOCKER",
+                                message="tests missing or invalid",
+                                evidence={
+                                    "error": str(e)})
                         except Exception:
                             pass
                 except Exception:
@@ -744,16 +825,25 @@ class ChecklistGenerator:
                     # Try to match by id or ptr first; otherwise fall back to matching by the original rule match
                     matched = False
                     for item in decorated:
-                        if (iid is not None and item.get("id") == iid) or (iptr is not None and item.get("ptr") == iptr):
+                        if (iid is not None and item.get("id") == iid) or (
+                                iptr is not None and item.get("ptr") == iptr):
                             matched = True
                             # If persona evaluator flagged this constraint as disallowed, surface it
                             if c.get("disallowed"):
-                                item.setdefault("meta", {}).setdefault("persona_constraints_disallowed", []).append({"persona": c.get("persona"), "attempt": setter})
+                                item.setdefault("meta", {}).setdefault("persona_constraints_disallowed",
+                                                                       []).append({"persona": c.get("persona"), "attempt": setter})
                                 try:
                                     if context:
                                         try:
                                             from shieldcraft.util.json_canonicalizer import canonicalize
-                                            context.record_event("G15_PERSONA_CONSTRAINT_DISALLOWED", "generation", "DIAGNOSTIC", message=f"persona attempted disallowed mutation", evidence={"persona": c.get("persona"), "attempt": canonicalize(setter)})
+                                            context.record_event(
+                                                "G15_PERSONA_CONSTRAINT_DISALLOWED",
+                                                "generation",
+                                                "DIAGNOSTIC",
+                                                message="persona attempted disallowed mutation",
+                                                evidence={
+                                                    "persona": c.get("persona"),
+                                                    "attempt": canonicalize(setter)})
                                         except Exception:
                                             pass
                                 except Exception:
@@ -764,12 +854,20 @@ class ChecklistGenerator:
                         for item in decorated:
                             if all(item.get(k) == v for k, v in c.get("match", {}).items()):
                                 if c.get("disallowed"):
-                                    item.setdefault("meta", {}).setdefault("persona_constraints_disallowed", []).append({"persona": c.get("persona"), "attempt": setter})
+                                    item.setdefault("meta", {}).setdefault("persona_constraints_disallowed", []).append(
+                                        {"persona": c.get("persona"), "attempt": setter})
                                     try:
                                         if context:
                                             try:
                                                 from shieldcraft.util.json_canonicalizer import canonicalize
-                                                context.record_event("G15_PERSONA_CONSTRAINT_DISALLOWED", "generation", "DIAGNOSTIC", message=f"persona attempted disallowed mutation", evidence={"persona": c.get("persona"), "attempt": canonicalize(setter)})
+                                                context.record_event(
+                                                    "G15_PERSONA_CONSTRAINT_DISALLOWED",
+                                                    "generation",
+                                                    "DIAGNOSTIC",
+                                                    message="persona attempted disallowed mutation",
+                                                    evidence={
+                                                        "persona": c.get("persona"),
+                                                        "attempt": canonicalize(setter)})
                                             except Exception:
                                                 pass
                                     except Exception:
@@ -777,46 +875,63 @@ class ChecklistGenerator:
                                 continue
                     # If matched above we already processed; otherwise apply permitted setters normally
                     for item in decorated:
-                        if (iid is not None and item.get("id") == iid) or (iptr is not None and item.get("ptr") == iptr) or (c.get("match") and all(item.get(k) == v for k, v in c.get("match", {}).items())):
+                        if (iid is not None and item.get("id") == iid) or (iptr is not None and item.get("ptr") == iptr) or (
+                                c.get("match") and all(item.get(k) == v for k, v in c.get("match", {}).items())):
                             if c.get("disallowed"):
                                 # already handled
                                 continue
                             for sk, sv in setter.items():
                                 # Forbid mutating identifiers and semantic fields that affect checklist outcomes
-                                forbidden = set(["id", "ptr", "generated", "artifact", "severity", "refusal", "outcome"])
+                                forbidden = set(["id", "ptr", "generated", "artifact",
+                                                "severity", "refusal", "outcome"])
                                 if sk in forbidden:
-                                    item.setdefault("meta", {}).setdefault("persona_constraints_disallowed", []).append({"persona": c.get("persona"), "attempt": {sk: sv}})
+                                    item.setdefault("meta", {}).setdefault("persona_constraints_disallowed", []).append(
+                                        {"persona": c.get("persona"), "attempt": {sk: sv}})
                                     # Record a DIAGNOSTIC to make the disallowed attempt visible
                                     try:
                                         from shieldcraft.util.json_canonicalizer import canonicalize
                                         if context:
                                             try:
-                                                context.record_event("G15_PERSONA_CONSTRAINT_DISALLOWED", "generation", "DIAGNOSTIC", message=f"persona attempted disallowed mutation: {sk}", evidence={"persona": c.get("persona"), "attempt": canonicalize({sk: sv})})
+                                                context.record_event("G15_PERSONA_CONSTRAINT_DISALLOWED",
+                                                                     "generation",
+                                                                     "DIAGNOSTIC",
+                                                                     message=f"persona attempted disallowed mutation: {sk}",
+                                                                     evidence={"persona": c.get("persona"),
+                                                                               "attempt": canonicalize({sk: sv})})
                                             except Exception:
                                                 pass
                                     except Exception:
                                         pass
                                 elif sk == "meta":
-                                    item.setdefault("meta", {}).setdefault("persona_constraints_applied", []).append({"persona": c.get("persona"), "set": sv})
+                                    item.setdefault("meta", {}).setdefault("persona_constraints_applied",
+                                                                           []).append({"persona": c.get("persona"), "set": sv})
                                 else:
                                     item[sk] = sv
                             for sk, sv in setter.items():
                                 # Forbid mutating identifiers and semantic fields that affect checklist outcomes
-                                forbidden = set(["id", "ptr", "generated", "artifact", "severity", "refusal", "outcome"])
+                                forbidden = set(["id", "ptr", "generated", "artifact",
+                                                "severity", "refusal", "outcome"])
                                 if sk in forbidden:
-                                    item.setdefault("meta", {}).setdefault("persona_constraints_disallowed", []).append({"persona": c.get("persona"), "attempt": {sk: sv}})
+                                    item.setdefault("meta", {}).setdefault("persona_constraints_disallowed", []).append(
+                                        {"persona": c.get("persona"), "attempt": {sk: sv}})
                                     # Record a DIAGNOSTIC to make the disallowed attempt visible
                                     try:
                                         from shieldcraft.util.json_canonicalizer import canonicalize
                                         if context:
                                             try:
-                                                context.record_event("G15_PERSONA_CONSTRAINT_DISALLOWED", "generation", "DIAGNOSTIC", message=f"persona attempted disallowed mutation: {sk}", evidence={"persona": c.get("persona"), "attempt": canonicalize({sk: sv})})
+                                                context.record_event("G15_PERSONA_CONSTRAINT_DISALLOWED",
+                                                                     "generation",
+                                                                     "DIAGNOSTIC",
+                                                                     message=f"persona attempted disallowed mutation: {sk}",
+                                                                     evidence={"persona": c.get("persona"),
+                                                                               "attempt": canonicalize({sk: sv})})
                                             except Exception:
                                                 pass
                                     except Exception:
                                         pass
                                 elif sk == "meta":
-                                    item.setdefault("meta", {}).setdefault("persona_constraints_applied", []).append({"persona": c.get("persona"), "set": sv})
+                                    item.setdefault("meta", {}).setdefault("persona_constraints_applied",
+                                                                           []).append({"persona": c.get("persona"), "set": sv})
                                 else:
                                     item[sk] = sv
                 # Enforce vetoes if any persona emitted a veto (advisory-only under Phase 15)
@@ -826,7 +941,14 @@ class ChecklistGenerator:
                     try:
                         if context:
                             try:
-                                context.record_event("G7_PERSONA_VETO", "generation", "DIAGNOSTIC", message="persona veto advisory (non-authoritative)", evidence={"persona_id": sel.get('persona_id'), "code": sel.get('code')})
+                                context.record_event(
+                                    "G7_PERSONA_VETO",
+                                    "generation",
+                                    "DIAGNOSTIC",
+                                    message="persona veto advisory (non-authoritative)",
+                                    evidence={
+                                        "persona_id": sel.get('persona_id'),
+                                        "code": sel.get('code')})
                             except Exception:
                                 pass
                     except Exception:
@@ -835,7 +957,13 @@ class ChecklistGenerator:
             try:
                 if context:
                     try:
-                        context.record_event("G12_PERSONA_VETO_ENFORCEMENT", "generation", "REFUSAL", message="persona veto at generator", evidence={"error": str(e)})
+                        context.record_event(
+                            "G12_PERSONA_VETO_ENFORCEMENT",
+                            "generation",
+                            "REFUSAL",
+                            message="persona veto at generator",
+                            evidence={
+                                "error": str(e)})
                     except Exception:
                         pass
             except Exception:
@@ -873,7 +1001,8 @@ class ChecklistGenerator:
                 run_seed = get_seed(engine, "run")
                 if run_seed:
                     for it in decorated:
-                        sm = __import__("hashlib").sha256((run_seed + ":" + it.get("id", "")).encode("utf-8")).hexdigest()[:8]
+                        sm = __import__("hashlib").sha256(
+                            (run_seed + ":" + it.get("id", "")).encode("utf-8")).hexdigest()[:8]
                         it.setdefault("meta", {})["determinism_marker"] = sm
         except Exception:
             pass
@@ -917,7 +1046,7 @@ class ChecklistGenerator:
         items_hash = hashlib.sha256(json.dumps(decorated, sort_keys=True).encode("utf-8")).hexdigest()
         spec_hash = hashlib.sha256(json.dumps(spec, sort_keys=True).encode("utf-8")).hexdigest()
         lineage = build_artifact_lineage(product_id, spec_hash, items_hash)
-        
+
         # Build evidence
         evidence = build_evidence_bundle(product_id, decorated, rollups)
         # Ensure every item has confidence, evidence, inferred flags and intent category
@@ -926,7 +1055,7 @@ class ChecklistGenerator:
             decorated = ensure_item_fields(decorated)
         except Exception:
             pass
-        
+
         # Check invariants
         inv_ok, inv_violations = check_invariants({
             "items": decorated,
@@ -934,38 +1063,38 @@ class ChecklistGenerator:
             "evidence": evidence,
             "lineage": lineage
         })
-        
+
         # Compute diff report
         diff_report = diff([], decorated)
-        
+
         # Compute impact score
         diff_score = impact_summary(diff_report)
-        
+
         # Attach target paths to diff elements
-        for group in ["added","removed","changed"]:
+        for group in ["added", "removed", "changed"]:
             for elem in diff_report[group]:
                 elem["target_path"] = resolve(elem["ptr"], product_id)
-        
+
         # Build rule graph
         rc = spec.get("rules_contract", {})
         rules = rc.get("rules", []) if rc else []
         rule_graph = build_graph(rules)
         cycles = detect_cycles(rule_graph)
-        
+
         # Validate dependencies
         dep_ok, dep_viol = validate_dependencies(spec)
-        
+
         # Build execution plan
         exec_plan = build_execution_plan(spec)
-        
+
         # Compute resolution chains for derived tasks
         from .resolution_chain import build_chain
-        resolution_chains = build_chain(decorated)
-        
+        build_chain(decorated)
+
         # Build task ancestry
         from .ancestry import build_ancestry
         ancestry = build_ancestry(decorated)
-        
+
         # Attach ancestry to items metadata
         for item in decorated:
             item_id = item.get("id")
@@ -973,14 +1102,14 @@ class ChecklistGenerator:
                 if "meta" not in item:
                     item["meta"] = {}
                 item["meta"]["ancestry"] = ancestry[item_id]
-        
+
         # Register all IDs in global registry
-        from .id_registry import create_registry
-        id_registry = create_registry(decorated)
-        
+        from ._id_registry import create_registry
+        create_registry(decorated)
+
         # Extract implicit dependencies
-        from .implicit_deps import extract_implicit_deps
-        implicit_deps = extract_implicit_deps(spec)
+        from ._implicit_deps import extract_implicit_deps
+        extract_implicit_deps(spec)
 
         # Check contract enforcement
         if not preflight["contract_ok"]:
@@ -1012,15 +1141,27 @@ class ChecklistGenerator:
                         except Exception:
                             ast_summary = []
                         ast_fp = de.hash(de.canonicalize(ast_summary))
-                        result["_determinism"] = {"seeds": snapshot(engine), "spec": spec, "ast_summary": ast_fp, "checklist": result}
+                        result["_determinism"] = {
+                            "seeds": snapshot(engine),
+                            "spec": spec,
+                            "ast_summary": ast_fp,
+                            "checklist": result}
                     except Exception:
-                        result["_determinism"] = {"seeds": snapshot(engine), "spec": spec, "ast_summary": None, "checklist": result}
+                        result["_determinism"] = {
+                            "seeds": snapshot(engine),
+                            "spec": spec,
+                            "ast_summary": None,
+                            "checklist": result}
             except Exception:
                 pass
             try:
                 if engine is not None and getattr(engine, 'checklist_context', None):
                     try:
-                        engine.checklist_context.record_event("G13_GENERATION_CONTRACT_FAILED", "generation", "BLOCKER", message="generation contract failed")
+                        engine.checklist_context.record_event(
+                            "G13_GENERATION_CONTRACT_FAILED",
+                            "generation",
+                            "BLOCKER",
+                            message="generation contract failed")
                     except Exception:
                         pass
             except Exception:
@@ -1045,11 +1186,11 @@ class ChecklistGenerator:
             "dependency_violations": dep_viol,
             "execution_plan": exec_plan
         }
-        
+
         # Write manifest
         if not dry_run:
             write_manifest(product_id, result)
-        
+
         # Compute stability
         signature = compute_run_signature(result)
         result["stable"] = compare_to_previous(product_id, signature)
@@ -1067,24 +1208,28 @@ class ChecklistGenerator:
                     except Exception:
                         ast_summary = []
                     ast_fp = de.hash(de.canonicalize(ast_summary))
-                    result["_determinism"] = {"seeds": snapshot(engine), "spec": spec, "ast_summary": ast_fp, "checklist": result}
+                    result["_determinism"] = {
+                        "seeds": snapshot(engine),
+                        "spec": spec,
+                        "ast_summary": ast_fp,
+                        "checklist": result}
                 except Exception:
                     pass
         except Exception:
             pass
-        
+
         return result
 
     def _validate_invariant(self, item, expression):
         """
         Invariant validation - intentionally permissive.
-        
+
         INTENTIONAL: Always returns True (no violation).
         Real invariant parsing and evaluation would require:
         1. Expression parser (e.g., "sections[*].tasks > 0")
         2. Safe evaluation engine
         3. Item context binding
-        
+
         Current behavior: All invariants pass validation.
         """
         return True
@@ -1112,7 +1257,7 @@ class ChecklistGenerator:
         if isinstance(v, bool):
             return f"Implement boolean at {ptr}: {v}"
         return f"Implement value at {ptr}"
-    
+
     def _check_invariant_satisfied(self, item, invariant):
         """Check if item satisfies a 'must' invariant."""
         constraint = invariant["constraint"]
@@ -1123,7 +1268,7 @@ class ChecklistGenerator:
             item_ptr = item.get("ptr", "")
             return constraint.lower() in item_text.lower() or constraint.lower() in item_ptr.lower()
         return True
-    
+
     def _check_invariant_forbidden(self, item, invariant):
         """Check if item violates a 'forbid' invariant."""
         constraint = invariant["constraint"]
@@ -1135,12 +1280,10 @@ class ChecklistGenerator:
             return constraint.lower() in item_text.lower() or constraint.lower() in item_ptr.lower()
         return False
 
-        return f"Implement scalar at {ptr}"
-    
     def _extract_from_ast(self, ast):
         """Extract checklist items using AST traversal."""
         items = []
-        
+
         # Walk all nodes in AST
         for node in ast.walk():
             if node.type == "dict_entry":
@@ -1154,5 +1297,5 @@ class ChecklistGenerator:
                 # Use the generator's render_task to produce deterministic text
                 item["text"] = self.render_task(item)
                 items.append(item)
-        
+
         return items

@@ -1,8 +1,7 @@
 import json
 import os
 import shutil
-from shieldcraft.requirements.extractor import extract_requirements as extract_dicts
-from shieldcraft.requirements.coverage import compute_coverage, write_coverage_report
+from shieldcraft.requirements.coverage import compute_coverage
 
 
 def test_se_spec_zero_missing(tmp_path):

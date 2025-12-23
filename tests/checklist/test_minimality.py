@@ -1,5 +1,4 @@
 import json
-import os
 from shieldcraft.checklist.equivalence import detect_and_collapse
 
 
@@ -64,7 +63,8 @@ def test_engine_raises_on_minimality_violation(monkeypatch):
     def fake_detect(items, reqs, outdir='.selfhost_outputs'):
         # keep items unchanged but report a violation
         pruned = items
-        report = {'removed_count': 1, 'equivalence_groups': [{'primary': 'a', 'collapsed_from': ['b']}], 'proof_of_minimality': [{'primary': 'a', 'necessary': False, 'delta_complete_pct': 0.0}]}
+        report = {'removed_count': 1, 'equivalence_groups': [{'primary': 'a', 'collapsed_from': [
+            'b']}], 'proof_of_minimality': [{'primary': 'a', 'necessary': False, 'delta_complete_pct': 0.0}]}
         return pruned, report
 
     monkeypatch.setattr('shieldcraft.checklist.equivalence.detect_and_collapse', fake_detect)
@@ -78,6 +78,7 @@ def test_engine_raises_on_minimality_violation(monkeypatch):
     from shieldcraft.services.spec.ingestion import ingest_spec
     spec = ingest_spec('spec/se_dsl_v1.spec.json')
     # If minimality processing surfaces a fatal condition, ensure it propagates
+
     def raising_detect(items, reqs, outdir='.selfhost_outputs'):
         raise RuntimeError('minimality_invariant_failed')
 

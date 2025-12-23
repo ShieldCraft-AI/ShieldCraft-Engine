@@ -29,8 +29,8 @@ def test_demo_runner_determinism(tmp_path, monkeypatch):
     for d in out1:
         p = os.path.join('demo_outputs', d, 'governance_bundle.json')
         if os.path.exists(p):
-            b1[d] = open(p,'rb').read()
-    r1 = open('demo_outputs/demo_report.md','rb').read()
+            b1[d] = open(p, 'rb').read()
+    r1 = open('demo_outputs/demo_report.md', 'rb').read()
 
     # Clear products to remove persisted previous_state
     if os.path.exists('products'):
@@ -41,8 +41,8 @@ def test_demo_runner_determinism(tmp_path, monkeypatch):
     for d in out2:
         p = os.path.join('demo_outputs', d, 'governance_bundle.json')
         if os.path.exists(p):
-            b2[d] = open(p,'rb').read()
-    r2 = open('demo_outputs/demo_report.md','rb').read()
+            b2[d] = open(p, 'rb').read()
+    r2 = open('demo_outputs/demo_report.md', 'rb').read()
 
     assert out1 == out2
     assert r1 == r2

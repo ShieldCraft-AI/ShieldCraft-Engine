@@ -1,5 +1,5 @@
 """Test Attachment Contract (TAC) v1 enforcement utilities."""
-from typing import Dict, List, Any
+from typing import List, Any
 
 
 class ProductInvariantFailure(RuntimeError):

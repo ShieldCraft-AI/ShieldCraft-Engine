@@ -15,7 +15,7 @@ from typing import Dict, Any, List
 
 
 def _read_json(path: str) -> Dict[str, Any]:
-    with open(path) as f:
+    with open(path, encoding='utf-8') as f:
         return json.load(f)
 
 
@@ -79,7 +79,7 @@ def emit_governance_bundle(output_dir: str = ".selfhost_outputs") -> None:
 
     # Write bundle file deterministically
     bundle_path = os.path.join(output_dir, "governance_bundle.json")
-    with open(bundle_path, "w") as f:
+    with open(bundle_path, "w", encoding='utf-8') as f:
         json.dump(bundle, f, indent=2, sort_keys=True)
 
     # Audit index: list included files and their hashes, with a canonical creation timestamp
@@ -94,5 +94,5 @@ def emit_governance_bundle(output_dir: str = ".selfhost_outputs") -> None:
     audit_index = {"bundle_version": "v1", "creation_timestamp": creation_ts, "files": entries}
 
     audit_path = os.path.join(output_dir, "audit_index.json")
-    with open(audit_path, "w") as f:
+    with open(audit_path, "w", encoding='utf-8') as f:
         json.dump(audit_index, f, indent=2, sort_keys=True)

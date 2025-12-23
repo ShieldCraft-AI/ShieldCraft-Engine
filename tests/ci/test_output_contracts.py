@@ -15,9 +15,9 @@ def _prepare_env():
     os.makedirs('artifacts', exist_ok=True)
     open('artifacts/repo_sync_state.json', 'w').write('{}')
     import hashlib
-    h = hashlib.sha256(open('artifacts/repo_sync_state.json','rb').read()).hexdigest()
+    h = hashlib.sha256(open('artifacts/repo_sync_state.json', 'rb').read()).hexdigest()
     with open('repo_state_sync.json', 'w') as f:
-        json.dump({"files":[{"path":"artifacts/repo_sync_state.json","sha256":h}]}, f)
+        json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)
     import importlib
     importlib.import_module('shieldcraft.persona')
     import shieldcraft.persona as pmod
@@ -59,7 +59,7 @@ def test_valid_spec_emitted_artifacts_match_schemas():
         _validate_against_schema(fbj, 'spec_feedback')
 
     # Ensure summary contains output_contract_version
-    s = json.loads(open('.selfhost_outputs/summary.json').read())
+    s = json.loads(open('.selfhost_outputs/summary.json', encoding='utf-8').read())
     assert s.get('output_contract_version') == OUTPUT_CONTRACT_VERSION
 
 
@@ -90,7 +90,7 @@ def test_invalid_spec_emits_feedback_and_suppressed_and_match_schemas():
         _validate_against_schema(fb, 'spec_feedback')
 
         # Summary should include counts consistent with artifacts
-        s = json.loads(open('.selfhost_outputs/summary.json').read())
+        s = json.loads(open('.selfhost_outputs/summary.json', encoding='utf-8').read())
         assert s.get('output_contract_version') == OUTPUT_CONTRACT_VERSION
         assert s.get('suppressed_signal_count') == len(sup.get('suppressed', []))
     finally:

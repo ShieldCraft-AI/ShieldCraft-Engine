@@ -1,9 +1,7 @@
-import json
 import pytest
 from shieldcraft.services.validator import (
     validate_instruction_block,
     ValidationError,
-    VALIDATION_ERROR_CODES,
 )
 
 
@@ -27,7 +25,8 @@ def test_negative_path_enumeration():
     _assert_code_for_spec(spec, "missing_invariants")
 
     # invariants_not_sorted (dicts)
-    spec = {"metadata": {"product_id": "x"}, "invariants": [{"id": "b"}, {"id": "a"}], "instructions": [{"id":"i1","type":"t"}]}
+    spec = {"metadata": {"product_id": "x"}, "invariants": [
+        {"id": "b"}, {"id": "a"}], "instructions": [{"id": "i1", "type": "t"}]}
     _assert_code_for_spec(spec, "invariants_not_sorted")
 
     # missing_instructions
@@ -43,9 +42,11 @@ def test_negative_path_enumeration():
     _assert_code_for_spec(spec, "instruction_missing_fields")
 
     # duplicate_instruction_id
-    spec = {"metadata": {"product_id": "x"}, "invariants": ["inv.1"], "instructions": [{"id":"i","type":"t"},{"id":"i","type":"t"}]}
+    spec = {"metadata": {"product_id": "x"}, "invariants": [
+        "inv.1"], "instructions": [{"id": "i", "type": "t"}, {"id": "i", "type": "t"}]}
     _assert_code_for_spec(spec, "duplicate_instruction_id")
 
     # ambient_state
-    spec = {"metadata": {"product_id": "x"}, "invariants": ["inv.1"], "instructions": [{"id":"i","type":"t","timestamp":"now"}]}
+    spec = {"metadata": {"product_id": "x"}, "invariants": [
+        "inv.1"], "instructions": [{"id": "i", "type": "t", "timestamp": "now"}]}
     _assert_code_for_spec(spec, "ambient_state")

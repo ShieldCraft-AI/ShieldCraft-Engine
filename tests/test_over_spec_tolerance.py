@@ -49,14 +49,18 @@ def test_conflicting_explicit_instructions_surface_diagnostic():
     from shieldcraft.engine import Engine
 
     # Conflicting invariants: one requires agents exist, another requires none
-    spec = {"metadata": {"product_id": "p"}, "sections": [{"name": "a", "must": "count(/agents) > 0"}, {"name": "b", "must": "count(/agents) == 0"}], "agents": []}
+    spec = {"metadata": {"product_id": "p"}, "sections": [
+        {"name": "a", "must": "count(/agents) > 0"}, {"name": "b", "must": "count(/agents) == 0"}], "agents": []}
 
     engine = Engine(schema_path='')
     chk = ChecklistGenerator().build(spec, dry_run=True, engine=engine)
     items = chk.get('items', [])
 
     # Look for invariant diagnostics or DIAGNOSTIC/BLOCKER items referencing invariants
-    found = any('INVARIANT' in (it.get('text') or '') or (it.get('meta') or {}).get('invariant_results') for it in items)
+    found = any(
+        'INVARIANT' in (
+            it.get('text') or '') or (
+            it.get('meta') or {}).get('invariant_results') for it in items)
     assert found, 'Conflicting invariants must be surfaced as diagnostics'
 
 

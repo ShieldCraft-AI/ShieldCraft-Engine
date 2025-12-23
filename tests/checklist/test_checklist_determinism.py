@@ -10,7 +10,8 @@ def test_checklist_determinism_for_same_spec():
     from shieldcraft.services.spec.ingestion import ingest_spec
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json") as t:
-        spec = {"metadata": {"product_id": "det-test", "version": "1.0", "spec_format": "canonical_json_v1"}, "model": {"version": "1.0"}, "sections": [{"id": "core", "description": "core"}]}
+        spec = {"metadata": {"product_id": "det-test", "version": "1.0", "spec_format": "canonical_json_v1"},
+                "model": {"version": "1.0"}, "sections": [{"id": "core", "description": "core"}]}
         json.dump(spec, t)
         sp = t.name
 

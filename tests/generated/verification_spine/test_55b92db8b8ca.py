@@ -3,11 +3,12 @@ from pathlib import Path
 
 SPEC = Path('spec/se_dsl_v1.spec.json')
 
+
 def resolve_ptr(spec_obj, ptr):
     parts = ptr.lstrip('/').split('/')
     cur = spec_obj
     for p in parts:
-        p = p.replace('~1','/').replace('~0','~')
+        p = p.replace('~1', '/').replace('~0', '~')
         if isinstance(cur, dict) and p in cur:
             cur = cur[p]
         else:

@@ -19,4 +19,4 @@ def validate_dependencies(spec):
             if rc and rc.get("category") not in cats:
                 violations.append(f"rule {rid} has unknown category {rc.get('category')}")
 
-    return len(violations)==0, violations
+    return len(violations) == 0, violations

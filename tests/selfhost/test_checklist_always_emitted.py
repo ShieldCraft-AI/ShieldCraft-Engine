@@ -9,9 +9,9 @@ def _prepare_env():
     os.makedirs('artifacts', exist_ok=True)
     open('artifacts/repo_sync_state.json', 'w').write('{}')
     import hashlib
-    h = hashlib.sha256(open('artifacts/repo_sync_state.json','rb').read()).hexdigest()
+    h = hashlib.sha256(open('artifacts/repo_sync_state.json', 'rb').read()).hexdigest()
     with open('repo_state_sync.json', 'w') as f:
-        json.dump({"files":[{"path":"artifacts/repo_sync_state.json","sha256":h}]}, f)
+        json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)
     import importlib
     importlib.import_module('shieldcraft.persona')
     import shieldcraft.persona as pmod
@@ -20,7 +20,7 @@ def _prepare_env():
 
 def _random_text(n_words=100):
     words = ["".join(random.choices(string.ascii_lowercase, k=8)) for _ in range(n_words)]
-    return "\n\n".join([" ".join(words[i:i+10]) for i in range(0, len(words), 10)])
+    return "\n\n".join([" ".join(words[i:i + 10]) for i in range(0, len(words), 10)])
 
 
 def test_checklist_always_emitted_for_random_text(tmp_path):

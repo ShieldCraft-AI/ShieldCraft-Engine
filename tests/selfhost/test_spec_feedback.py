@@ -52,7 +52,11 @@ def test_spec_feedback_includes_remediation_hints_on_readiness_failure(monkeypat
             shutil.rmtree('.selfhost_outputs')
 
         # Force tests_attached gate to fail
-        monkeypatch.setattr('shieldcraft.verification.readiness_evaluator.enforce_tests_attached', lambda items: (_ for _ in ()).throw(RuntimeError('no tests')))
+        monkeypatch.setattr(
+            'shieldcraft.verification.readiness_evaluator.enforce_tests_attached',
+            lambda items: (
+                _ for _ in ()).throw(
+                RuntimeError('no tests')))
 
         os.environ['SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY'] = '1'
         run_self_host(tmp_path, 'src/shieldcraft/dsl/schema/se_dsl.schema.json')

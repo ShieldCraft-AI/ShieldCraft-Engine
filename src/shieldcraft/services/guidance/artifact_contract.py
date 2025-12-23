@@ -13,7 +13,12 @@ from __future__ import annotations
 from typing import Dict, Any, List, Optional, Set
 
 
-def _collect_referenced_artifacts(artifact_contract: Optional[Dict[str, Any]], checklist_items: Optional[List[Dict[str, Any]]], execution_preview: Optional[Dict[str, Any]]) -> List[str]:
+def _collect_referenced_artifacts(artifact_contract: Optional[Dict[str,
+                                                                   Any]],
+                                  checklist_items: Optional[List[Dict[str,
+                                                                      Any]]],
+                                  execution_preview: Optional[Dict[str,
+                                                                   Any]]) -> List[str]:
     refs: Set[str] = set()
     if artifact_contract and isinstance(artifact_contract, dict):
         ar = artifact_contract.get("artifacts", []) or []
@@ -32,7 +37,14 @@ def _collect_referenced_artifacts(artifact_contract: Optional[Dict[str, Any]], c
     return sorted(refs)
 
 
-def build_artifact_contract_summary(conversion_state: Optional[str], artifact_contract: Optional[Dict[str, Any]], checklist_items: Optional[List[Dict[str, Any]]], execution_preview: Optional[Dict[str, Any]]) -> Dict[str, List[str]]:
+def build_artifact_contract_summary(conversion_state: Optional[str],
+                                    artifact_contract: Optional[Dict[str,
+                                                                     Any]],
+                                    checklist_items: Optional[List[Dict[str,
+                                                                        Any]]],
+                                    execution_preview: Optional[Dict[str,
+                                                                     Any]]) -> Dict[str,
+                                                                                    List[str]]:
     cur = (conversion_state or "").upper()
     refs = _collect_referenced_artifacts(artifact_contract, checklist_items, execution_preview)
 

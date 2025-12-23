@@ -1,5 +1,4 @@
 import json
-import pathlib
 
 from shieldcraft.persona import PersonaContext
 

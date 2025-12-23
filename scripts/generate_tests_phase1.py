@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from collections import defaultdict, Counter
 
 INCLUDE_CATEGORIES = {"meta", "gov", "general"}
 MAX_TESTS = 40
@@ -31,6 +30,8 @@ for it in checklist:
 candidates = candidates[:MAX_TESTS]
 
 # Helper to access JSON Pointer
+
+
 def resolve_ptr(spec_obj, ptr):
     if not ptr or not ptr.startswith('/'):
         return None
@@ -44,6 +45,7 @@ def resolve_ptr(spec_obj, ptr):
         else:
             return None
     return cur
+
 
 # Load spec
 spec = json.loads(SPEC.read_text())
@@ -97,7 +99,7 @@ report = {
     'tests': generated_tests,
     'items_covered': items_covered,
     'categories_covered': sorted(list(categories_covered)),
-    'remaining_unlinked_items': [k for k,v in attached.items() if not v],
+    'remaining_unlinked_items': [k for k, v in attached.items() if not v],
 }
 OUT = OUT_REPORT_DIR / 'phase1_report.json'
 OUT.write_text(json.dumps(report, indent=2, sort_keys=True))

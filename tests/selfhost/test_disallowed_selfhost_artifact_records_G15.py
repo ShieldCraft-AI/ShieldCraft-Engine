@@ -7,4 +7,3 @@ def test_engine_contains_disallowed_selfhost_artifact_event():
     # Ensure the code records a G15 event before raising on disallowed artifacts
     assert 'G15_DISALLOWED_SELFHOST_ARTIFACT' in txt
     assert 'disallowed_selfhost_artifact' in txt
-

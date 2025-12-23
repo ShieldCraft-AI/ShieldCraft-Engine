@@ -8,7 +8,13 @@ def test_cli_self_host_success():
     from shieldcraft.main import run_self_host
 
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as tmp:
-        spec = {"metadata": {"product_id": "smoke", "spec_format": "canonical_json_v1", "self_host": True}, "model": {}, "sections": {}}
+        spec = {
+            "metadata": {
+                "product_id": "smoke",
+                "spec_format": "canonical_json_v1",
+                "self_host": True},
+            "model": {},
+            "sections": {}}
         json.dump(spec, tmp)
         path = tmp.name
 
@@ -19,9 +25,9 @@ def test_cli_self_host_success():
         os.makedirs('artifacts', exist_ok=True)
         open('artifacts/repo_sync_state.json', 'w').write('{}')
         import hashlib
-        h = hashlib.sha256(open('artifacts/repo_sync_state.json','rb').read()).hexdigest()
-        with open('repo_state_sync.json','w') as f:
-            json.dump({"files":[{"path":"artifacts/repo_sync_state.json","sha256":h}]}, f)
+        h = hashlib.sha256(open('artifacts/repo_sync_state.json', 'rb').read()).hexdigest()
+        with open('repo_state_sync.json', 'w') as f:
+            json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)
         import importlib
         importlib.import_module('shieldcraft.persona')
         import shieldcraft.persona as pmod
@@ -30,7 +36,7 @@ def test_cli_self_host_success():
         assert os.path.exists('.selfhost_outputs/manifest.json')
         assert os.path.exists('.selfhost_outputs/summary.json')
         # Assert conversion_path and execution_preview behavior for non-READY states
-        s = json.loads(open('.selfhost_outputs/summary.json').read())
+        s = json.loads(open('.selfhost_outputs/summary.json', encoding='utf-8').read())
         assert 'conversion_path' in s
         if s.get('conversion_state') != 'READY':
             assert s['conversion_path']['blocking_requirements'], 'conversion_path must not be empty for non-READY states'
@@ -58,9 +64,9 @@ def test_cli_self_host_invalid_spec():
         os.makedirs('artifacts', exist_ok=True)
         open('artifacts/repo_sync_state.json', 'w').write('{}')
         import hashlib
-        h = hashlib.sha256(open('artifacts/repo_sync_state.json','rb').read()).hexdigest()
-        with open('repo_state_sync.json','w') as f:
-            json.dump({"files":[{"path":"artifacts/repo_sync_state.json","sha256":h}]}, f)
+        h = hashlib.sha256(open('artifacts/repo_sync_state.json', 'rb').read()).hexdigest()
+        with open('repo_state_sync.json', 'w') as f:
+            json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)
         import importlib
         importlib.import_module('shieldcraft.persona')
         import shieldcraft.persona as pmod
@@ -71,9 +77,10 @@ def test_cli_self_host_invalid_spec():
         # Partial manifest may be emitted to assist authors (conversion/diagnostic info)
         # Checklist draft is now emitted for author visibility even on validation failure
         # spec_feedback.json may also be emitted to provide remediation guidance
-        assert set([p for p in os.listdir('.selfhost_outputs') if not p.startswith('.')]) <= {'errors.json', 'summary.json', 'manifest.json', 'checklist_draft.json', 'spec_feedback.json', 'checklist.json'}
+        assert set([p for p in os.listdir('.selfhost_outputs') if not p.startswith('.')]) <= {
+            'errors.json', 'summary.json', 'manifest.json', 'checklist_draft.json', 'spec_feedback.json', 'checklist.json'}
         # Summary should contain conversion_path to help authors make progress
-        s = json.loads(open('.selfhost_outputs/summary.json').read())
+        s = json.loads(open('.selfhost_outputs/summary.json', encoding='utf-8').read())
         assert 'conversion_path' in s
         assert s['conversion_path']['blocking_requirements'], 'conversion_path must not be empty for non-READY states'
         # And summary should indicate that a checklist draft was emitted
@@ -88,7 +95,15 @@ def test_progress_summary_integration():
 
     # First run: good spec
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as tmp:
-        spec = {"metadata": {"product_id": "smoke_progress", "spec_format": "canonical_json_v1", "self_host": True}, "model": {"a": 1}, "sections": [{}]}
+        spec = {
+            "metadata": {
+                "product_id": "smoke_progress",
+                "spec_format": "canonical_json_v1",
+                "self_host": True},
+            "model": {
+                "a": 1},
+            "sections": [
+                {}]}
         json.dump(spec, tmp)
         path1 = tmp.name
 
@@ -99,20 +114,20 @@ def test_progress_summary_integration():
         os.makedirs('artifacts', exist_ok=True)
         open('artifacts/repo_sync_state.json', 'w').write('{}')
         import hashlib
-        h = hashlib.sha256(open('artifacts/repo_sync_state.json','rb').read()).hexdigest()
-        with open('repo_state_sync.json','w') as f:
-            json.dump({"files":[{"path":"artifacts/repo_sync_state.json","sha256":h}]}, f)
+        h = hashlib.sha256(open('artifacts/repo_sync_state.json', 'rb').read()).hexdigest()
+        with open('repo_state_sync.json', 'w') as f:
+            json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)
         import importlib
         importlib.import_module('shieldcraft.persona')
         import shieldcraft.persona as pmod
         setattr(pmod, '_is_worktree_clean', lambda: True)
         run_self_host(path1, 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
-        s1 = json.loads(open('.selfhost_outputs/summary.json').read())
+        s1 = json.loads(open('.selfhost_outputs/summary.json', encoding='utf-8').read())
         assert 'progress_summary' in s1
         assert s1['progress_summary']['delta'] in ('initial', 'advanced', 'unchanged', 'regressed')
         # Ensure last_state was persisted for this product
         assert os.path.exists('products/smoke_progress/last_state.json')
-        ls = json.loads(open('products/smoke_progress/last_state.json').read())
+        ls = json.loads(open('products/smoke_progress/last_state.json', encoding='utf-8').read())
         assert ls.get('conversion_state') is not None
     finally:
         os.unlink(path1)
@@ -125,7 +140,7 @@ def test_progress_summary_integration():
 
     try:
         run_self_host(path2, 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
-        s2 = json.loads(open('.selfhost_outputs/summary.json').read())
+        s2 = json.loads(open('.selfhost_outputs/summary.json', encoding='utf-8').read())
         assert 'progress_summary' in s2
         # When validation fails we have no authoritative fingerprint for the current run
         # so we must treat this as a first-observation for progress (no false regression)

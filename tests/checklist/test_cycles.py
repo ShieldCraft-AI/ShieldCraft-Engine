@@ -11,16 +11,16 @@ def test_cycle_detection_simple():
         {"id": "task-a", "depends_on": ["task-b"]},
         {"id": "task-b", "depends_on": ["task-a"]}
     ]
-    
+
     result = build_graph(items)
-    
+
     # Should detect one cycle
     assert len(result["cycles"]) == 1
-    
+
     # Cycle should contain both tasks
     cycle = result["cycles"][0]
     assert set(cycle[:-1]) == {"task-a", "task-b"}  # Exclude last element (duplicate)
-    
+
     # Check cycle members
     members = get_cycle_members(result["cycles"])
     assert members == {"task-a", "task-b"}
@@ -33,12 +33,12 @@ def test_cycle_detection_three_way():
         {"id": "task-2", "depends_on": ["task-3"]},
         {"id": "task-3", "depends_on": ["task-1"]}
     ]
-    
+
     result = build_graph(items)
-    
+
     # Should detect one cycle
     assert len(result["cycles"]) == 1
-    
+
     # Cycle should contain all three tasks
     cycle = result["cycles"][0]
     assert set(cycle[:-1]) == {"task-1", "task-2", "task-3"}
@@ -51,12 +51,12 @@ def test_no_cycle():
         {"id": "task-2", "depends_on": ["task-3"]},
         {"id": "task-3", "depends_on": []}
     ]
-    
+
     result = build_graph(items)
-    
+
     # Should detect no cycles
     assert len(result["cycles"]) == 0
-    
+
     # No cycle members
     members = get_cycle_members(result["cycles"])
     assert len(members) == 0
@@ -68,13 +68,13 @@ def test_cycle_deterministic_id():
         {"id": "task-alpha", "depends_on": ["task-beta"]},
         {"id": "task-beta", "depends_on": ["task-alpha"]}
     ]
-    
+
     # Run multiple times
     results = []
     for _ in range(3):
         result = build_graph(items)
         results.append(result)
-    
+
     # All results should be identical
     for i in range(1, len(results)):
         assert results[i]["cycles"] == results[0]["cycles"]
@@ -90,12 +90,12 @@ def test_multiple_cycles():
         {"id": "task-y", "depends_on": ["task-x"]},
         {"id": "task-z", "depends_on": []}  # Independent task
     ]
-    
+
     result = build_graph(items)
-    
+
     # Should detect two cycles
     assert len(result["cycles"]) == 2
-    
+
     # Check cycle members
     members = get_cycle_members(result["cycles"])
     assert "task-a" in members
@@ -109,14 +109,14 @@ def test_resolve_cycle_task_creation():
     """Test that resolve-cycle tasks are created with deterministic IDs."""
     # Simulate what generator does
     cycle = ["task-1", "task-2", "task-3"]
-    
+
     # Create cycle task ID (same logic as generator)
     task_id = f"resolve-cycle-{hash(tuple(sorted(cycle))) % 10000:04d}"
-    
+
     # Should be deterministic
     task_id_2 = f"resolve-cycle-{hash(tuple(sorted(cycle))) % 10000:04d}"
     assert task_id == task_id_2
-    
+
     # Different cycle should have different ID
     cycle_2 = ["task-a", "task-b", "task-c"]
     task_id_3 = f"resolve-cycle-{hash(tuple(sorted(cycle_2))) % 10000:04d}"

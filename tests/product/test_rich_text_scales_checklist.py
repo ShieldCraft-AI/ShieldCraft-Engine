@@ -7,9 +7,9 @@ def _prepare_env():
     os.makedirs('artifacts', exist_ok=True)
     open('artifacts/repo_sync_state.json', 'w').write('{}')
     import hashlib
-    h = hashlib.sha256(open('artifacts/repo_sync_state.json','rb').read()).hexdigest()
-    with open('repo_state_sync.json','w') as f:
-        json.dump({"files":[{"path":"artifacts/repo_sync_state.json","sha256":h}]}, f)
+    h = hashlib.sha256(open('artifacts/repo_sync_state.json', 'rb').read()).hexdigest()
+    with open('repo_state_sync.json', 'w') as f:
+        json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)
     import importlib
     importlib.import_module('shieldcraft.persona')
     import shieldcraft.persona as pmod
@@ -24,7 +24,7 @@ def test_rich_text_scales_checklist():
     run_self_host('spec/test_spec.yml', 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
     cj = '.selfhost_outputs/checklist.json'
     assert os.path.exists(cj), 'checklist.json missing'
-    cl = json.load(open(cj))
+    cl = json.load(open(cj, encoding='utf-8'))
     items = cl.get('items') or []
     assert len(items) >= 50
     # Ensure presence of domain-significant items

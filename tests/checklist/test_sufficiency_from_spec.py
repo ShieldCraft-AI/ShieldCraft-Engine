@@ -1,7 +1,6 @@
 import json
 import os
 import shutil
-import pathlib
 import hashlib
 import pytest
 
@@ -57,7 +56,15 @@ def test_end_to_end_sufficiency_positive(tmp_path):
             uncovered.append(r)
 
     # Coverage assertions: all high-priority must be covered
-    high_reqs = [r for r in reqs if any(k in r['text'].lower() for k in ['must', 'shall', 'mandatory', 'requires', 'enforced', 'every run must'])]
+    high_reqs = [
+        r for r in reqs if any(
+            k in r['text'].lower() for k in [
+                'must',
+                'shall',
+                'mandatory',
+                'requires',
+                'enforced',
+                'every run must'])]
     high_uncovered = [r for r in uncovered if r in high_reqs]
     assert not high_uncovered, f"Uncovered high-priority requirements: {[r['id'] for r in high_uncovered]}"
 

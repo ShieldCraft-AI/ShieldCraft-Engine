@@ -25,12 +25,12 @@ def test_engine_forbidden_bypass_run(monkeypatch, tmp_path):
 
 def test_forbidden_bypass_sync(monkeypatch, tmp_path):
     from shieldcraft.engine import Engine
-    from shieldcraft.services.sync import SyncError
 
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
 
     # Use canonical sample and inject invalid instruction
-    import pathlib, json
+    import pathlib
+    import json
     data = json.loads(pathlib.Path("spec/se_dsl_v1.spec.json").read_text())
     data["metadata"]["spec_format"] = "canonical_json_v1"
     data["instructions"] = [{"id": "i1", "type": "construction", "timestamp": "now"}]

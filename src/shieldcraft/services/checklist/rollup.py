@@ -44,13 +44,13 @@ def build_rollups(grouped):
             by_cat[cat] = by_cat.get(cat, 0) + 1
             by_cls[cls] = by_cls.get(cls, 0) + 1
             by_type[item_type] = by_type.get(item_type, 0) + 1
-            
+
             if it.get("derived", False):
                 derived_count += 1
 
             if "SPEC MISSING" in it.get("text", ""):
                 missing.append(it.get("id", "unknown"))
-            
+
             ptr = it.get("ptr")
             if ptr is None or ptr == "":
                 missing_ptrs.append(it.get("id", "unknown"))
@@ -59,7 +59,7 @@ def build_rollups(grouped):
     dependency_tasks = by_type.get("fix-dependency", 0)
     invariant_tasks = by_type.get("resolve-invariant", 0)
     cycle_tasks = by_type.get("resolve-cycle", 0)
-    
+
     # Compute severity heatmap
     severity_heatmap = {
         "critical": by_sev.get("critical", 0),

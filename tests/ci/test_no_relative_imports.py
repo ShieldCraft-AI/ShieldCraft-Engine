@@ -1,6 +1,7 @@
 import os
 import re
 
+
 def test_no_relative_imports_in_tests():
     root = os.path.dirname(os.path.dirname(__file__))
     pattern = re.compile(r"^\s*(from|import)\s+\.")

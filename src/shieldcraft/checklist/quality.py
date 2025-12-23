@@ -34,8 +34,31 @@ def _content_hash(s: str) -> str:
 
 
 COMMON_IMPERATIVE_VERBS = {
-    'add', 'apply', 'attach', 'audit', 'build', 'check', 'create', 'deploy', 'document', 'enforce', 'ensure', 'fix', 'implement', 'install', 'integrate', 'merge', 'produce', 'refuse', 'register', 'remove', 'replace', 'run', 'update', 'validate', 'verify'
-}
+    'add',
+    'apply',
+    'attach',
+    'audit',
+    'build',
+    'check',
+    'create',
+    'deploy',
+    'document',
+    'enforce',
+    'ensure',
+    'fix',
+    'implement',
+    'install',
+    'integrate',
+    'merge',
+    'produce',
+    'refuse',
+    'register',
+    'remove',
+    'replace',
+    'run',
+    'update',
+    'validate',
+    'verify'}
 
 
 def evaluate_quality(items: List[Dict[str, Any]]) -> Tuple[List[ItemQuality], Dict[str, Any]]:
@@ -79,24 +102,29 @@ def evaluate_quality(items: List[Dict[str, Any]]) -> Tuple[List[ItemQuality], Di
             reasons.append('no_requirement_coverage')
 
         # Duplicate detection by (normalized content hash + ptr) to avoid false positives
-        dup = False
         ptr = it.get('ptr') or ''
         key = (ch, ptr)
         if key in seen_hashes:
-            dup = True
             reasons.append('duplicate')
         else:
             seen_hashes[key] = iid
 
         status = 'VALID' if not reasons else 'INVALID'
         # Low-signal detection (conservative): mark low-signal only when
-        # (no artifact AND no execution effect) OR (prose_restatement AND low_confidence) OR (no_requirement_coverage AND low_confidence)
+        # (no artifact AND no execution effect) OR
+        # (prose_restatement AND low_confidence) OR
+        # (no_requirement_coverage AND low_confidence)
         low_reasons: List[str] = []
         no_artifact = False
-        if not it.get('produces_artifacts') and not any(v in (it.get('covers_dimensions') or []) for v in ('artifacts', 'refusal')):
+        if not it.get('produces_artifacts') and not any(
+            v in (
+                it.get('covers_dimensions') or []) for v in (
+                'artifacts',
+                'refusal')):
             no_artifact = True
         no_execution = False
-            if not (it.get('requires_item_ids') or it.get('depends_on') or it.get('produces_artifacts') or it.get('requires_artifacts') or it.get('order_rank') or it.get('blocking')):
+        if not (it.get('requires_item_ids') or it.get('depends_on') or it.get('produces_artifacts')
+                or it.get('requires_artifacts') or it.get('order_rank') or it.get('blocking')):
             no_execution = True
         prose_restatement = bool(it.get('inferred_from_prose'))
         low_conf = (it.get('confidence') or '').lower() == 'low'
@@ -110,7 +138,16 @@ def evaluate_quality(items: List[Dict[str, Any]]) -> Tuple[List[ItemQuality], Di
 
         is_low = len(low_reasons) > 0
 
-        qualities.append(ItemQuality(item_id=iid or '', content_hash=ch, quality_status=status, quality_reasons=sorted(set(reasons)), low_signal=is_low, low_signal_reasons=sorted(set(low_reasons))))
+        qualities.append(
+            ItemQuality(
+                item_id=iid or '',
+                content_hash=ch,
+                quality_status=status,
+                quality_reasons=sorted(
+                    set(reasons)),
+                low_signal=is_low,
+                low_signal_reasons=sorted(
+                    set(low_reasons))))
 
     # Compute aggregates
     total = len(qualities)
@@ -130,7 +167,8 @@ def evaluate_quality(items: List[Dict[str, Any]]) -> Tuple[List[ItemQuality], Di
     return qualities, summary
 
 
-def write_quality_report(qualities: List[ItemQuality], summary: Dict[str, Any], outdir: str = '.selfhost_outputs') -> str:
+def write_quality_report(qualities: List[ItemQuality], summary: Dict[str, Any],
+                         outdir: str = '.selfhost_outputs') -> str:
     os.makedirs(outdir, exist_ok=True)
     p = os.path.join(outdir, 'checklist_quality.json')
     data = {'items': [asdict(q) for q in qualities], 'summary': summary}

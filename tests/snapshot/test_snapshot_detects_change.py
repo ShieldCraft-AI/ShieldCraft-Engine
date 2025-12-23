@@ -1,4 +1,3 @@
-import json
 from shieldcraft.snapshot import generate_snapshot, write_snapshot, validate_snapshot, SnapshotError
 
 

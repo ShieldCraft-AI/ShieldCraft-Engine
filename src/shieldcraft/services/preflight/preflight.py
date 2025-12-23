@@ -1,4 +1,3 @@
-import json
 from ..spec.schema_validator import validate_spec_against_schema
 from ..spec.pointer_auditor import extract_json_pointers, compute_coverage, ensure_full_pointer_coverage
 from ..ast.shape_validator import validate_shape
@@ -33,13 +32,12 @@ def run_preflight(spec, schema, checklist_items):
     from shieldcraft.services.ast.builder import ASTBuilder
     from shieldcraft.services.spec.model import SpecModel
     from shieldcraft.services.governance.rules_engine import evaluate_governance
-    from shieldcraft.services.ast.lineage import build_lineage
-    
+
     valid_schema, schema_errors = validate_spec_against_schema(spec, schema)
     ptrs = extract_json_pointers(spec)
     uncovered, _ = compute_coverage(ptrs, checklist_items)
     ok_contract, violations = verify_generation_contract(spec, checklist_items, uncovered)
-    
+
     # Build SpecModel for governance evaluation
     # Check if spec is already a SpecModel (from canonical loader)
     if isinstance(spec, SpecModel):
@@ -53,22 +51,22 @@ def run_preflight(spec, schema, checklist_items):
         spec_fingerprint = compute_spec_fingerprint(spec)
         spec_model = SpecModel(spec, ast, spec_fingerprint)
         spec_raw = spec
-    
+
     # Run pointer coverage enforcement with canonical support
     from shieldcraft.services.spec.pointer_auditor import check_unreachable_pointers
     pointer_coverage = ensure_full_pointer_coverage(ast, spec_raw)
     unreachable_pointers = check_unreachable_pointers(ast, spec_raw)
-    
+
     # Record missing pointers in preflight output format
     missing_pointers = pointer_coverage.get("missing", [])
     contract_ok_final = ok_contract and (len(missing_pointers) == 0) and (len(unreachable_pointers) == 0)
-    
+
     # Run governance evaluation
     governance_result = evaluate_governance(spec_model, checklist_items)
-    
+
     # Verify lineage chain (use AST object, not lineage_data list)
     lineage_ok, lineage_violations = verify_lineage_chain(ast)
-    
+
     # Detect unresolved dependencies
     unresolved_dependencies = []
     for item in checklist_items:
@@ -86,20 +84,20 @@ def run_preflight(spec, schema, checklist_items):
                         "dependency_ref": dep_ref,
                         "severity": "high"
                     })
-    
+
     dependency_ok = len(unresolved_dependencies) == 0
-    
+
     # Run mapping inspector
     from shieldcraft.services.codegen.mapping_inspector import inspect as inspect_mappings
     codegen_targets = inspect_mappings(checklist_items, strict=False)
-    
+
     # Validate AST shape
     ast_shape_result = validate_shape(ast)
-    
+
     # Run normalization audit
     from shieldcraft.services.checklist.normalization_audit import audit as normalization_audit
     norm_audit = normalization_audit(checklist_items)
-    
+
     # Run AST reconciliation
     from shieldcraft.services.ast.reconcile import reconcile
     reconciliation = reconcile(ast, spec)
@@ -125,4 +123,3 @@ def run_preflight(spec, schema, checklist_items):
         "normalization_audit": norm_audit,
         "ast_reconciliation": reconciliation
     }
-

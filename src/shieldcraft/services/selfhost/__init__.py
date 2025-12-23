@@ -54,7 +54,16 @@ SELFHOST_READINESS_MARKER = "SELFHOST_READY_V1"
 ENGINE_VERSION = "0.1.0"
 
 # Allowed top-level spec keys that self-host may consume
-ALLOWED_SELFHOST_INPUT_KEYS = frozenset({"$schema", "canonical_spec_hash", "metadata", "model", "sections", "invariants", "instructions", "codegen_targets", "execution", "pointer_map"})
+ALLOWED_SELFHOST_INPUT_KEYS = frozenset({"$schema",
+                                         "canonical_spec_hash",
+                                         "metadata",
+                                         "model",
+                                         "sections",
+                                         "invariants",
+                                         "instructions",
+                                         "codegen_targets",
+                                         "execution",
+                                         "pointer_map"})
 
 
 def provenance_header(spec_fingerprint: str, snapshot_hash: str | None, engine_version: str = ENGINE_VERSION) -> str:
@@ -101,7 +110,12 @@ def is_allowed_diff(baseline_dir: str, rel_path: str) -> bool:
     return rel_path in allowed
 
 
-def provenance_header_extended(spec_fingerprint: str, snapshot_hash: str | None, previous_snapshot: str | None = None, build_depth: int = 0, engine_version: str = ENGINE_VERSION) -> str:
+def provenance_header_extended(
+        spec_fingerprint: str,
+        snapshot_hash: str | None,
+        previous_snapshot: str | None = None,
+        build_depth: int = 0,
+        engine_version: str = ENGINE_VERSION) -> str:
     """Extended provenance header including self-build lineage."""
     lines = [
         f"# engine_version: {engine_version}",

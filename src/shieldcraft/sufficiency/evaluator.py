@@ -28,7 +28,6 @@ def evaluate_from_files(outdir: str = '.selfhost_outputs') -> Dict[str, Any]:
     reqs = _load_json(os.path.join(outdir, 'requirements.json')) or {}
     plan = _load_json(os.path.join(outdir, 'checklist_execution_plan.json')) or {}
 
-    summary = rc.get('summary') or {}
     # Load spec coverage to detect structural/fallback units we should ignore
     cov = _load_json(os.path.join(outdir, 'spec_coverage.json')) or {}
     structural_ids = set(cov.get('structural_unit_ids', []) or [])
@@ -37,7 +36,8 @@ def evaluate_from_files(outdir: str = '.selfhost_outputs') -> Dict[str, Any]:
     req_entries = rc.get('requirements', [])
     non_struct_reqs = [r for r in req_entries if r.get('requirement_id') not in structural_ids]
     if non_struct_reqs:
-        complete_pct = float(sum(1 for r in non_struct_reqs if (r.get('state') or '') == 'COMPLETE') / len(non_struct_reqs))
+        complete_pct = float(sum(1 for r in non_struct_reqs if (
+            r.get('state') or '') == 'COMPLETE') / len(non_struct_reqs))
     else:
         # If there are no requirements at all, treat completeness as 0% (not sufficient)
         if len(req_entries) == 0:
@@ -86,12 +86,20 @@ def evaluate_from_files(outdir: str = '.selfhost_outputs') -> Dict[str, Any]:
         # requirement extraction is sparse. This helps canonical spec cases.
         try:
             # prefer manifest in outdir, fallback to root .selfhost_outputs
-            man = _load_json(os.path.join(outdir, 'manifest.json')) or _load_json(os.path.join('.selfhost_outputs', 'manifest.json')) or {}
+            man = _load_json(
+                os.path.join(
+                    outdir,
+                    'manifest.json')) or _load_json(
+                os.path.join(
+                    '.selfhost_outputs',
+                    'manifest.json')) or {}
             quality = man.get('checklist_quality_summary', {}) or {}
-            exec_plan = _load_json(os.path.join(outdir, 'checklist_execution_plan.json')) or _load_json(os.path.join('.selfhost_outputs', 'checklist_execution_plan.json')) or {}
+            exec_plan = _load_json(os.path.join(outdir, 'checklist_execution_plan.json')) or _load_json(
+                os.path.join('.selfhost_outputs', 'checklist_execution_plan.json')) or {}
             total_items = int(quality.get('total_items') or 0)
             ordered_count = len(exec_plan.get('ordered_item_ids') or [])
-            if total_items >= 50 and ordered_count >= 50 and not exec_plan.get('missing_artifacts') and not exec_plan.get('priority_violations') and not exec_plan.get('cycles'):
+            if total_items >= 50 and ordered_count >= 50 and not exec_plan.get(
+                    'missing_artifacts') and not exec_plan.get('priority_violations') and not exec_plan.get('cycles'):
                 sufficient = True
                 reasons.append('heuristic_item_volume_override')
         except Exception:
@@ -106,7 +114,6 @@ def evaluate_from_files(outdir: str = '.selfhost_outputs') -> Dict[str, Any]:
     # Consider spec coverage: require content coverage >= threshold
     try:
         cov = cov or _load_json(os.path.join(outdir, 'spec_coverage.json')) or {}
-        cov_pct = float(cov.get('covered_pct', 1.0))
         # Adjust coverage to ignore structural dump units
         total_units = int(cov.get('total_units', 0) or 0)
         structural_count = len([u for u in (cov.get('structural_unit_ids') or [])])

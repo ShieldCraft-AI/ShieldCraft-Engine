@@ -1,8 +1,6 @@
 import os
 import json
 import hashlib
-import shutil
-import tempfile
 
 
 def _prepare_repo_for_tests(tmp_dir):

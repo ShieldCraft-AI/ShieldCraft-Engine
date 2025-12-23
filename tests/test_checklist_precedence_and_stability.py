@@ -68,7 +68,12 @@ def test_primary_cause_selection_tiebreaks():
     e.checklist_context.record_event('G_Z', 'gen', 'BLOCKER')
     e.checklist_context.record_event('G_A', 'gen', 'BLOCKER')
     r = finalize_checklist(e)
-    primary_gates = [it.get('meta', {}).get('gate') for it in r['checklist'].get('items', []) if it.get('role') == 'PRIMARY_CAUSE']
+    primary_gates = [
+        it.get(
+            'meta',
+            {}).get('gate') for it in r['checklist'].get(
+            'items',
+            []) if it.get('role') == 'PRIMARY_CAUSE']
     assert primary_gates == ['G_A']
 
 

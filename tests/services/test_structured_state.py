@@ -1,7 +1,6 @@
 import json
 import os
 import shutil
-from pathlib import Path
 
 
 def run_and_read(spec_path):

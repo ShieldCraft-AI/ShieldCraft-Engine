@@ -1,8 +1,12 @@
-import ast, json, os
+import ast
+import json
+import os
 
 TARGET = "artifacts/dsl_field_usage.json"
 
 # Keys accessed via obj["key"] or dict.get("key")
+
+
 class FieldAccessVisitor(ast.NodeVisitor):
     def __init__(self):
         self.keys = set()
@@ -27,6 +31,8 @@ class FieldAccessVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 # JSON pointer fragments inside string literals
+
+
 class PointerVisitor(ast.NodeVisitor):
     def __init__(self):
         self.fragments = set()
@@ -76,6 +82,7 @@ def main():
 
     with open(TARGET, "w", encoding="utf-8") as f:
         json.dump(out, f, indent=2)
+
 
 if __name__ == "__main__":
     main()

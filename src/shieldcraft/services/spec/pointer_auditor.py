@@ -99,26 +99,25 @@ def check_unreachable_pointers(ast, raw):
     """
     # Extract all pointers from raw spec
     raw_pointers = extract_json_pointers(raw)
-    
+
     # Extract all pointers from AST
     ast_pointers = set()
     if hasattr(ast, 'walk'):
         for node in ast.walk():
             if hasattr(node, 'ptr') and node.ptr:
                 ast_pointers.add(node.ptr)
-    
-    # Canonical specs may have additional metadata keys - filter them out
+
+    # Canonical specs may have additional _metadata keys - filter them out
     if isinstance(raw, dict):
         canonical_metadata_keys = {'canonical', 'canonical_spec_hash', 'float_precision'}
-        metadata = raw.get('metadata', {})
         for key in canonical_metadata_keys:
-            ptr = f"/metadata/{key}"
+            ptr = f"/_metadata/{key}"
             if ptr in raw_pointers and ptr not in ast_pointers:
                 raw_pointers.discard(ptr)
-    
+
     # Find pointers in raw but not in AST
     unreachable = raw_pointers - ast_pointers
-    
+
     # Sort for deterministic output
     return sorted(unreachable)
 
@@ -131,7 +130,7 @@ def ensure_full_pointer_coverage_old(raw, ast):
     """
     # Extract all pointers from raw spec
     raw_pointers = extract_json_pointers(raw)
-    
+
     # Extract all pointers from AST
     ast_pointers = set()
     if hasattr(ast, 'walk'):
@@ -145,13 +144,12 @@ def ensure_full_pointer_coverage_old(raw, ast):
                 ast_pointers.add(node["ptr"])
             elif hasattr(node, 'ptr') and node.ptr:
                 ast_pointers.add(node.ptr)
-    
+
     # Find pointers in AST but not in raw
     uncovered_ast_pointers = ast_pointers - raw_pointers
-    
+
     # Sort for deterministic output
     return sorted(uncovered_ast_pointers)
-
 
 
 def pointer_audit(raw, ast, checklist_items):
@@ -164,35 +162,35 @@ def pointer_audit(raw, ast, checklist_items):
     uncovered_raw, covered = compute_coverage(raw_pointers, checklist_items)
     unreachable = check_unreachable_pointers(ast, raw)
     uncovered_ast = ensure_full_pointer_coverage_old(raw, ast)
-    
+
     # Check pointer locality constraints
     locality_warnings = []
-    
+
     # Get all top-level sections
     sections_data = raw.get("sections", [])
     top_level_sections = set()
-    
+
     if isinstance(sections_data, list):
         for idx, sec in enumerate(sections_data):
             top_level_sections.add(f"/sections/{idx}")
     elif isinstance(sections_data, dict):
         for key in sections_data.keys():
             top_level_sections.add(f"/sections/{key}")
-    
+
     # Check each item for cross-section pointer references
     for item in checklist_items:
         item_ptr = item.get("ptr", "")
-        
+
         # Determine item's top-level section
         item_section = None
         for sec in top_level_sections:
             if item_ptr.startswith(sec):
                 item_section = sec
                 break
-        
+
         if not item_section:
             continue
-        
+
         # Check if item references pointers from different sections
         # Look for dependency references or cross-references
         for ref_field in ["depends_on", "requires", "references"]:
@@ -206,7 +204,7 @@ def pointer_audit(raw, ast, checklist_items):
                             if ref.startswith(sec):
                                 ref_section = sec
                                 break
-                        
+
                         if ref_section and ref_section != item_section:
                             locality_warnings.append({
                                 "item_id": item.get("id", "unknown"),
@@ -216,13 +214,13 @@ def pointer_audit(raw, ast, checklist_items):
                                 "reference_section": ref_section,
                                 "severity": "medium"
                             })
-    
+
     # Check pointer range references (e.g., array[*])
     pointer_range_errors = []
-    
+
     for item in checklist_items:
         item_ptr = item.get("ptr", "")
-        
+
         # Look for wildcard array references
         if "[*]" in item_ptr or "/*" in item_ptr:
             # Extract base pointer (before the wildcard)
@@ -230,12 +228,12 @@ def pointer_audit(raw, ast, checklist_items):
                 base_ptr = item_ptr.split("[*]")[0]
             else:
                 base_ptr = item_ptr.split("/*")[0]
-            
+
             # Check if base pointer points to an array in raw spec
             try:
                 parts = [p for p in base_ptr.split("/") if p]
                 current = raw
-                
+
                 for part in parts:
                     if isinstance(current, dict):
                         current = current.get(part)
@@ -249,7 +247,7 @@ def pointer_audit(raw, ast, checklist_items):
                     else:
                         current = None
                         break
-                
+
                 # Verify current is an array
                 if current is None:
                     pointer_range_errors.append({
@@ -279,13 +277,13 @@ def pointer_audit(raw, ast, checklist_items):
                     "error": "validation_error",
                     "message": str(e)
                 })
-    
+
     # Check pointer shape validity
     pointer_shape_errors = []
-    
+
     for item in checklist_items:
         item_ptr = item.get("ptr", "")
-        
+
         # Check for double slashes
         if "//" in item_ptr:
             pointer_shape_errors.append({
@@ -293,7 +291,7 @@ def pointer_audit(raw, ast, checklist_items):
                 "pointer": item_ptr,
                 "error": "double_slash"
             })
-        
+
         # Check for trailing slash
         if item_ptr.endswith("/") and item_ptr != "/":
             pointer_shape_errors.append({
@@ -301,7 +299,7 @@ def pointer_audit(raw, ast, checklist_items):
                 "pointer": item_ptr,
                 "error": "trailing_slash"
             })
-        
+
         # Check for invalid characters
         import re
         if not re.match(r'^(/[a-zA-Z0-9_\-]+)*/?$', item_ptr) and item_ptr != "/":
@@ -312,7 +310,7 @@ def pointer_audit(raw, ast, checklist_items):
                     "pointer": item_ptr,
                     "error": "invalid_characters"
                 })
-    
+
     return {
         "uncovered_raw_pointers": sorted(uncovered_raw),
         "covered_pointers": sorted(covered),

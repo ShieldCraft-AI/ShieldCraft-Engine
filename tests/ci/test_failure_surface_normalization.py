@@ -22,12 +22,12 @@ def test_cli_writes_snapshot_error(monkeypatch):
     # Call wrapper; ensure errors.json created with snapshot code
     try:
         mod.run_self_host('spec/se_dsl_v1.spec.json', 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
-    except Exception:
+    except Exception: # type: ignore
         pass
 
     p = os.path.join('.selfhost_outputs', 'errors.json')
     assert os.path.exists(p)
-    data = json.load(open(p))
+    data = json.load(open(p, encoding='utf-8'))
     assert data['errors'][0]['code'] == 'snapshot_missing'
 
 
@@ -44,10 +44,10 @@ def test_cli_writes_sync_error(monkeypatch):
     monkeypatch.setattr('shieldcraft.engine.Engine.run_self_host', fake_engine_runner)
     try:
         mod.run_self_host('spec/se_dsl_v1.spec.json', 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
-    except Exception:
+    except Exception: # type: ignore
         pass
 
     p = os.path.join('.selfhost_outputs', 'errors.json')
     assert os.path.exists(p)
-    data = json.load(open(p))
+    data = json.load(open(p, encoding='utf-8'))
     assert data['errors'][0]['code'] == 'sync_missing'

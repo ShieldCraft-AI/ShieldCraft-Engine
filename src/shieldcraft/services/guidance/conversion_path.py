@@ -44,7 +44,8 @@ def _positive_for_missing(item: Dict[str, Any]) -> str:
     return f"Address '{code}' to meet the next state requirements."
 
 
-def build_conversion_path(conversion_state: str | None, missing_next: List[Dict[str, Any]] | None, readiness: Dict[str, Any] | None) -> Dict[str, Any]:
+def build_conversion_path(conversion_state: str | None,
+                          missing_next: List[Dict[str, Any]] | None, readiness: Dict[str, Any] | None) -> Dict[str, Any]:
     """Return a deterministic conversion_path dict.
 
     - `conversion_state`: current state (string) e.g. 'CONVERTIBLE'
@@ -62,7 +63,8 @@ def build_conversion_path(conversion_state: str | None, missing_next: List[Dict[
     if next_state == "READY" and readiness:
         results = readiness.get("results", {})
         # Blocking gates where ok == False and blocking == True
-        gates = [g for g, r in sorted(results.items()) if isinstance(results.get(g), dict) and not results[g].get("ok") and results[g].get("blocking")]
+        gates = [g for g, r in sorted(results.items()) if isinstance(results.get(g), dict)
+                 and not results[g].get("ok") and results[g].get("blocking")]
         for g in gates:
             suggestion = GATE_SUGGESTIONS.get(g, f"Address readiness gate: {g}.")
             blocking_requirements.append({"code": g, "suggestion": suggestion})

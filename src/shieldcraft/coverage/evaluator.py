@@ -56,7 +56,8 @@ def bind_units_to_items(units: List[Dict[str, Any]], items: List[Dict[str, Any]]
     return items
 
 
-def evaluate_spec_coverage(spec: Dict[str, Any], items: List[Dict[str, Any]], outdir: str = '.selfhost_outputs') -> Dict[str, Any]:
+def evaluate_spec_coverage(spec: Dict[str, Any], items: List[Dict[str, Any]],
+                           outdir: str = '.selfhost_outputs') -> Dict[str, Any]:
     units = build_units_from_spec(spec)
     # annotate items with covers_units
     items = bind_units_to_items(units, items)
@@ -78,7 +79,8 @@ def evaluate_spec_coverage(spec: Dict[str, Any], items: List[Dict[str, Any]], ou
         elif matched_items:
             partially.append(uid)
         else:
-            uncovered.append({'id': uid, 'ptr': u.get('ptr'), 'text': u.get('text'), 'kind': u.get('kind'), 'structural_dump': bool(u.get('structural_dump'))})
+            uncovered.append({'id': uid, 'ptr': u.get('ptr'), 'text': u.get('text'),
+                             'kind': u.get('kind'), 'structural_dump': bool(u.get('structural_dump'))})
 
     total = len(units)
     covered_count = len(covered)
@@ -88,7 +90,8 @@ def evaluate_spec_coverage(spec: Dict[str, Any], items: List[Dict[str, Any]], ou
         'total_units': total,
         'covered_count': covered_count,
         'covered_pct': pct,
-        'uncovered_units': sorted(uncovered, key=lambda x: (x.get('kind') or '', x.get('ptr') or '', x.get('id') or '')),
+        'uncovered_units': sorted(uncovered, key=lambda x: (
+            x.get('kind') or '', x.get('ptr') or '', x.get('id') or '')),
         'structural_unit_ids': sorted([u.get('id') for u in units if u.get('structural_dump')])
     }
 
@@ -99,7 +102,7 @@ def evaluate_spec_coverage(spec: Dict[str, Any], items: List[Dict[str, Any]], ou
         with open(p + '.tmp', 'w', encoding='utf8') as f:
             json.dump(report, f, indent=2, sort_keys=True)
         os.replace(p + '.tmp', p)
-    except Exception:
+    except (OSError, IOError, TypeError):
         pass
 
     # also persist annotated checklist for visibility

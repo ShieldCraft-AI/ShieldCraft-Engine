@@ -3,7 +3,7 @@
 This allows personas to be registered in-memory for deterministic evaluation
 without relying on filesystem persona files.
 """
-from typing import List, Dict, Any
+from typing import List
 from shieldcraft.persona import Persona
 
 _REGISTRY: List[Persona] = []

@@ -18,16 +18,16 @@ def test_governance_bundle_deterministic(tmp_path, monkeypatch):
     spec_path = str(repo_root / "spec" / "se_dsl_v1.spec.json")
 
     run_self_host(spec_path, 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
-    b1 = open('.selfhost_outputs/governance_bundle.json','rb').read()
-    a1 = open('.selfhost_outputs/audit_index.json','rb').read()
+    b1 = open('.selfhost_outputs/governance_bundle.json', 'rb').read()
+    a1 = open('.selfhost_outputs/audit_index.json', 'rb').read()
 
     # Re-run (remove persisted prior state to keep identical starting conditions)
     import shutil
     if os.path.exists('products'):
         shutil.rmtree('products')
     run_self_host(spec_path, 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
-    b2 = open('.selfhost_outputs/governance_bundle.json','rb').read()
-    a2 = open('.selfhost_outputs/audit_index.json','rb').read()
+    b2 = open('.selfhost_outputs/governance_bundle.json', 'rb').read()
+    a2 = open('.selfhost_outputs/audit_index.json', 'rb').read()
 
     assert b1 == b2
     assert a1 == a2

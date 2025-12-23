@@ -1,9 +1,5 @@
 import os
-import stat
 import json
-import shutil
-import tempfile
-import importlib
 
 import pytest
 
@@ -131,7 +127,8 @@ def test_non_intrusive_enforcement(tmp_path, monkeypatch):
     (tmp / "artifacts" / "repo_sync_state.json").write_text('{}')
     import hashlib
     h = hashlib.sha256((tmp / "artifacts" / "repo_sync_state.json").read_bytes()).hexdigest()
-    (tmp / "repo_state_sync.json").write_text(json.dumps({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}))
+    (tmp /
+     "repo_state_sync.json").write_text(json.dumps({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}))
     # Capture mtimes
     mt1 = os.path.getmtime(p1)
     mt2 = os.path.getmtime(p2)

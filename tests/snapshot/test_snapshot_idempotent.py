@@ -1,5 +1,3 @@
-import json
-import tempfile
 from shieldcraft.snapshot import generate_snapshot
 
 

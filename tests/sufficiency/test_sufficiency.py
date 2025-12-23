@@ -10,9 +10,9 @@ def _prepare_env():
     os.makedirs('artifacts', exist_ok=True)
     open('artifacts/repo_sync_state.json', 'w').write('{}')
     import hashlib
-    h = hashlib.sha256(open('artifacts/repo_sync_state.json','rb').read()).hexdigest()
+    h = hashlib.sha256(open('artifacts/repo_sync_state.json', 'rb').read()).hexdigest()
     with open('repo_state_sync.json', 'w') as f:
-        json.dump({"files":[{"path":"artifacts/repo_sync_state.json","sha256":h}]}, f)
+        json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)
     import importlib
     importlib.import_module('shieldcraft.persona')
     import shieldcraft.persona as pmod
@@ -28,7 +28,7 @@ def test_se_dsl_is_sufficient(tmp_path):
     assert p.exists(), "sufficiency artifact missing"
     s = json.loads(p.read_text())
     assert s.get('sufficient') is True
-    summary = json.loads(open('.selfhost_outputs/summary.json').read())
+    summary = json.loads(open('.selfhost_outputs/summary.json', encoding='utf-8').read())
     assert summary.get('sufficiency_verdict') is True
 
 

@@ -1,4 +1,3 @@
-import pytest
 import tempfile
 import json
 import os
@@ -7,7 +6,7 @@ from shieldcraft.engine import Engine
 
 def test_engine_end_to_end_basic():
     schema = "src/shieldcraft/dsl/schema/se_dsl.schema.json"
-    
+
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix=".json") as tmp:
         spec = {
             "metadata": {"product_id": "test-e2e", "version": "1.0"},
@@ -16,11 +15,11 @@ def test_engine_end_to_end_basic():
         }
         json.dump(spec, tmp)
         tmp_path = tmp.name
-    
+
     try:
         engine = Engine(schema)
         result = engine.run(tmp_path)
-        
+
         # Should return valid result or schema error
         assert result is not None
         assert isinstance(result, dict)
@@ -30,7 +29,7 @@ def test_engine_end_to_end_basic():
 
 def test_engine_execution_plan_emission():
     schema = "src/shieldcraft/dsl/schema/se_dsl.schema.json"
-    
+
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix=".json") as tmp:
         spec = {
             "metadata": {"product_id": "test-plan", "version": "1.0"},
@@ -39,11 +38,11 @@ def test_engine_execution_plan_emission():
         }
         json.dump(spec, tmp)
         tmp_path = tmp.name
-    
+
     try:
         engine = Engine(schema)
         result = engine.run(tmp_path)
-        
+
         if "plan" in result:
             # Plan should have phases and steps
             plan = result["plan"]
@@ -60,7 +59,7 @@ def test_engine_execution_plan_emission():
 
 def test_engine_ast_integration():
     schema = "src/shieldcraft/dsl/schema/se_dsl.schema.json"
-    
+
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix=".json") as tmp:
         spec = {
             "metadata": {"product_id": "test-ast", "version": "1.0"},
@@ -69,11 +68,11 @@ def test_engine_ast_integration():
         }
         json.dump(spec, tmp)
         tmp_path = tmp.name
-    
+
     try:
         engine = Engine(schema)
         result = engine.run(tmp_path)
-        
+
         if "ast" in result:
             ast = result["ast"]
             assert ast is not None
@@ -88,7 +87,7 @@ def test_engine_ast_integration():
 
 def test_engine_validation_errors():
     schema = "src/shieldcraft/dsl/schema/se_dsl.schema.json"
-    
+
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix=".json") as tmp:
         spec = {
             "metadata": {"product_id": "test-invalid"}
@@ -96,11 +95,11 @@ def test_engine_validation_errors():
         }
         json.dump(spec, tmp)
         tmp_path = tmp.name
-    
+
     try:
         engine = Engine(schema)
         result = engine.run(tmp_path)
-        
+
         # Should return schema_error
         assert result.get("type") == "schema_error"
         assert "details" in result

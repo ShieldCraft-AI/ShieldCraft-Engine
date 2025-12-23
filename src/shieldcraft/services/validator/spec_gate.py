@@ -1,7 +1,6 @@
 """Spec gating utilities to enforce fuzz stability before generation."""
-from typing import List
 from shieldcraft.verification.spec_fuzzer import generate_mutations, classify_mutation
-from shieldcraft.verification.failure_classes import SPEC_AMBIGUOUS, SPEC_CONTRADICTORY, SPEC_INCOMPLETE
+from shieldcraft.verification.failure_classes import SPEC_CONTRADICTORY, SPEC_INCOMPLETE
 
 
 def enforce_spec_fuzz_stability(spec: dict, generator, max_variants: int = 5) -> None:

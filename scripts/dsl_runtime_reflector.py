@@ -1,4 +1,5 @@
-import json, os, importlib
+import json
+import importlib
 from inspect import getmembers, isclass, isfunction
 
 SCHEMA_PATH = 'spec/schemas/se_dsl_v1.schema.json'
@@ -9,6 +10,7 @@ with open(SCHEMA_PATH, 'r', encoding='utf-8') as f:
     schema = json.load(f)
 
 schema_fields = set()
+
 
 def walk_schema(node, prefix=''):
     if isinstance(node, dict):
@@ -22,6 +24,7 @@ def walk_schema(node, prefix=''):
         for item in node:
             walk_schema(item, prefix)
 
+
 walk_schema(schema)
 
 # Runtime structural extraction
@@ -34,6 +37,7 @@ MODULE_ROOTS = [
     'shieldcraft.dsl',
     'shieldcraft',
 ]
+
 
 def collect_from_object(obj):
     # Look for attribute access patterns
@@ -60,6 +64,7 @@ def load_and_reflect():
                     collect_from_object(member)
             except Exception:
                 pass
+
 
 load_and_reflect()
 

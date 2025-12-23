@@ -37,7 +37,8 @@ def evaluate_completeness(requirements: List[Dict[str, Any]], checklist_items: L
             uncovered.append({'id': rid, 'text': r.get('text'), 'ptr': ptr})
         else:
             # check if any found items have priority P0/P1 and confidence not low
-            ok = any((it.get('priority') in ('P0', 'P1')) and ((it.get('confidence') or '').lower() != 'low') for it in found)
+            ok = any((it.get('priority') in ('P0', 'P1')) and (
+                (it.get('confidence') or '').lower() != 'low') for it in found)
             covered.append({'id': rid, 'ok': ok, 'found': [it.get('id') for it in found]})
             if not ok:
                 weak.append({'id': rid, 'text': r.get('text'), 'ptr': ptr, 'found': [it.get('id') for it in found]})

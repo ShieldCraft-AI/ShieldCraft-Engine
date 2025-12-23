@@ -5,12 +5,12 @@ import jsonschema
 def normalize_spec(spec):
     """
     Normalize spec for deterministic comparison.
-    
+
     Operations:
     - Sort all dict keys recursively
     - Canonicalize values (strip whitespace from strings)
     - Sort lists of dicts by 'id' field if present
-    
+
     Returns:
         Normalized spec dict
     """
@@ -19,7 +19,7 @@ def normalize_spec(spec):
         for key in sorted(spec.keys()):
             normalized[key] = normalize_spec(spec[key])
         return normalized
-    
+
     elif isinstance(spec, list):
         # Check if list contains dicts with 'id' field
         if spec and isinstance(spec[0], dict) and 'id' in spec[0]:
@@ -28,11 +28,11 @@ def normalize_spec(spec):
             return [normalize_spec(item) for item in sorted_list]
         else:
             return [normalize_spec(item) for item in spec]
-    
+
     elif isinstance(spec, str):
         # Strip leading/trailing whitespace
         return spec.strip()
-    
+
     else:
         return spec
 
@@ -47,7 +47,7 @@ def validate_spec_against_schema(spec, schema):
         from pathlib import Path
         schema_path = Path(schema)
         if schema_path.exists():
-            with open(schema_path) as f:
+            with open(schema_path, encoding='utf-8') as f:
                 schema = json.load(f)
         else:
             raise FileNotFoundError(f"Schema path not found: {schema}")

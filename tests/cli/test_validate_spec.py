@@ -31,7 +31,7 @@ def test_validate_spec_valid_spec():
         spec_path = os.path.join(tmpdir, "spec.json")
         with open(spec_path, "w") as f:
             json.dump(spec, f)
-        
+
         # Create minimal schema
         schema = {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -66,14 +66,14 @@ def test_validate_spec_valid_spec():
         schema_path = os.path.join(tmpdir, "schema.json")
         with open(schema_path, "w") as f:
             json.dump(schema, f)
-        
+
         # Run validate-spec
         result = subprocess.run(
             [sys.executable, "-m", "shieldcraft.main", "--validate-spec", spec_path, "--schema", schema_path],
             capture_output=True,
             text=True
         )
-        
+
         # Should succeed
         assert result.returncode == 0
         assert "✓ Spec is valid" in result.stdout
@@ -94,7 +94,7 @@ def test_validate_spec_invalid_spec():
         spec_path = os.path.join(tmpdir, "spec.json")
         with open(spec_path, "w") as f:
             json.dump(spec, f)
-        
+
         # Create schema requiring version
         schema = {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -108,14 +108,14 @@ def test_validate_spec_invalid_spec():
         schema_path = os.path.join(tmpdir, "schema.json")
         with open(schema_path, "w") as f:
             json.dump(schema, f)
-        
+
         # Run validate-spec
         result = subprocess.run(
             [sys.executable, "-m", "shieldcraft.main", "--validate-spec", spec_path, "--schema", schema_path],
             capture_output=True,
             text=True
         )
-        
+
         # Should fail
         assert result.returncode == 1
         assert "✗ Spec validation failed" in result.stdout

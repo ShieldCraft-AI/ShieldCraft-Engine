@@ -11,7 +11,8 @@ def test_normalized_empty_skeleton_selfhost_produces_classification(monkeypatch,
     monkeypatch.setenv("SHIELDCRAFT_PERSONA_ENABLED", "0")
     # Disable default strictness for this visibility test so it can complete
     monkeypatch.setenv("SEMANTIC_STRICTNESS_DISABLED", "1")
-    monkeypatch.setattr("shieldcraft.services.sync.verify_repo_state_authoritative", lambda root: {"ok": True, "sha256": "abc"})
+    monkeypatch.setattr("shieldcraft.services.sync.verify_repo_state_authoritative",
+                        lambda root: {"ok": True, "sha256": "abc"})
 
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
     res = engine.run_self_host(spec, dry_run=True)
@@ -28,7 +29,8 @@ def test_cli_selfhost_writes_summary_with_classification(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY", "1")
     monkeypatch.setenv("SHIELDCRAFT_PERSONA_ENABLED", "0")
-    monkeypatch.setattr("shieldcraft.services.sync.verify_repo_state_authoritative", lambda root: {"ok": True, "sha256": "abc"})
+    monkeypatch.setattr("shieldcraft.services.sync.verify_repo_state_authoritative",
+                        lambda root: {"ok": True, "sha256": "abc"})
 
     os.makedirs(tmp_path / "artifacts", exist_ok=True)
     # Copy spec into repo and run main.run_self_host

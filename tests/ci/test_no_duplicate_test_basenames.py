@@ -1,6 +1,7 @@
 import os
 from collections import defaultdict
 
+
 def test_no_duplicate_test_basenames():
     root = os.path.dirname(os.path.dirname(__file__))
     mapping = defaultdict(list)

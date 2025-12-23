@@ -2,16 +2,13 @@
 Test AST completeness.
 Ensure every raw field appears in AST (1:1 coverage).
 """
-import json
-import tempfile
-import pytest
 
 
 def test_raw_to_ast_completeness():
     """Test that all raw spec fields appear in AST."""
     from shieldcraft.services.ast.builder import ASTBuilder
-    from shieldcraft.services.spec.pointer_auditor import extract_json_pointers, check_unreachable_pointers
-    
+    from shieldcraft.services.spec.pointer_auditor import check_unreachable_pointers
+
     # Create minimal spec
     spec = {
         "metadata": {
@@ -27,14 +24,14 @@ def test_raw_to_ast_completeness():
             }
         }
     }
-    
+
     # Build AST
     builder = ASTBuilder()
     ast = builder.build(spec)
-    
+
     # Check for unreachable pointers
     unreachable = check_unreachable_pointers(ast, spec)
-    
+
     # All pointers should be reachable in AST
     assert len(unreachable) == 0, f"Unreachable pointers found: {unreachable}"
 
@@ -43,7 +40,7 @@ def test_ast_coverage_nested_structures():
     """Test AST coverage for nested structures."""
     from shieldcraft.services.ast.builder import ASTBuilder
     from shieldcraft.services.spec.pointer_auditor import check_unreachable_pointers
-    
+
     spec = {
         "metadata": {
             "product_id": "test-nested",
@@ -65,12 +62,12 @@ def test_ast_coverage_nested_structures():
             }
         }
     }
-    
+
     builder = ASTBuilder()
     ast = builder.build(spec)
-    
+
     unreachable = check_unreachable_pointers(ast, spec)
-    
+
     # Should have full coverage
     assert len(unreachable) == 0
 
@@ -79,7 +76,7 @@ def test_ast_coverage_with_arrays():
     """Test AST coverage handles arrays correctly."""
     from shieldcraft.services.ast.builder import ASTBuilder
     from shieldcraft.services.spec.pointer_auditor import check_unreachable_pointers
-    
+
     spec = {
         "metadata": {
             "product_id": "test-arrays",
@@ -92,11 +89,11 @@ def test_ast_coverage_with_arrays():
             }
         }
     }
-    
+
     builder = ASTBuilder()
     ast = builder.build(spec)
-    
+
     unreachable = check_unreachable_pointers(ast, spec)
-    
+
     # All array elements should be in AST
     assert len(unreachable) == 0

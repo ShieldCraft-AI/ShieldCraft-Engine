@@ -32,10 +32,10 @@ def validate_cross_item_constraints(items):
 def validate_no_empty_sections(items):
     """
     Validate that no sections have zero items.
-    
+
     Args:
         items: List of checklist items with ptr field.
-        
+
     Returns:
         violations: List of section violation dicts.
     """
@@ -50,7 +50,7 @@ def validate_no_empty_sections(items):
             if section not in sections:
                 sections[section] = []
             sections[section].append(item["id"])
-    
+
     violations = []
     # Check for sections with zero items
     # Note: This checks extracted sections. For spec-level validation,
@@ -63,5 +63,5 @@ def validate_no_empty_sections(items):
                 "severity": "high",
                 "message": f"Section '{section}' has zero checklist items"
             })
-    
+
     return violations

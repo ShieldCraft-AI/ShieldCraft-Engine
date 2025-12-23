@@ -8,13 +8,13 @@ class SpecModel:
     """
     Internal representation of a spec with computed artifacts.
     """
-    
+
     def __init__(self, raw, ast, fingerprint, strict_mode=False):
         self.raw = raw
         self.ast = ast
         self.fingerprint = fingerprint
         self.strict_mode = strict_mode
-    
+
     def get_sections(self):
         """Return list of section keys from raw spec."""
         sections = self.raw.get("sections", [])
@@ -24,7 +24,7 @@ class SpecModel:
             # For array-based sections, return list of section ids
             return [sec.get("id", f"section_{i}") for i, sec in enumerate(sections)]
         return []
-    
+
     def get_dependencies(self):
         """
         Extract dependency references from raw spec.
@@ -32,7 +32,7 @@ class SpecModel:
         """
         deps = []
         sections = self.raw.get("sections", {})
-        
+
         for section_key in sorted(sections.keys()):
             section = sections[section_key]
             if isinstance(section, dict):
@@ -53,10 +53,10 @@ class SpecModel:
                                     "target": dep.get("id", ""),
                                     "type": dep.get("type", "direct")
                                 })
-                
+
                 # Recursively check nested structures
                 self._extract_deps_recursive(section, section_key, deps)
-        
+
         # Deduplicate and sort
         unique_deps = []
         seen = set()
@@ -65,9 +65,9 @@ class SpecModel:
             if key not in seen:
                 seen.add(key)
                 unique_deps.append(dep)
-        
+
         return unique_deps
-    
+
     def _extract_deps_recursive(self, obj, context, deps):
         """Recursively extract dependencies from nested structures."""
         if isinstance(obj, dict):
@@ -94,14 +94,14 @@ class SpecModel:
             for item in obj:
                 if isinstance(item, (dict, list)):
                     self._extract_deps_recursive(item, context, deps)
-    
+
     def get_all_pointers(self):
         """
         Return all JSON pointers found in raw spec.
         Deterministic ordering.
         """
         pointers = set()
-        
+
         def walk(obj, path=""):
             if isinstance(obj, dict):
                 for key in sorted(obj.keys()):
@@ -113,10 +113,10 @@ class SpecModel:
                     new_path = f"{path}/{idx}"
                     pointers.add(new_path)
                     walk(item, new_path)
-        
+
         walk(self.raw)
         return sorted(pointers)
-    
+
     def get_invariants(self):
         """
         Extract invariants from AST.
@@ -124,14 +124,14 @@ class SpecModel:
         """
         from shieldcraft.services.checklist.invariants import extract_invariants
         return extract_invariants(self.ast)
-    
+
     def get_entity_map(self):
         """
         Map top-level nodes to AST node IDs.
         Returns deterministic mapping of entity paths to AST node identifiers.
         """
         entity_map = {}
-        
+
         # Walk AST and map top-level entities
         for node in self.ast.walk():
             if node.ptr and node.ptr.count('/') == 2:  # Top-level: /section/entity
@@ -140,23 +140,23 @@ class SpecModel:
                     "type": node.type,
                     "ptr": node.ptr
                 }
-        
+
         # Return sorted by pointer for determinism
         return dict(sorted(entity_map.items()))
-    
+
     def validate_pointer_strict_mode(self, checklist_items):
         """
         Validate that all spec pointers are covered by checklist items.
         Only enforced when strict_mode is True.
-        
+
         Returns: (ok: bool, missing_pointers: list)
         """
         if not self.strict_mode:
             return True, []
-        
+
         all_pointers = set(self.get_all_pointers())
         covered_pointers = set()
-        
+
         # Extract pointers from checklist items
         for item in checklist_items:
             ptr = item.get("ptr", "")
@@ -168,18 +168,18 @@ class SpecModel:
                     parent_path = "/".join(parts[:i])
                     if parent_path:
                         covered_pointers.add(parent_path)
-        
+
         missing = all_pointers - covered_pointers
-        
+
         return len(missing) == 0, sorted(missing)
-    
+
     def pointer_index(self):
         """
         Return mapping of pointer → location metadata.
         Deterministic ordering for canonical support.
         """
         pointer_index = {}
-        
+
         def walk(obj, path="", parent_type=None):
             if isinstance(obj, dict):
                 for key in sorted(obj.keys()):
@@ -201,17 +201,17 @@ class SpecModel:
                         "value_type": type(item).__name__
                     }
                     walk(item, new_path, "array")
-        
+
         walk(self.raw)
         return dict(sorted(pointer_index.items()))
-    
+
     def get_pointer_map(self):
         """
         Return mapping of pointer → value from raw spec.
         Deterministic ordering.
         """
         pointer_map = {}
-        
+
         def walk(obj, path=""):
             if isinstance(obj, dict):
                 for key in sorted(obj.keys()):
@@ -223,18 +223,18 @@ class SpecModel:
                     new_path = f"{path}/{idx}"
                     pointer_map[new_path] = item
                     walk(item, new_path)
-        
+
         walk(self.raw)
         return dict(sorted(pointer_map.items()))
-    
+
     def get_all_lineage_ids(self):
         """
         Return set of all lineage IDs from AST.
         """
         lineage_ids = set()
-        
+
         for node in self.ast.walk():
             if node.lineage_id:
                 lineage_ids.add(node.lineage_id)
-        
+
         return lineage_ids

@@ -52,7 +52,11 @@ def test_generator_blocker_emits_checklist():
 def test_selfhost_refusal_emits_checklist():
     engine = E()
     # Simulate a self-host refusal (G14)
-    engine.checklist_context.record_event("G14_SELFHOST_INPUT_SANDBOX", "post_generation", "REFUSAL", message="disallowed self-host input")
+    engine.checklist_context.record_event(
+        "G14_SELFHOST_INPUT_SANDBOX",
+        "post_generation",
+        "REFUSAL",
+        message="disallowed self-host input")
 
     result = finalize_checklist(engine)
 

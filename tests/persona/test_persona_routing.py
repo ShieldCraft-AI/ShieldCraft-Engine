@@ -5,8 +5,20 @@ from shieldcraft.persona import routing
 
 def test_routing_table_filters_personas():
     clear_registry()
-    p1 = Persona(name='a', role=None, scope=['checklist'], allowed_actions=['annotate'], constraints={}, authority='ANNOTATIVE')
-    p2 = Persona(name='b', role=None, scope=['checklist'], allowed_actions=['annotate'], constraints={}, authority='ANNOTATIVE')
+    p1 = Persona(
+        name='a',
+        role=None,
+        scope=['checklist'],
+        allowed_actions=['annotate'],
+        constraints={},
+        authority='ANNOTATIVE')
+    p2 = Persona(
+        name='b',
+        role=None,
+        scope=['checklist'],
+        allowed_actions=['annotate'],
+        constraints={},
+        authority='ANNOTATIVE')
     register_persona(p1)
     register_persona(p2)
     # No routing configured -> both personas apply

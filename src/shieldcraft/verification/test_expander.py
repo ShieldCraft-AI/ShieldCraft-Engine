@@ -1,5 +1,4 @@
 from typing import Dict, List
-from .test_registry import discover_tests
 
 
 def expand_tests_for_item(item: Dict, test_map: Dict[str, str]) -> Dict:

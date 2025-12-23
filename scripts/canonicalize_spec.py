@@ -1,4 +1,4 @@
-import os
+import yaml
 import json
 import hashlib
 from pathlib import Path
@@ -10,7 +10,6 @@ OUT_DIR = Path("artifacts/canonicalization")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Load source YAML via safe loader
-import yaml
 src = yaml.safe_load(open(SRC))
 
 # Helper
@@ -122,8 +121,27 @@ out_spec = OUT_DIR / "generated_canonical_spec.json"
 out_spec.write_text(json.dumps(canonical, indent=2, sort_keys=True))
 
 # Step 3: produce gap report
-missing_required_fields = [k for k, v in canonical.items() if v == UNKNOWN or (isinstance(v, dict) and any(vv == UNKNOWN or (isinstance(vv, list) and UNKNOWN in vv) for vv in v.values()))]
-ambiguous_sections = ["build_contract", "error_contract", "evidence_bundle", "state_machine", "schema_contract", "artifact_contract", "ci_contract", "generation_mappings", "observability", "security"]
+missing_required_fields = [
+    k for k,
+    v in canonical.items() if v == UNKNOWN or (
+        isinstance(
+            v,
+            dict) and any(
+                vv == UNKNOWN or (
+                    isinstance(
+                        vv,
+                        list) and UNKNOWN in vv) for vv in v.values()))]
+ambiguous_sections = [
+    "build_contract",
+    "error_contract",
+    "evidence_bundle",
+    "state_machine",
+    "schema_contract",
+    "artifact_contract",
+    "ci_contract",
+    "generation_mappings",
+    "observability",
+    "security"]
 blocked_generation_reasons = []
 if metadata["product_id"] == UNKNOWN:
     blocked_generation_reasons.append("missing_product_id")

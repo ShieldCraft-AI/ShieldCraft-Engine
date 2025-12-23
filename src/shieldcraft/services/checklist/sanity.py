@@ -7,7 +7,7 @@ def sanity_check(items):
     - severity must be one of allowed
     Return filtered valid list.
     """
-    allowed = {"critical","high","medium","low"}
+    allowed = {"critical", "high", "medium", "low"}
     seen_ids = set()
     out = []
     for it in items:

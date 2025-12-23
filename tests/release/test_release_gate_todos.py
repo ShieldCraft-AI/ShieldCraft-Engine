@@ -11,7 +11,7 @@ def test_no_todos_or_debug_left():
                 if not f.endswith(('.py', '.md', '.json')):
                     continue
                 p = os.path.join(dirpath, f)
-                s = open(p).read()
+                s = open(p, encoding='utf-8').read()
                 if re.search(r"\bTODO\b|DEBUG|PROVISIONAL", s):
                     bad.append(p)
     assert not bad, f"Found TODO/DEBUG/PROVISIONAL markers in: {bad}"

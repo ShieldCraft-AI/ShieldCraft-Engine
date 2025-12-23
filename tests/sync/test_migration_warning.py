@@ -10,7 +10,8 @@ def test_migration_warning_logged(tmp_path, caplog, monkeypatch):
     with open(tmp_path / "artifacts" / "repo_sync_state.json", "w") as f:
         f.write("x")
     # compute sha and write repo_state_sync.json
-    import hashlib, json
+    import hashlib
+    import json
     h = hashlib.sha256(open(tmp_path / "artifacts" / "repo_sync_state.json", "rb").read()).hexdigest()
     with open(tmp_path / "repo_state_sync.json", "w") as f:
         json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)

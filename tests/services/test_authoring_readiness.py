@@ -11,7 +11,8 @@ def test_authoring_readiness_progression(monkeypatch):
     monkeypatch.setenv("SHIELDCRAFT_PERSONA_ENABLED", "0")
     monkeypatch.delenv("SEMANTIC_STRICTNESS_DISABLED", raising=False)
     monkeypatch.setenv("SEMANTIC_STRICTNESS_LEVEL_2", "1")
-    monkeypatch.setattr("shieldcraft.services.sync.verify_repo_state_authoritative", lambda root: {"ok": True, "sha256": "abc"})
+    monkeypatch.setattr("shieldcraft.services.sync.verify_repo_state_authoritative",
+                        lambda root: {"ok": True, "sha256": "abc"})
 
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
 

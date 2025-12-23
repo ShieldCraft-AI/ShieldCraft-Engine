@@ -115,7 +115,7 @@ def write_snapshot(manifest: Dict, path: str = None) -> str:
     # validate before writing
     _validate_manifest_structure(manifest)
     # canonical JSON: sort keys, indent 2
-    with open(path, "w") as f:
+    with open(path, "w", encoding='utf-8') as f:
         json.dump(manifest, f, indent=2, sort_keys=True)
     return path
 
@@ -128,9 +128,9 @@ def validate_snapshot(path: str, repo_root: str = ".") -> Dict:
     if not os.path.exists(path):
         raise SnapshotError(SNAPSHOT_MISSING, "snapshot file missing", {"path": path})
     try:
-        with open(path) as f:
+        with open(path, encoding='utf-8') as f:
             manifest = json.load(f)
-    except Exception as e:
+    except (IOError, OSError, json.JSONDecodeError, ValueError) as e:
         raise SnapshotError(SNAPSHOT_INVALID, f"invalid snapshot file: {e}")
 
     # version guard
@@ -142,7 +142,8 @@ def validate_snapshot(path: str, repo_root: str = ".") -> Dict:
 
     current = generate_snapshot(repo_root)
     if manifest.get("tree_hash") != current.get("tree_hash"):
-        raise SnapshotError(SNAPSHOT_MISMATCH, "repo tree does not match snapshot", {"expected": manifest.get("tree_hash"), "actual": current.get("tree_hash")})
+        raise SnapshotError(SNAPSHOT_MISMATCH, "repo tree does not match snapshot", {
+                            "expected": manifest.get("tree_hash"), "actual": current.get("tree_hash")})
 
     return {"ok": True}
 
@@ -152,7 +153,9 @@ def _validate_manifest_structure(manifest: Dict) -> None:
     if manifest.get("version") not in SUPPORTED_MANIFEST_VERSIONS:
         raise SnapshotError(SNAPSHOT_INVALID, "unsupported manifest version", {"version": manifest.get("version")})
     if manifest.get("hash_algorithm") != HASH_ALGORITHM:
-        raise SnapshotError(SNAPSHOT_INVALID, "hash algorithm mismatch", {"expected": HASH_ALGORITHM, "found": manifest.get("hash_algorithm")})
+        raise SnapshotError(
+            SNAPSHOT_INVALID, "hash algorithm mismatch", {
+                "expected": HASH_ALGORITHM, "found": manifest.get("hash_algorithm")})
     if "files" not in manifest or not isinstance(manifest.get("files"), list):
         raise SnapshotError(SNAPSHOT_INVALID, "manifest 'files' must be a list")
     paths = set()

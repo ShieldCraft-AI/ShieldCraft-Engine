@@ -5,11 +5,8 @@ import pytest
 
 from shieldcraft.engine import Engine
 from shieldcraft.persona import (
-    Persona,
     PersonaContext,
     load_persona,
-    find_persona_files,
-    resolve_persona_files,
     detect_conflicts,
     emit_annotation,
     emit_veto,
@@ -53,7 +50,13 @@ def test_missing_version_fails(tmp_path, monkeypatch):
 def test_annotation_rate_limit_enforced(tmp_path, monkeypatch):
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
     monkeypatch.setenv("SHIELDCRAFT_PERSONA_ENABLED", "1")
-    persona = PersonaContext(name="rate", role=None, display_name=None, scope=["preflight"], allowed_actions=["annotate"], constraints={})
+    persona = PersonaContext(
+        name="rate",
+        role=None,
+        display_name=None,
+        scope=["preflight"],
+        allowed_actions=["annotate"],
+        constraints={})
     for i in range(5):
         emit_annotation(engine, persona, "preflight", f"note {i}", "info")
     with pytest.raises(PersonaError) as e:
@@ -64,7 +67,13 @@ def test_annotation_rate_limit_enforced(tmp_path, monkeypatch):
 def test_veto_explanation_schema_enforced(tmp_path, monkeypatch):
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
     monkeypatch.setenv("SHIELDCRAFT_PERSONA_ENABLED", "1")
-    persona = PersonaContext(name="v1", role=None, display_name=None, scope=["preflight"], allowed_actions=["veto"], constraints={})
+    persona = PersonaContext(
+        name="v1",
+        role=None,
+        display_name=None,
+        scope=["preflight"],
+        allowed_actions=["veto"],
+        constraints={})
     # explanation must be dict with explanation_code and details
     with pytest.raises(PersonaError) as e:
         emit_veto(engine, persona, "preflight", "bad", "not a dict", "high")
@@ -74,7 +83,15 @@ def test_veto_explanation_schema_enforced(tmp_path, monkeypatch):
 def test_persona_determinism_assertions(tmp_path, monkeypatch):
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
     monkeypatch.setenv("SHIELDCRAFT_PERSONA_ENABLED", "1")
-    p = PersonaContext(name="d", role=None, display_name=None, scope=["preflight"], allowed_actions=["annotate", "veto"], constraints={})
+    p = PersonaContext(
+        name="d",
+        role=None,
+        display_name=None,
+        scope=["preflight"],
+        allowed_actions=[
+            "annotate",
+            "veto"],
+        constraints={})
     emit_annotation(engine, p, "preflight", "a1", "info")
     emit_veto(engine, p, "preflight", "stop", {"explanation_code": "x", "details": "stop it"}, "high")
     # Run preflight (will raise persona_veto)
@@ -100,8 +117,20 @@ def test_persona_determinism_assertions(tmp_path, monkeypatch):
 def test_cross_persona_interference(tmp_path, monkeypatch):
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
     monkeypatch.setenv("SHIELDCRAFT_PERSONA_ENABLED", "1")
-    p1 = PersonaContext(name="one", role=None, display_name=None, scope=["preflight"], allowed_actions=["annotate"], constraints={})
-    p2 = PersonaContext(name="two", role=None, display_name=None, scope=["preflight"], allowed_actions=["annotate"], constraints={})
+    p1 = PersonaContext(
+        name="one",
+        role=None,
+        display_name=None,
+        scope=["preflight"],
+        allowed_actions=["annotate"],
+        constraints={})
+    p2 = PersonaContext(
+        name="two",
+        role=None,
+        display_name=None,
+        scope=["preflight"],
+        allowed_actions=["annotate"],
+        constraints={})
     emit_annotation(engine, p1, "preflight", "from one", "info")
     emit_annotation(engine, p2, "preflight", "from two", "info")
     anns = json.load(open(os.path.join("artifacts", "persona_annotations_v1.json")))

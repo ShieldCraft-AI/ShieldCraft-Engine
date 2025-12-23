@@ -12,11 +12,11 @@ def group_items(items):
           "order_key": (classification_rank, severity_rank, section)
       }
     }
-    
+
     Guarantees deterministic ordering.
     """
     out = {}
-    
+
     # Rank order for deterministic sorting
     classification_rank = {
         "bootstrap": 0,
@@ -25,7 +25,7 @@ def group_items(items):
         "invariant": 3,
         "module": 4
     }
-    
+
     severity_rank = {
         "critical": 0,
         "high": 1,
@@ -37,10 +37,10 @@ def group_items(items):
         c = it.get("classification", "core")
         s = it.get("severity", "low")
         section = it.get("section", "default")
-        
+
         # Hierarchical group key: classification.severity.section
         grp = f"{c}.{s}.{section}"
-        
+
         if grp not in out:
             out[grp] = {
                 "items": [],

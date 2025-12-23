@@ -9,7 +9,6 @@ import argparse
 import json
 import os
 import shutil
-import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -30,7 +29,8 @@ def collect_metrics_for_result(result: Dict[str, Any], artifacts_dir: Path) -> D
     spec_metrics["blocked_item_count"] = 0
     spec_metrics["inferred_from_prose_count"] = 0
     spec_metrics["suppressed_signal_count"] = 0
-    spec_metrics["readiness_status"] = (manifest.get("readiness") or {}).get("status") if manifest.get("readiness") else None
+    spec_metrics["readiness_status"] = (manifest.get("readiness") or {}).get(
+        "status") if manifest.get("readiness") else None
     spec_metrics["conversion_state"] = manifest.get("conversion_state")
 
     cd = out_dir / "checklist_draft.json"
@@ -62,7 +62,12 @@ def collect_metrics_for_result(result: Dict[str, Any], artifacts_dir: Path) -> D
     return spec_metrics
 
 
-def run_scale(specs_dir: str, schema: str, out_report: str = "scale_report.json", artifacts_root: str = "scale_artifacts", allow_dirty: bool = True) -> str:
+def run_scale(
+        specs_dir: str,
+        schema: str,
+        out_report: str = "scale_report.json",
+        artifacts_root: str = "scale_artifacts",
+        allow_dirty: bool = True) -> str:
     from importlib import import_module
     ingest_spec = import_module("shieldcraft.services.spec.ingestion").ingest_spec
     Engine = import_module("shieldcraft.engine").Engine
@@ -104,7 +109,8 @@ def run_scale(specs_dir: str, schema: str, out_report: str = "scale_report.json"
                     preview = engine.run_self_host(spec, dry_run=True)
                     try:
                         cd = artifacts_base / "checklist_draft.json"
-                        cd.write_text(json.dumps({"items": preview.get("checklist", []), "status": "draft"}, indent=2, sort_keys=True))
+                        cd.write_text(json.dumps({"items": preview.get("checklist", []),
+                                      "status": "draft"}, indent=2, sort_keys=True))
                     except Exception:
                         pass
                     result = preview
@@ -117,10 +123,15 @@ def run_scale(specs_dir: str, schema: str, out_report: str = "scale_report.json"
                         from shieldcraft.services.ast.builder import ASTBuilder
                         from shieldcraft.services.checklist.generator import ChecklistGenerator
                         ast = ASTBuilder().build(spec)
-                        checklist_preview = ChecklistGenerator().build(spec, ast=ast, dry_run=True, run_test_gate=False, engine=engine)
+                        checklist_preview = ChecklistGenerator().build(
+                            spec, ast=ast, dry_run=True, run_test_gate=False, engine=engine)
                         try:
                             cd = artifacts_base / "checklist_draft.json"
-                            cd.write_text(json.dumps({"items": checklist_preview.get("items", []), "status": "draft"}, indent=2, sort_keys=True))
+                            draft_data = {
+                                "items": checklist_preview.get("items", []),
+                                "status": "draft"
+                            }
+                            cd.write_text(json.dumps(draft_data, indent=2, sort_keys=True))
                         except Exception:
                             pass
                         result = {"manifest": None}
@@ -128,6 +139,7 @@ def run_scale(specs_dir: str, schema: str, out_report: str = "scale_report.json"
                         # Last-resort: lightweight prose pre-scan for obligation keywords
                         try:
                             import hashlib
+
                             def _scan(node, base_ptr=""):
                                 items = []
                                 if isinstance(node, dict):
@@ -140,7 +152,14 @@ def run_scale(specs_dir: str, schema: str, out_report: str = "scale_report.json"
                                         items.extend(_scan(v, ptr))
                                 elif isinstance(node, str):
                                     low = node.lower()
-                                    if any(w in low for w in ("must", "never", "requires", "should", "must not", "refuse")):
+                                    if any(
+                                        w in low for w in (
+                                            "must",
+                                            "never",
+                                            "requires",
+                                            "should",
+                                            "must not",
+                                            "refuse")):
                                         text = node.strip()
                                         hid = hashlib.sha256((base_ptr + ":" + text).encode()).hexdigest()[:12]
                                         items.append({"id": hid, "ptr": base_ptr or "/", "text": text, "value": text})
@@ -149,7 +168,8 @@ def run_scale(specs_dir: str, schema: str, out_report: str = "scale_report.json"
                             if pre_items:
                                 try:
                                     cd = artifacts_base / "checklist_draft.json"
-                                    cd.write_text(json.dumps({"items": pre_items, "status": "draft"}, indent=2, sort_keys=True))
+                                    cd.write_text(json.dumps(
+                                        {"items": pre_items, "status": "draft"}, indent=2, sort_keys=True))
                                 except Exception:
                                     pass
                                 result = {"manifest": None}
@@ -200,7 +220,8 @@ def run_scale(specs_dir: str, schema: str, out_report: str = "scale_report.json"
                 try:
                     preview = engine.run_self_host(spec, dry_run=True)
                     try:
-                        cd_path.write_text(json.dumps({"items": preview.get("checklist", []), "status": "draft"}, indent=2, sort_keys=True))
+                        cd_path.write_text(json.dumps({"items": preview.get(
+                            "checklist", []), "status": "draft"}, indent=2, sort_keys=True))
                     except Exception:
                         pass
                     # If we didn't have a real result manifest, use preview for metrics
@@ -225,7 +246,8 @@ def run_scale(specs_dir: str, schema: str, out_report: str = "scale_report.json"
         collected.append(entry)
 
     # Write deterministic scale report: sort by spec_path
-    report = {"results": sorted(collected, key=lambda x: x.get("spec_path")), "metadata": {"spec_count": len(collected)}}
+    report = {"results": sorted(collected, key=lambda x: x.get("spec_path")),
+              "metadata": {"spec_count": len(collected)}}
     _safe_write(Path(out_report), report)
 
     # Enforce non-silence at scale

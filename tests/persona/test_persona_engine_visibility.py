@@ -1,5 +1,4 @@
 import json
-import os
 import pathlib
 
 from shieldcraft.engine import Engine
@@ -20,7 +19,13 @@ def test_engine_exposes_persona_when_enabled(monkeypatch, tmp_path):
 
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
     # Persona loading happens during run_self_host (in our scaffold)
-    engine.run_self_host(json.load(open(pathlib.Path(__file__).resolve().parents[2] / "spec" / "se_dsl_v1.spec.json")), dry_run=True)
+    engine.run_self_host(
+        json.load(
+            open(
+                pathlib.Path(__file__).resolve().parents[2] /
+                "spec" /
+                "se_dsl_v1.spec.json")),
+        dry_run=True)
 
     assert engine.persona is not None
     assert engine.persona.name == "Fiona"

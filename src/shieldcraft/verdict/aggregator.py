@@ -15,7 +15,7 @@ def _sha256_of_file(path: str) -> str:
 
 
 def compute_implementability(outdir: str = '.selfhost_outputs') -> Dict[str, Any]:
-    """Aggregate artifacts and compute a binary IMPLEMENTABLE verdict.
+    """Aggregate _artifacts and compute a binary IMPLEMENTABLE verdict.
 
     Rules (strict): IMPLEMENTABLE iff all are true:
       - checklist_sufficiency.json -> 'sufficient' == True
@@ -25,7 +25,7 @@ def compute_implementability(outdir: str = '.selfhost_outputs') -> Dict[str, Any
 
     The result is persisted to `implementability_verdict.json` in `outdir`.
     """
-    artifacts = {}
+
     def load_json(name: str) -> Any:
         p = os.path.join(outdir, name)
         if os.path.exists(p):
@@ -64,7 +64,10 @@ def compute_implementability(outdir: str = '.selfhost_outputs') -> Dict[str, Any
     checklist = load_json('checklist.json') or {}
     items = checklist.get('items', []) or []
     id_to_pr = {it.get('id'): (it.get('priority') or '').upper() for it in items}
-    p0p1_violations = [iid for iid in low_ids if id_to_pr.get(iid, '').startswith('P0') or id_to_pr.get(iid, '').startswith('P1')]
+    p0p1_violations = [
+        iid for iid in low_ids if id_to_pr.get(
+            iid, '').startswith('P0') or id_to_pr.get(
+            iid, '').startswith('P1')]
     if p0p1_violations:
         reasons.append('p0p1_low_signal:' + ','.join(sorted(p0p1_violations)))
 
@@ -83,7 +86,12 @@ def compute_implementability(outdir: str = '.selfhost_outputs') -> Dict[str, Any
 
     # Proof references: include artifact file SHA256s when present
     proof_refs: Dict[str, str] = {}
-    for name in ('checklist_sufficiency.json', 'spec_coverage.json', 'checklist_quality.json', 'checklist_execution_plan.json', 'requirement_completeness.json'):
+    for name in (
+        'checklist_sufficiency.json',
+        'spec_coverage.json',
+        'checklist_quality.json',
+        'checklist_execution_plan.json',
+            'requirement_completeness.json'):
         p = os.path.join(outdir, name)
         if os.path.exists(p):
             try:

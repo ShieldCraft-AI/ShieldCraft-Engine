@@ -1,5 +1,4 @@
 import pytest
-import os
 
 
 def test_snapshot_authority_is_default(monkeypatch, tmp_path):

@@ -18,7 +18,7 @@ def check_invariants(result):
         import json
         import hashlib
         rehash = hashlib.sha256(json.dumps(
-            {k:v for k,v in evidence.items() if k!="hash"},
+            {k: v for k, v in evidence.items() if k != "hash"},
             sort_keys=True
         ).encode("utf-8")).hexdigest()
         if rehash != evidence.get("hash"):
@@ -37,4 +37,4 @@ def check_invariants(result):
         if lh != lineage.get("lineage_hash"):
             violations.append("lineage hash mismatch")
 
-    return len(violations)==0, violations
+    return len(violations) == 0, violations

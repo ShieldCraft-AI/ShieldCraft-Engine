@@ -28,7 +28,12 @@ def _roles(result):
 
 
 def _primary_gates(result):
-    return [it.get('meta', {}).get('gate') for it in result['checklist'].get('items', []) if it.get('role') == 'PRIMARY_CAUSE']
+    return [
+        it.get(
+            'meta',
+            {}).get('gate') for it in result['checklist'].get(
+            'items',
+            []) if it.get('role') == 'PRIMARY_CAUSE']
 
 
 def test_multiple_blockers_single_primary_cause():

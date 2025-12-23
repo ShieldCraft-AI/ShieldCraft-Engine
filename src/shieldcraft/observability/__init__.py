@@ -38,7 +38,7 @@ def emit_state(engine, phase: str, gate: str, status: str, error_code: Optional[
     engine._execution_state_entries.append(asdict(entry))
     # Persist deterministically
     path = _state_file_path()
-    with open(path, "w") as f:
+    with open(path, "w", encoding='utf-8') as f:
         json.dump(engine._execution_state_entries, f, indent=2, sort_keys=True)
 
 
@@ -46,7 +46,8 @@ def read_state() -> List[dict]:
     p = _state_file_path()
     if not os.path.exists(p):
         return []
-    return json.loads(open(p).read())
+    with open(p, encoding='utf-8') as f:
+        return json.load(f)
 
 
 def _annotations_path() -> str:
@@ -67,7 +68,7 @@ def emit_persona_annotation(engine, persona_id: str, phase: str, message: str, s
     }
     engine._persona_annotations.append(entry)
     p = _annotations_path()
-    with open(p, "w") as f:
+    with open(p, "w", encoding='utf-8') as f:
         json.dump(engine._persona_annotations, f, indent=2, sort_keys=True)
 
 
@@ -75,7 +76,8 @@ def read_persona_annotations() -> List[dict]:
     p = _annotations_path()
     if not os.path.exists(p):
         return []
-    return json.loads(open(p).read())
+    with open(p, encoding='utf-8') as f:
+        return json.load(f)
 
 
 def _events_path() -> str:
@@ -128,7 +130,7 @@ def _validate_event_schema(event: dict) -> None:
 
 def _write_events_and_hash(engine) -> None:
     path = _events_path()
-    with open(path, "w") as f:
+    with open(path, "w", encoding='utf-8') as f:
         json.dump(getattr(engine, "_persona_events", []), f, indent=2, sort_keys=True)
 
     # Compute deterministic hash over canonical representation (no whitespace variance)
@@ -136,11 +138,17 @@ def _write_events_and_hash(engine) -> None:
     payload = canonicalize(getattr(engine, "_persona_events", []))
     import hashlib
     h = hashlib.sha256(payload.encode()).hexdigest()
-    with open(_events_hash_path(), "w") as f:
+    with open(_events_hash_path(), "w", encoding='utf-8') as f:
         f.write(h)
 
 
-def emit_persona_event(engine, persona_id: str, capability: str, phase: str, payload_ref: str, severity: str = "info") -> None:
+def emit_persona_event(
+        engine,
+        persona_id: str,
+        capability: str,
+        phase: str,
+        payload_ref: str,
+        severity: str = "info") -> None:
     """Append a PersonaEvent and persist deterministically with a companion hash.
 
     PersonaEvent fields: persona_id, capability (annotate|veto), phase, payload_ref, severity

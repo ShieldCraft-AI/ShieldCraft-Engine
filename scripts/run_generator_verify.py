@@ -3,9 +3,12 @@
 Run the ShieldCraft generator (engine + codegen) and save deterministic artifacts for comparison.
 Usage: python scripts/run_generator_verify.py --label run1
 """
+from shieldcraft.services.spec.fingerprint import compute_spec_fingerprint
+from shieldcraft.services.artifacts.lineage import bundle as build_lineage
+from shieldcraft.util.json_canonicalizer import canonicalize
+from shieldcraft.engine import Engine
 import argparse
 import json
-import os
 import hashlib
 from pathlib import Path
 import sys
@@ -13,17 +16,13 @@ import sys
 # Ensure src is on path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from shieldcraft.engine import Engine
-from shieldcraft.util.json_canonicalizer import canonicalize
-from shieldcraft.services.artifacts.lineage import bundle as build_lineage
-from shieldcraft.services.spec.fingerprint import compute_spec_fingerprint
-
 
 def sha256_text(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()
 
 
-def run_and_capture(label: str, spec_path: str = "spec/se_dsl_v1.spec.json", schema_path: str = "spec/schemas/se_dsl_v1.schema.json"):
+def run_and_capture(label: str, spec_path: str = "spec/se_dsl_v1.spec.json",
+                    schema_path: str = "spec/schemas/se_dsl_v1.schema.json"):
     artifacts_dir = Path("artifacts/determinism") / label
     artifacts_dir.mkdir(parents=True, exist_ok=True)
 
@@ -46,7 +45,6 @@ def run_and_capture(label: str, spec_path: str = "spec/se_dsl_v1.spec.json", sch
     result = engine.run(temp_spec_path)
 
     spec = result.get("spec", {})
-    ast = result.get("ast")
     checklist = result.get("checklist")
     # Normalize checklist to either list or dict
     if isinstance(checklist, dict) and "items" in checklist:
@@ -116,10 +114,11 @@ def run_and_capture(label: str, spec_path: str = "spec/se_dsl_v1.spec.json", sch
         "plan_fp": plan_fp,
         "code_fp": code_fp,
         "code_hashes": sorted_hashes,
-        "codegen_bundle_hash": outputs_preview.get("codegen_bundle_hash") if isinstance(outputs_preview, dict) else None,
+        "codegen_bundle_hash": outputs_preview.get("codegen_bundle_hash") if isinstance(
+            outputs_preview,
+            dict) else None,
         "lockfile_hash": lockfile_hash,
-        "lineage_signature": lineage_signature
-    }
+        "lineage_signature": lineage_signature}
     with open(artifacts_dir / "run.summary.json", "w") as f:
         json.dump(summary, f, indent=2, sort_keys=True)
 
@@ -129,7 +128,10 @@ def run_and_capture(label: str, spec_path: str = "spec/se_dsl_v1.spec.json", sch
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--label", default="run", help="Label for this run (used to create artifacts/determinism/<label>)")
+    parser.add_argument(
+        "--label",
+        default="run",
+        help="Label for this run (used to create artifacts/determinism/<label>)")
     args = parser.parse_args()
 
     run_and_capture(args.label)

@@ -50,7 +50,8 @@ def _item_covers_req(item: Dict[str, Any], req: Dict[str, Any]) -> Tuple[bool, s
     return False, ''
 
 
-def map_requirements_to_checklist(requirements: List[Dict[str, Any]], checklist_items: List[Dict[str, Any]]) -> Dict[str, Any]:
+def map_requirements_to_checklist(requirements: List[Dict[str, Any]],
+                                  checklist_items: List[Dict[str, Any]]) -> Dict[str, Any]:
     covered = []
     uncovered = []
     weakly_covered = []

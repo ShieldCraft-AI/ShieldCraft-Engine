@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from enum import Enum
 from typing import List, Dict, Any, Tuple
 import json
 import os
-import re
 
 
 class RequirementState(Enum):
@@ -76,12 +75,16 @@ def bind_dimensions_to_items(requirements: List[Dict[str, Any]], items: List[Dic
                 it['covers_dimensions'] = inferred
         # Conservative fallback: if item references requirements and has evidence, assume it covers 'behavior'
         if not it.get('covers_dimensions'):
-            if it.get('requirement_refs') and ((it.get('evidence') or {}).get('quote') or (it.get('evidence') or {}).get('source', {}).get('ptr')):
+            if it.get('requirement_refs') and (
+                (it.get('evidence') or {}).get('quote') or (
+                    it.get('evidence') or {}).get(
+                    'source', {}).get('ptr')):
                 it['covers_dimensions'] = ['behavior']
     return items
 
 
-def evaluate_completeness(requirements: List[Dict[str, Any]], items: List[Dict[str, Any]]) -> Tuple[List[RequirementCompleteness], Dict[str, Any]]:
+def evaluate_completeness(requirements: List[Dict[str, Any]], items: List[Dict[str, Any]]
+                          ) -> Tuple[List[RequirementCompleteness], Dict[str, Any]]:
     dims_map = extract_dimensions(requirements)
     # Build index of valid items by requirement_refs
     req_to_items: Dict[str, List[Dict[str, Any]]] = {}
@@ -121,7 +124,13 @@ def evaluate_completeness(requirements: List[Dict[str, Any]], items: List[Dict[s
         else:
             state = RequirementState.COMPLETE
             complete += 1
-        res.append(RequirementCompleteness(requirement_id=rid, state=state, covered_dimensions=sorted(list(covered)), missing_dimensions=sorted(missing)))
+        res.append(
+            RequirementCompleteness(
+                requirement_id=rid,
+                state=state,
+                covered_dimensions=sorted(
+                    list(covered)),
+                missing_dimensions=sorted(missing)))
 
     total = len(requirements)
     complete_pct = (complete / total) if total else 0.0
@@ -135,7 +144,8 @@ def evaluate_completeness(requirements: List[Dict[str, Any]], items: List[Dict[s
     return res, summary
 
 
-def write_completeness_report(results: List[RequirementCompleteness], summary: Dict[str, Any], outdir: str = '.selfhost_outputs') -> str:
+def write_completeness_report(results: List[RequirementCompleteness],
+                              summary: Dict[str, Any], outdir: str = '.selfhost_outputs') -> str:
     os.makedirs(outdir, exist_ok=True)
     p = os.path.join(outdir, 'requirement_completeness.json')
     reqs = []
@@ -158,7 +168,6 @@ def is_implementable(summary: Dict[str, Any], requirements: List[Dict[str, Any]]
     # Implementable iff complete_pct >= 0.98 and no P0 requirements are PARTIAL or UNBOUND
     if summary.get('complete_pct', 0.0) < 0.98:
         return False
-    p0_reqs = [r for r in requirements if r.get('priority') == 'P0' or r.get('mandatory')]
     # This requires a mapping from eval results to requirement ids; caller should ensure
     # For this simplified check, assume P0 requirements are covered (caller can implement stricter checks)
     return True

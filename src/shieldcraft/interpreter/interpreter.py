@@ -72,24 +72,32 @@ def interpret_raw_spec(text: str) -> List[ChecklistItemV1]:
         if not body_sentences:
             body_sentences = [title]
         # primary claim: combine title + first sentence
-        claim = f"{title}: {body_sentences[0]}" if title and body_sentences[0] else (body_sentences[0] if body_sentences else title)
+        claim = f"{title}: {body_sentences[0]}" if title and body_sentences[0] else (
+            body_sentences[0] if body_sentences else title)
         cid = _det_hash(f"{idx}:{claim}")
         # determine confidence
         low_keywords = ("may", "might", "could", "possibly")
         high_keywords = ("must", "must not", "never", "always", "refuse", "unsafe")
-        l = claim.lower()
-        if any(k in l for k in high_keywords):
+        claim_lower = claim.lower()
+        if any(k in claim_lower for k in high_keywords):
             conf = "HIGH"
-        elif any(k in l for k in low_keywords):
+        elif any(k in claim_lower for k in low_keywords):
             conf = "LOW"
         else:
             conf = "MEDIUM"
         # risk default
         risk = "unsafe or misleading change"
-        if any(k in l for k in ("refuse", "no-touch", "no touch", "unsafe", "no safe")):
+        if any(k in claim_lower for k in ("refuse", "no-touch", "no touch", "unsafe", "no safe")):
             risk = "unsafe_to_act"
         ev = {"ptr": "/interpreted", "excerpt_hash": _det_hash(claim)}
-        items.append(ChecklistItemV1(id=cid, claim=claim, obligation=claim, risk_if_false=risk, confidence=conf, evidence_ref=ev))
+        items.append(
+            ChecklistItemV1(
+                id=cid,
+                claim=claim,
+                obligation=claim,
+                risk_if_false=risk,
+                confidence=conf,
+                evidence_ref=ev))
         # additional items: one per remaining sentence
         for sidx, sent in enumerate(body_sentences[1:]):
             sc = f"{title}: {sent}" if title else sent
@@ -105,10 +113,23 @@ def interpret_raw_spec(text: str) -> List[ChecklistItemV1]:
             if any(k in sl for k in ("refuse", "no-touch", "no touch", "unsafe", "no safe")):
                 risk2 = "unsafe_to_act"
             ev2 = {"ptr": "/interpreted", "excerpt_hash": _det_hash(sc)}
-            items.append(ChecklistItemV1(id=sid, claim=sc, obligation=sc, risk_if_false=risk2, confidence=conf2, evidence_ref=ev2))
+            items.append(
+                ChecklistItemV1(
+                    id=sid,
+                    claim=sc,
+                    obligation=sc,
+                    risk_if_false=risk2,
+                    confidence=conf2,
+                    evidence_ref=ev2))
 
     # ensure never empty
     if not items:
-        items.append(ChecklistItemV1(id=_det_hash(text[:64]), claim=text[:200], obligation=text[:200], risk_if_false="unsafe or misleading change", confidence="LOW", evidence_ref={"ptr": "/interpreted", "excerpt_hash": _det_hash(text[:200])}))
+        items.append(ChecklistItemV1(id=_det_hash(text[:64]),
+                                     claim=text[:200],
+                                     obligation=text[:200],
+                                     risk_if_false="unsafe or misleading change",
+                                     confidence="LOW",
+                                     evidence_ref={"ptr": "/interpreted",
+                                                   "excerpt_hash": _det_hash(text[:200])}))
 
     return items

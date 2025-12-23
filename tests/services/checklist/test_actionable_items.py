@@ -7,9 +7,9 @@ def _prepare_env():
     os.makedirs('artifacts', exist_ok=True)
     open('artifacts/repo_sync_state.json', 'w').write('{}')
     import hashlib
-    h = hashlib.sha256(open('artifacts/repo_sync_state.json','rb').read()).hexdigest()
-    with open('repo_state_sync.json','w') as f:
-        json.dump({"files":[{"path":"artifacts/repo_sync_state.json","sha256":h}]}, f)
+    h = hashlib.sha256(open('artifacts/repo_sync_state.json', 'rb').read()).hexdigest()
+    with open('repo_state_sync.json', 'w') as f:
+        json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)
     import importlib
     importlib.import_module('shieldcraft.persona')
     import shieldcraft.persona as pmod
@@ -17,7 +17,42 @@ def _prepare_env():
 
 
 def _check_items(items):
-    verbs = {"verify", "ensure", "confirm", "prevent", "reject", "refuse", "avoid", "maintain", "record", "attach", "add", "update", "remove", "delete", "create", "preserve", "lock", "authorize", "test", "run", "execute", "enforce", "log", "audit", "annotate", "synthesize", "generate", "persist", "validate", "confirm", "fix", "resolve", "implement", "design", "build"}
+    verbs = {
+        "verify",
+        "ensure",
+        "confirm",
+        "prevent",
+        "reject",
+        "refuse",
+        "avoid",
+        "maintain",
+        "record",
+        "attach",
+        "add",
+        "update",
+        "remove",
+        "delete",
+        "create",
+        "preserve",
+        "lock",
+        "authorize",
+        "test",
+        "run",
+        "execute",
+        "enforce",
+        "log",
+        "audit",
+        "annotate",
+        "synthesize",
+        "generate",
+        "persist",
+        "validate",
+        "confirm",
+        "fix",
+        "resolve",
+        "implement",
+        "design",
+        "build"}
     for it in items:
         action = it.get('action')
         assert isinstance(action, str) and action, f"Missing action on item {it.get('id')}"

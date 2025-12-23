@@ -9,7 +9,6 @@ from shieldcraft.persona import (
     PERSONA_COMPLETE,
     PERSONA_VERSION_INCOMPATIBLE,
     load_persona,
-    is_persona_enabled,
 )
 
 
@@ -45,7 +44,7 @@ def test_disabling_persona_removes_artifacts(tmp_path, monkeypatch):
     for f in (os.path.join("artifacts", "persona_events_v1.json"), os.path.join("artifacts", "persona_events_v1.hash")):
         try:
             os.remove(f)
-        except Exception:
+        except Exception: # type: ignore
             pass
     # No exception: persona disabled means emission APIs are not called
     res = engine.preflight({})

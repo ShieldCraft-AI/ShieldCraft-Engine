@@ -1,6 +1,5 @@
-import json
 from shieldcraft.engine import Engine
-from shieldcraft.persona import Persona, PersonaContext
+from shieldcraft.persona import Persona
 from shieldcraft.persona.persona_registry import register_persona, clear_registry
 
 
@@ -8,8 +7,11 @@ def make_stub_context():
     class StubCtx:
         def __init__(self):
             self._events = []
+
         def record_event(self, code, phase, severity, message=None, evidence=None):
-            self._events.append({"code": code, "phase": phase, "severity": severity, "message": message, "evidence": evidence})
+            self._events.append({"code": code, "phase": phase, "severity": severity,
+                                "message": message, "evidence": evidence})
+
         def get_events(self):
             return self._events
     return StubCtx()
@@ -58,5 +60,3 @@ def test_persona_routing_invariance(monkeypatch, tmp_path):
     # Persona routing recorded only as advisory events/metadata
     evs = engine_yes.checklist_context.get_events()
     assert any(e.get("code") == "G7_PERSONA_VETO" for e in evs) or getattr(engine_yes, "_persona_veto_selected", None)
-
-

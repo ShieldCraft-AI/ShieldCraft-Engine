@@ -1,5 +1,4 @@
 import json
-import pytest
 
 from shieldcraft.services.checklist.generator import ChecklistGenerator
 from shieldcraft.engine import Engine, finalize_checklist
@@ -10,7 +9,8 @@ class DummyContext:
         self._events = []
 
     def record_event(self, gate, phase, outcome, **kwargs):
-        self._events.append({'gate_id': gate, 'phase': phase, 'outcome': outcome, 'message': kwargs.get('message'), 'evidence': kwargs.get('evidence')})
+        self._events.append({'gate_id': gate, 'phase': phase, 'outcome': outcome,
+                            'message': kwargs.get('message'), 'evidence': kwargs.get('evidence')})
 
     def get_events(self):
         return list(self._events)
@@ -61,7 +61,8 @@ def test_engine_finalizes_on_compiler_exception(monkeypatch, tmp_path):
 
     assert isinstance(res, dict)
     assert res.get('emitted') is True
-    # Finalize call should have recorded an internal diagnostic gate event (events live under result['checklist']['events'])
+    # Finalize call should have recorded an internal diagnostic gate event
+    # (events live under result['checklist']['events'])
     evs = res.get('checklist', {}).get('events', [])
     assert any(e.get('gate_id') == 'G22_EXECUTE_INTERNAL_ERROR_RETURN' for e in evs)
     # The finalized checklist should include the internal exception item

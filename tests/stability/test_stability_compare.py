@@ -1,4 +1,3 @@
-import pytest
 from shieldcraft.services.stability.stability import compare
 
 
@@ -11,7 +10,7 @@ def test_compare_identical_runs():
         "signature": "abc123",
         "manifest": {"data": "test"}
     }
-    
+
     assert compare(run1, run2) is True
 
 
@@ -24,7 +23,7 @@ def test_compare_different_signatures():
         "signature": "def456",
         "manifest": {"data": "test"}
     }
-    
+
     assert compare(run1, run2) is False
 
 
@@ -35,7 +34,7 @@ def test_compare_no_signatures():
     run2 = {
         "manifest": {"data": "test", "version": "1.0"}
     }
-    
+
     # Should fallback to deep comparison
     result = compare(run1, run2)
     assert result is True
@@ -48,7 +47,7 @@ def test_compare_different_manifests():
     run2 = {
         "manifest": {"data": "test2"}
     }
-    
+
     assert compare(run1, run2) is False
 
 
@@ -61,7 +60,7 @@ def test_compare_deterministic():
         "signature": "stable123",
         "manifest": {"field_b": "val2", "field_a": "val1"}  # Different order
     }
-    
+
     # Should be stable due to signature match
     assert compare(run1, run2) is True
 
@@ -69,6 +68,6 @@ def test_compare_deterministic():
 def test_compare_empty_runs():
     run1 = {}
     run2 = {}
-    
+
     result = compare(run1, run2)
     assert result is True

@@ -31,7 +31,8 @@ class ChecklistContext:
         self._events: List[ChecklistEvent] = []
         self._lock = Lock()
 
-    def record_event(self, gate_id: str, phase: str, outcome: str, message: Optional[str] = None, evidence: Optional[Dict[str, Any]] = None) -> None:
+    def record_event(self, gate_id: str, phase: str, outcome: str,
+                     message: Optional[str] = None, evidence: Optional[Dict[str, Any]] = None) -> None:
         """Record a single gate event. This method is non-blocking and
         does not modify control flow; callers should not rely on side-effects."""
         evt = ChecklistEvent(gate_id=gate_id, phase=phase, outcome=outcome, message=message, evidence=evidence)
@@ -53,6 +54,7 @@ class ChecklistContext:
 # Optional global context registration helpers (defensive; plumbing only)
 _GLOBAL_CONTEXT: Optional[ChecklistContext] = None
 
+
 def set_global_context(ctx: Optional[ChecklistContext]) -> None:
     global _GLOBAL_CONTEXT
     _GLOBAL_CONTEXT = ctx
@@ -62,7 +64,8 @@ def get_global_context() -> Optional[ChecklistContext]:
     return _GLOBAL_CONTEXT
 
 
-def record_event_global(gate_id: str, phase: str, outcome: str, message: Optional[str] = None, evidence: Optional[Dict[str, Any]] = None) -> None:
+def record_event_global(gate_id: str, phase: str, outcome: str,
+                        message: Optional[str] = None, evidence: Optional[Dict[str, Any]] = None) -> None:
     """Convenience: record event to the registered global context if present."""
     try:
         gc = get_global_context()

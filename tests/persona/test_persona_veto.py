@@ -1,5 +1,3 @@
-import os
-import pytest
 from shieldcraft.persona.persona_registry import register_persona, clear_registry
 from shieldcraft.persona import Persona
 from shieldcraft.engine import Engine
@@ -28,8 +26,11 @@ def test_persona_veto_halts_engine(monkeypatch, tmp_path):
     class StubCtx:
         def __init__(self):
             self._events = []
+
         def record_event(self, code, phase, severity, message=None, evidence=None):
-            self._events.append({"code": code, "phase": phase, "severity": severity, "message": message, "evidence": evidence})
+            self._events.append({"code": code, "phase": phase, "severity": severity,
+                                "message": message, "evidence": evidence})
+
         def get_events(self):
             return self._events
     engine.checklist_context = StubCtx()

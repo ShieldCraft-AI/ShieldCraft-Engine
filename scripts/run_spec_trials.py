@@ -44,7 +44,11 @@ def _safe_write(path: Path, obj: Any):
         json.dump(obj, f, indent=2, sort_keys=True)
 
 
-def run_trials(specs_dir: str, schema: str = "src/shieldcraft/dsl/schema/se_dsl.schema.json", out_report: str = "spec_trial_report.json", raw_artifacts_dir: str = "spec_trial_artifacts"):
+def run_trials(
+        specs_dir: str,
+        schema: str = "src/shieldcraft/dsl/schema/se_dsl.schema.json",
+        out_report: str = "spec_trial_report.json",
+        raw_artifacts_dir: str = "spec_trial_artifacts"):
     from importlib import import_module
     # local imports that rely on package
     ingest_spec = import_module("shieldcraft.services.spec.ingestion").ingest_spec
@@ -87,9 +91,11 @@ def run_trials(specs_dir: str, schema: str = "src/shieldcraft/dsl/schema/se_dsl.
 
             # Capture facts
             entry["conversion_state"] = manifest.get("conversion_state")
-            entry["readiness_status"] = (manifest.get("readiness", {}) or {}).get("status") if manifest.get("readiness") else None
+            entry["readiness_status"] = (manifest.get("readiness", {}) or {}).get(
+                "status") if manifest.get("readiness") else None
             entry["state_reason"] = manifest.get("state_reason")
-            entry["conversion_path_next_state"] = (manifest.get("conversion_path") or {}).get("next_state") if manifest.get("conversion_path") else None
+            entry["conversion_path_next_state"] = (manifest.get("conversion_path") or {}).get(
+                "next_state") if manifest.get("conversion_path") else None
             entry["checklist_preview_items"] = manifest.get("checklist_preview_items")
             entry["what_was_produced"] = ["manifest.json", "summary.json"]
             entry["what_was_skipped"] = []
@@ -155,13 +161,23 @@ def run_trials(specs_dir: str, schema: str = "src/shieldcraft/dsl/schema/se_dsl.
                         base_path = Path(baseline_dir) / fp.name / "checklist_draft.json"
                         if base_path.exists():
                             base = json.loads(base_path.read_text())
-                            added = [i for i in data.get("items", []) if i.get("id") not in {b.get("id") for b in base.get("items", [])}]
-                            removed = [i for i in base.get("items", []) if i.get("id") not in {d.get("id") for d in data.get("items", [])}]
+                            added = [
+                                i for i in data.get(
+                                    "items", []) if i.get("id") not in {
+                                    b.get("id") for b in base.get(
+                                        "items", [])}]
+                            removed = [
+                                i for i in base.get(
+                                    "items", []) if i.get("id") not in {
+                                    d.get("id") for d in data.get(
+                                        "items", [])}]
                             changed = []
                             base_map = {b.get("id"): b for b in base.get("items", [])}
                             for it in data.get("items", []):
                                 bid = it.get("id")
-                                if bid in base_map and json.dumps(it, sort_keys=True) != json.dumps(base_map[bid], sort_keys=True):
+                                if bid in base_map and json.dumps(
+                                        it, sort_keys=True) != json.dumps(
+                                        base_map[bid], sort_keys=True):
                                     changed.append(it)
                             entry["checklist_diff_added"] = len(added)
                             entry["checklist_diff_removed"] = len(removed)
@@ -206,19 +222,28 @@ def run_trials(specs_dir: str, schema: str = "src/shieldcraft/dsl/schema/se_dsl.
             try:
                 from shieldcraft.services.ast.builder import ASTBuilder
                 from shieldcraft.services.checklist.generator import ChecklistGenerator
-                from shieldcraft.services.guidance.checklist import annotate_items, annotate_items_with_blockers, enrich_with_confidence_and_evidence
+                from shieldcraft.services.guidance.checklist import (
+                    annotate_items, annotate_items_with_blockers,
+                    enrich_with_confidence_and_evidence)
                 ast = ASTBuilder().build(spec)
-                checklist_obj = ChecklistGenerator().build(spec, ast=ast, dry_run=True, run_test_gate=False, engine=Engine(schema))
+                checklist_obj = ChecklistGenerator().build(
+                    spec, ast=ast, dry_run=True, run_test_gate=False,
+                    engine=Engine(schema))
                 if isinstance(checklist_obj, dict):
                     annotate_items(checklist_obj.get("items", []))
-                    annotate_items_with_blockers(checklist_obj.get("items", []), validation_errors=[getattr(e, "code", None)])
+                    annotate_items_with_blockers(
+                        checklist_obj.get(
+                            "items", []), validation_errors=[
+                            getattr(
+                                e, "code", None)])
                     try:
                         from shieldcraft.services.guidance.checklist import ensure_item_fields
                         enrich_with_confidence_and_evidence(checklist_obj.get("items", []), spec)
                         ensure_item_fields(checklist_obj.get("items", []))
                     except Exception:
                         pass
-                    _safe_write(artifacts_base / "checklist_draft.json", {"items": checklist_obj.get("items", []), "status": "draft"})
+                    _safe_write(artifacts_base / "checklist_draft.json",
+                                {"items": checklist_obj.get("items", []), "status": "draft"})
                     # Post-write guard
                     try:
                         from shieldcraft.services.guidance.checklist import ensure_item_fields
@@ -231,7 +256,8 @@ def run_trials(specs_dir: str, schema: str = "src/shieldcraft/dsl/schema/se_dsl.
                     entry["checklist_item_count"] = len(checklist_obj.get("items", []))
                     # Attempt to compute and persist spec_feedback for validation failures
                     try:
-                        from shieldcraft.services.guidance.checklist import annotate_items_with_remediation, build_spec_feedback
+                        from shieldcraft.services.guidance.checklist import (
+                            annotate_items_with_remediation, build_spec_feedback)
                         items = checklist_obj.get("items", [])
                         annotate_items_with_remediation(items, spec)
                         fb = build_spec_feedback(items, spec)
@@ -248,7 +274,8 @@ def run_trials(specs_dir: str, schema: str = "src/shieldcraft/dsl/schema/se_dsl.
                 entry["checklist_emitted"] = False
                 entry["checklist_item_count"] = 0
             # Minimal summary
-            summary = {"status": "fail", "validity_status": "fail", "errors": [err], "conversion_state": manifest.get("conversion_state")}
+            summary = {"status": "fail", "validity_status": "fail", "errors": [
+                err], "conversion_state": manifest.get("conversion_state")}
             _safe_write(artifacts_base / "summary.json", summary)
             entry["conversion_state"] = manifest.get("conversion_state")
             entry["readiness_status"] = "not_evaluated"
@@ -261,7 +288,8 @@ def run_trials(specs_dir: str, schema: str = "src/shieldcraft/dsl/schema/se_dsl.
             print(tb)
             entry["error_codes"].append({"type": type(e).__name__, "message": str(e)})
             artifacts_base.mkdir(parents=True, exist_ok=True)
-            _safe_write(artifacts_base / "errors.json", {"errors": [{"type": type(e).__name__, "message": str(e), "traceback": tb}]})
+            _safe_write(artifacts_base / "errors.json",
+                        {"errors": [{"type": type(e).__name__, "message": str(e), "traceback": tb}]})
             # Explicitly record missing checklist
             entry["checklist_emitted"] = False
             entry["checklist_item_count"] = 0
@@ -269,7 +297,10 @@ def run_trials(specs_dir: str, schema: str = "src/shieldcraft/dsl/schema/se_dsl.
         collected.append(entry)
         # Emit debug trace for per-spec results to aid triage when running CLI
         try:
-            print(f"[SPEC-TRIAL] spec={entry.get('spec_path')} checklist_emitted={entry.get('checklist_emitted')} items={entry.get('checklist_item_count')}")
+            print(
+                f"[SPEC-TRIAL] spec={entry.get('spec_path')} "
+                f"checklist_emitted={entry.get('checklist_emitted')} "
+                f"items={entry.get('checklist_item_count')}")
         except Exception:
             pass
 
@@ -291,7 +322,11 @@ def run_trials(specs_dir: str, schema: str = "src/shieldcraft/dsl/schema/se_dsl.
         # Debug: print collected entries for triage
         try:
             for r in collected:
-                print(f"[SPEC-TRIAL-DEBUG] {r.get('spec_path')} emitted={r.get('checklist_emitted')} items={r.get('checklist_item_count')} errors={r.get('error_codes')}")
+                print(
+                    f"[SPEC-TRIAL-DEBUG] {r.get('spec_path')} "
+                    f"emitted={r.get('checklist_emitted')} "
+                    f"items={r.get('checklist_item_count')} "
+                    f"errors={r.get('error_codes')}")
         except Exception:
             pass
     if missing:

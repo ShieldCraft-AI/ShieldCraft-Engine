@@ -14,7 +14,7 @@ def test_preflight_halts_on_missing_test_refs(monkeypatch):
     monkeypatch.setattr(engine.checklist_gen, "build", fake_build)
 
     import json
-    spec = json.load(open('spec/se_dsl_v1.spec.json'))
+    spec = json.load(open('spec/se_dsl_v1.spec.json', encoding='utf-8'))
 
     # Enable TAC enforcement for this test via env var
     monkeypatch.setenv("SHIELDCRAFT_ENFORCE_TEST_ATTACHMENT", "1")

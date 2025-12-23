@@ -1,5 +1,4 @@
 import os
-import shutil
 
 from shieldcraft.services.guidance.progress import load_last_state, persist_last_state, compute_progress_summary
 

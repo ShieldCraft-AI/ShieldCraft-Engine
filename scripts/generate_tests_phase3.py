@@ -1,7 +1,5 @@
 import json
 from pathlib import Path
-from collections import defaultdict
-from collections import defaultdict
 
 INCLUDE_CATEGORIES = {"meta", "gov", "general"}
 MAX_TESTS = 30
@@ -24,7 +22,7 @@ metadata_required = set(metadata_schema.get('required', []))
 metadata_props = metadata_schema.get('properties', {})
 
 # Determine existing generated tests
-existing_tests = {p.stem.replace('test_','') for p in Path('tests/generated/verification_spine').glob('test_*.py')}
+existing_tests = {p.stem.replace('test_', '') for p in Path('tests/generated/verification_spine').glob('test_*.py')}
 
 candidates = []
 for it in checklist:
@@ -53,13 +51,13 @@ for it in checklist:
     # 3) boolean explicitly expected in text (e.g., 'Implement boolean at /x: True')
     if invariant is None:
         txt = (it.get('text') or '').lower()
-        if 'implement boolean' in txt and ':' in it.get('text',''):
+        if 'implement boolean' in txt and ':' in it.get('text', ''):
             # parse trailing literal
             parts = it.get('text').split(':')
             if len(parts) > 1:
                 lit = parts[1].strip()
-                if lit.lower() in ('true','false'):
-                    invariant = {'type': 'exact_value', 'ptr': ptr, 'value': True if lit.lower()=='true' else False}
+                if lit.lower() in ('true', 'false'):
+                    invariant = {'type': 'exact_value', 'ptr': ptr, 'value': True if lit.lower() == 'true' else False}
     if invariant:
         candidates.append((cid, it, invariant))
 
@@ -68,7 +66,7 @@ candidates = candidates[:MAX_TESTS]
 
 generated = []
 for cid, it, inv in candidates:
-    safe = cid.replace(':','_').replace('/','_')
+    safe = cid.replace(':', '_').replace('/', '_')
     test_name = f"test_{safe}"
     test_path = OUT_TEST_DIR / f"{test_name}.py"
     # Build test content depending on invariant type
@@ -86,33 +84,43 @@ def test_{safe}():
     val = spec['metadata']['{field}']
     assert val is not None, 'Spec pointer /metadata/{field} must be present'
 """
-    elif inv['type']=='exact_value':
+    elif inv['type'] == 'exact_value':
         val = inv['value']
-        content = f"""import json
+        # Compute check_lines if needed
+        check_lines_code = ""
+        if isinstance(val, dict):
+            checks = []
+            for k, v in val.items():
+                if isinstance(v, (str, bool, int, float)):
+                    checks.append((k, v))
+            check_lines_code = "\n    ".join([
+                ("assert '{k}' in cur and cur['{k}'] == {v_repr}, "
+                 "'Invariant failed: {ptr}/{k} != {v_repr}'").format(
+                    k=k, v_repr=repr(v), ptr=inv['ptr']) for k, v in checks
+            ])
+        content = """import json
 from pathlib import Path
 
 SPEC=Path('spec/se_dsl_v1.spec.json')
 
 def test_{safe}():
     spec=json.loads(SPEC.read_text())
-    # Assert exact value at {inv['ptr']}
-    parts='{inv['ptr']}'.lstrip('/').split('/')
+    # Assert exact value at {inv_ptr}
+    parts='{inv_ptr}'.lstrip('/').split('/')
     cur=spec
     for p in parts:
-        assert p in cur, f'Pointer {inv['ptr']} missing in spec'
+        assert p in cur, f'Pointer {inv_ptr} missing in spec'
         cur = cur[p]
         if isinstance(val, dict):
             checks = []
             for k, v in val.items():
                 if isinstance(v, (str, bool, int, float)):
                     checks.append((k, v))
-            check_lines = "\n    ".join([
-                f"assert '{k}' in cur and cur['{k}'] == {repr(v)}, 'Invariant failed: {inv['ptr']}/{k} != {repr(v)}'" for k, v in checks
-            ])
-            {check_lines}
+            check_lines = "{check_lines_code}"
+            {{check_lines}}
         else:
-            assert cur == {repr(val)}, 'Invariant failed: {inv['ptr']} != {repr(val)}'
-"""
+            assert cur == {val_repr}, 'Invariant failed: {inv_ptr} != {val_repr}'
+""".format(safe=safe, inv_ptr=inv['ptr'], check_lines_code=check_lines_code, val_repr=repr(val))
     else:
         continue
     test_path.write_text(content)
@@ -122,9 +130,9 @@ def test_{safe}():
 report = {
     'tests_generated': len(generated),
     'items_covered': [g['id'] for g in generated],
-    'categories_covered': sorted(list({it.get('category') for _,it,_ in candidates})),
+    'categories_covered': sorted(list({it.get('category') for _, it, _ in candidates})),
     'remaining_unlinked_items': [it.get('id') for it in checklist if (not it.get('test_refs'))],
-    'generated_tests': [{ 'id': g['id'], 'path': g['test'], 'invariant': g['invariant']} for g in generated]
+    'generated_tests': [{'id': g['id'], 'path': g['test'], 'invariant': g['invariant']} for g in generated]
 }
 OUT = OUT_REPORT_DIR / 'phase3_report.json'
 OUT.write_text(json.dumps(report, indent=2, sort_keys=True))

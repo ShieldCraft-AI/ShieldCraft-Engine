@@ -10,4 +10,3 @@ def test_render_basic():
     x_item = [i for i in all_items if i["ptr"] == "/x"][0]
     # Updated assertion to match new render_task implementation
     assert x_item["text"].startswith("Implement value")
-

@@ -30,9 +30,9 @@ def load_last_state(product_id: str) -> Optional[Dict[str, Any]]:
     if not os.path.exists(p):
         return None
     try:
-        with open(p) as f:
+        with open(p, encoding='utf-8') as f:
             return json.load(f)
-    except Exception:
+    except (IOError, OSError, json.JSONDecodeError, ValueError):
         return None
 
 
@@ -42,12 +42,21 @@ def persist_last_state(product_id: str, fingerprint: str, conversion_state: str,
     os.makedirs(os.path.dirname(p), exist_ok=True)
     # Atomic write
     tmp = p + ".tmp"
-    with open(tmp, "w") as f:
+    with open(tmp, "w", encoding='utf-8') as f:
         json.dump(d, f, indent=2, sort_keys=True)
     os.replace(tmp, p)
 
 
-def compute_progress_summary(prev: Optional[Dict[str, Any]], current_state: Optional[str], current_readiness_status: Optional[str], missing_next: Optional[List[Dict[str, Any]]], readiness_results: Optional[Dict[str, Any]], current_fingerprint: Optional[str] = None) -> Dict[str, Any]:
+def compute_progress_summary(prev: Optional[Dict[str,
+                                                 Any]],
+                             current_state: Optional[str],
+                             current_readiness_status: Optional[str],
+                             missing_next: Optional[List[Dict[str,
+                                                              Any]]],
+                             readiness_results: Optional[Dict[str,
+                                                              Any]],
+                             current_fingerprint: Optional[str] = None) -> Dict[str,
+                                                                                Any]:
     prev_state = prev.get("conversion_state") if prev else None
     prev_readiness = prev.get("readiness_status") if prev else None
     prev_fp = prev.get("fingerprint") if prev else None
@@ -59,7 +68,8 @@ def compute_progress_summary(prev: Optional[Dict[str, Any]], current_state: Opti
     if prev and current_fingerprint and prev_fp == current_fingerprint and prev_readiness == "pass":
         valid_baseline = True
 
-    out: Dict[str, Any] = {"previous_state": (prev if valid_baseline else None), "current_state": cur_state, "delta": None, "reasons": []}
+    out: Dict[str, Any] = {"previous_state": (prev if valid_baseline else None),
+                           "current_state": cur_state, "delta": None, "reasons": []}
 
     # Treat as first observation when baseline is not valid
     if not valid_baseline:
@@ -110,7 +120,10 @@ def compute_progress_summary(prev: Optional[Dict[str, Any]], current_state: Opti
         if missing_next:
             reasons.append("missing:" + ",".join([i.get("code") or "unspecified" for i in missing_next]))
         elif readiness_results:
-            failed = [g for g, r in readiness_results.get("results", {}).items() if isinstance(r, dict) and not r.get("ok")]
+            failed = [
+                g for g, r in readiness_results.get(
+                    "results", {}).items() if isinstance(
+                    r, dict) and not r.get("ok")]
             if failed:
                 reasons.append("failing_gates:" + ",".join(sorted(failed)))
             else:

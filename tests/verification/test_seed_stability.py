@@ -1,5 +1,4 @@
 from shieldcraft.engine import Engine
-from shieldcraft.verification.seed_manager import generate_seed
 
 
 def test_seed_changes_cause_marker_variation(monkeypatch):

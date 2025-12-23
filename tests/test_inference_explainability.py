@@ -17,8 +17,10 @@ def test_synthesized_items_have_explainability():
     class StubContext:
         def __init__(self):
             self._events = []
+
         def record_event(self, *args, **kwargs):
             self._events.append((args, kwargs))
+
         def get_events(self):
             return list(self._events)
 
@@ -44,12 +46,16 @@ def test_coercion_explainability_on_missing_pointer():
     assert 'original_value' in ni.get('meta', {})
 
 
-
 def test_derived_tasks_have_explainability():
     from shieldcraft.services.checklist.derived import infer_tasks
     item = {'ptr': '/metadata', 'id': 'i1', 'value': {}}  # missing product_id -> derived tasks
     derived = infer_tasks(item)
-    has_set_product = any(d for d in derived if d.get('meta', {}).get('justification', '').startswith('missing_metadata_field'))
+    has_set_product = any(
+        d for d in derived if d.get(
+            'meta',
+            {}).get(
+            'justification',
+            '').startswith('missing_metadata_field'))
     assert has_set_product
     # Derived tasks for missing metadata fields must record parent provenance
     for d in derived:
@@ -83,8 +89,10 @@ def test_invariant_default_explainability():
     class StubContext:
         def __init__(self):
             self._events = []
+
         def record_event(self, *args, **kwargs):
             self._events.append((args, kwargs))
+
         def get_events(self):
             return list(self._events)
 
@@ -107,14 +115,24 @@ def test_refusal_masking_adds_diagnostic_item():
     class StubContext:
         def __init__(self):
             self._events = []
+
         def record_event(self, gate_id, phase, outcome, message=None, evidence=None, **kwargs):
-            self._events.append({'gate_id': gate_id, 'phase': phase, 'outcome': outcome, 'message': message, 'evidence': evidence})
+            self._events.append({'gate_id': gate_id, 'phase': phase, 'outcome': outcome,
+                                'message': message, 'evidence': evidence})
+
         def get_events(self):
             return list(self._events)
 
     engine.checklist_context = StubContext()
     from shieldcraft.services.governance.refusal_authority import record_refusal_event
-    record_refusal_event(engine.checklist_context, 'G2_GOVERNANCE_PRESENCE_CHECK', 'preflight', message='missing governance doc', trigger='missing_authority', scope='/governance', justification='gov_missing')
+    record_refusal_event(
+        engine.checklist_context,
+        'G2_GOVERNANCE_PRESENCE_CHECK',
+        'preflight',
+        message='missing governance doc',
+        trigger='missing_authority',
+        scope='/governance',
+        justification='gov_missing')
     res = finalize_checklist(engine)
     items = res['checklist']['items']
     assert any(it.get('text', '').startswith('REFUSAL_DIAG:') for it in items)

@@ -7,13 +7,13 @@ class ChecklistModel:
         "task", "module", "fix-dependency", "resolve-invariant",
         "resolve-cycle", "integration", "bootstrap", "set-metadata"
     }
-    
+
     # Canonical key order for to_dict()
     CANONICAL_KEYS = [
         "id", "spec_pointer", "ptr", "test_refs", "category", "severity", "deps", "invariants",
         "meta", "derived", "origin"
     ]
-    
+
     def normalize_item(self, item):
         # Require explicit traceability: prefer explicit 'spec_pointer'.
         if "spec_pointer" not in item and "ptr" not in item:
@@ -23,7 +23,11 @@ class ChecklistModel:
             try:
                 from shieldcraft.services.checklist.context import record_event_global
                 try:
-                    record_event_global("G21_CHECKLIST_MODEL_VALIDATION_ERRORS", "generation", "BLOCKER", message="missing spec pointer")
+                    record_event_global(
+                        "G21_CHECKLIST_MODEL_VALIDATION_ERRORS",
+                        "generation",
+                        "BLOCKER",
+                        message="missing spec pointer")
                 except Exception:
                     pass
             except Exception:
@@ -63,13 +67,17 @@ class ChecklistModel:
             item["test_refs"] = item.get("meta", {}).get("test_refs", [])
         ptr = item.get("ptr")
         text = item.get("text", "")
-        
+
         # Enforce item.id as string
         if "id" in item and not isinstance(item["id"], str):
             try:
                 from shieldcraft.services.checklist.context import record_event_global
                 try:
-                    record_event_global("G21_CHECKLIST_MODEL_VALIDATION_ERRORS", "generation", "BLOCKER", message="item id not string")
+                    record_event_global(
+                        "G21_CHECKLIST_MODEL_VALIDATION_ERRORS",
+                        "generation",
+                        "BLOCKER",
+                        message="item id not string")
                 except Exception:
                     pass
             except Exception:
@@ -87,13 +95,19 @@ class ChecklistModel:
             item["meta"].setdefault("inference_type", "coercion")
             item["severity"] = "high"
             item["quality_status"] = "INVALID"
-        
+
         # Enforce item.type in allowed set
         if "type" in item and item["type"] not in self.ALLOWED_TYPES:
             try:
                 from shieldcraft.services.checklist.context import record_event_global
                 try:
-                    record_event_global("G21_CHECKLIST_MODEL_VALIDATION_ERRORS", "generation", "BLOCKER", message="item type not allowed", evidence={"type": item.get('type')})
+                    record_event_global(
+                        "G21_CHECKLIST_MODEL_VALIDATION_ERRORS",
+                        "generation",
+                        "BLOCKER",
+                        message="item type not allowed",
+                        evidence={
+                            "type": item.get('type')})
                 except Exception:
                     pass
             except Exception:
@@ -111,7 +125,7 @@ class ChecklistModel:
             item["severity"] = "high"
             item["quality_status"] = "INVALID"
             item["type"] = "task"
-        
+
         # Enforce deterministic meta fields
         if "meta" not in item:
             item["meta"] = {}
@@ -119,7 +133,11 @@ class ChecklistModel:
             try:
                 from shieldcraft.services.checklist.context import record_event_global
                 try:
-                    record_event_global("G21_CHECKLIST_MODEL_VALIDATION_ERRORS", "generation", "BLOCKER", message="item meta not dict")
+                    record_event_global(
+                        "G21_CHECKLIST_MODEL_VALIDATION_ERRORS",
+                        "generation",
+                        "BLOCKER",
+                        message="item meta not dict")
                 except Exception:
                     pass
             except Exception:
@@ -137,7 +155,7 @@ class ChecklistModel:
             item["meta"].setdefault("inference_type", "coercion")
             item["severity"] = "high"
             item["quality_status"] = "INVALID"
-        
+
         # Ensure unified schema fields
         if "category" not in item:
             item["category"] = self.classify(item)
@@ -154,11 +172,11 @@ class ChecklistModel:
                 "source": "derived" if item.get("derived", False) else "spec",
                 "parent": item.get("meta", {}).get("parent_id", None)
             }
-        
+
         if "id" not in item:
             item["id"] = stable_id(ptr, text)
         return item
-    
+
     def to_dict(self, item):
         """Convert item to dict with canonical key ordering."""
         result = {}

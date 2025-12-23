@@ -7,9 +7,9 @@ import hashlib
 def _prepare_env():
     os.makedirs('artifacts', exist_ok=True)
     open('artifacts/repo_sync_state.json', 'w').write('{}')
-    h = hashlib.sha256(open('artifacts/repo_sync_state.json','rb').read()).hexdigest()
-    with open('repo_state_sync.json','w') as f:
-        json.dump({"files":[{"path":"artifacts/repo_sync_state.json","sha256":h}]}, f)
+    h = hashlib.sha256(open('artifacts/repo_sync_state.json', 'rb').read()).hexdigest()
+    with open('repo_state_sync.json', 'w') as f:
+        json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)
     import importlib
     importlib.import_module('shieldcraft.persona')
     import shieldcraft.persona as pmod
@@ -18,7 +18,6 @@ def _prepare_env():
 
 def test_se_spec_is_sufficient():
     # Use Engine dry-run to avoid validation-failure short-circuit and evaluate sufficiency
-    from shieldcraft.engine import Engine
     from shieldcraft.interpretation.requirements import extract_requirements
     from shieldcraft.requirements.coverage import compute_coverage
     from shieldcraft.requirements.sufficiency import evaluate_sufficiency

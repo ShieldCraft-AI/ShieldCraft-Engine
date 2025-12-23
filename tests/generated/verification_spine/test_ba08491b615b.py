@@ -1,13 +1,14 @@
 import json
 from pathlib import Path
 
-SPEC=Path('spec/se_dsl_v1.spec.json')
+SPEC = Path('spec/se_dsl_v1.spec.json')
+
 
 def test_ba08491b615b():
-    spec=json.loads(SPEC.read_text())
+    spec = json.loads(SPEC.read_text())
     # Assert exact value at /metadata
-    parts='/metadata'.lstrip('/').split('/')
-    cur=spec
+    parts = '/metadata'.lstrip('/').split('/')
+    cur = spec
     for p in parts:
         assert p in cur, f'Pointer /metadata missing in spec'
         cur = cur[p]

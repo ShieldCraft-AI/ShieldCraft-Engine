@@ -16,12 +16,15 @@ def build_with_personas(personas, order_seed=None):
 
 def test_multiple_personas_order_irrelevant(monkeypatch):
     # Create personas that only annotate (no authority)
-    p1 = Persona(name="p1", scope=["checklist"], allowed_actions=["annotate"], constraints={"constraint": [{"match": {"ptr": "/sections"}, "set": {"meta": {"note": "p1"}}}]})
-    p2 = Persona(name="p2", scope=["checklist"], allowed_actions=["annotate"], constraints={"constraint": [{"match": {"ptr": "/sections"}, "set": {"meta": {"note": "p2"}}}]})
+    p1 = Persona(name="p1", scope=["checklist"], allowed_actions=["annotate"], constraints={
+                 "constraint": [{"match": {"ptr": "/sections"}, "set": {"meta": {"note": "p1"}}}]})
+    p2 = Persona(name="p2", scope=["checklist"], allowed_actions=["annotate"], constraints={
+                 "constraint": [{"match": {"ptr": "/sections"}, "set": {"meta": {"note": "p2"}}}]})
 
     res1 = build_with_personas([p1, p2])
     res2 = build_with_personas([p2, p1])
     # Primary items should be identical ignoring persona-added meta
+
     def strip_persona_meta(chk):
         out = []
         for it in chk.get("items", []):

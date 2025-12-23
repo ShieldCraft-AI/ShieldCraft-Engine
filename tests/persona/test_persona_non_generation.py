@@ -1,4 +1,3 @@
-import pytest
 from shieldcraft.persona.persona_registry import register_persona, clear_registry
 from shieldcraft.persona import Persona
 from shieldcraft.engine import Engine

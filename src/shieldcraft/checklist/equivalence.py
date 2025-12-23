@@ -96,7 +96,8 @@ def choose_primary(group: List[Dict[str, Any]]) -> Dict[str, Any]:
     return best
 
 
-def detect_and_collapse(items: List[Dict[str, Any]], requirements: List[Dict[str, Any]], outdir: str = '.selfhost_outputs') -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+def detect_and_collapse(items: List[Dict[str, Any]], requirements: List[Dict[str, Any]],
+                        outdir: str = '.selfhost_outputs') -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     groups = group_equivalent_items(items)
     collapsed_map = {}
     removed = 0

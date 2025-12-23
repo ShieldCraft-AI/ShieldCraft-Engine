@@ -5,29 +5,27 @@ Deterministic, stable outputs include pointer-level diffs and a
 semantic section-level summary for authoring guidance.
 """
 
-import json
-
 
 def compute_evolution(old_spec, new_spec):
     """
     Compare old and new spec versions.
-    
+
     Args:
         old_spec: Previous spec dict
         new_spec: Current spec dict
-    
+
     Returns:
         Dict with evolution analysis
     """
     from shieldcraft.services.spec.pointer_auditor import extract_json_pointers
-    
+
     old_pointers = extract_json_pointers(old_spec) if old_spec else set()
     new_pointers = extract_json_pointers(new_spec)
-    
+
     added = sorted(new_pointers - old_pointers)
     removed = sorted(old_pointers - new_pointers)
     unchanged = sorted(old_pointers & new_pointers)
-    
+
     # Check for changes in unchanged pointers
     changed = []
     for ptr in unchanged:
@@ -35,10 +33,10 @@ def compute_evolution(old_spec, new_spec):
         new_val = _get_value_at_pointer(new_spec, ptr)
         if old_val != new_val:
             changed.append(ptr)
-    
+
     changed = sorted(changed)
     truly_unchanged = sorted(set(unchanged) - set(changed))
-    
+
     summary = {
         "added_count": len(added),
         "removed_count": len(removed),
@@ -47,11 +45,12 @@ def compute_evolution(old_spec, new_spec):
         "total_old": len(old_pointers),
         "total_new": len(new_pointers)
     }
-    
+
     # Include semantic section-level changes (added/removed/filled)
     try:
         from shieldcraft.services.spec.analysis import classify_dsl_sections
-        old_sections = classify_dsl_sections(old_spec or {}, "src/shieldcraft/dsl/schema/se_dsl.schema.json") if old_spec else {}
+        old_sections = classify_dsl_sections(old_spec or {},
+                                             "src/shieldcraft/dsl/schema/se_dsl.schema.json") if old_spec else {}
         new_sections = classify_dsl_sections(new_spec or {}, "src/shieldcraft/dsl/schema/se_dsl.schema.json")
 
         semantic_sections_changed = {}
@@ -90,10 +89,10 @@ def _get_value_at_pointer(spec, ptr):
     """Get value at JSON pointer."""
     if not ptr or ptr == "/":
         return spec
-    
+
     parts = ptr.lstrip("/").split("/")
     current = spec
-    
+
     try:
         for part in parts:
             if isinstance(current, dict):

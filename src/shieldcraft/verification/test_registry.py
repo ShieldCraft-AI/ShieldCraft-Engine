@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Dict, List
+from typing import Dict
 
 
 def discover_tests(root: str = "tests") -> Dict[str, str]:

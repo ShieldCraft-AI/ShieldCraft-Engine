@@ -8,12 +8,18 @@ def test_persona_event_and_hash_emitted_together(tmp_path, monkeypatch):
     from shieldcraft.engine import Engine
     from shieldcraft.persona import PersonaContext, emit_annotation
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
-    p = PersonaContext(name="c", role=None, display_name=None, scope=["preflight"], allowed_actions=["annotate"], constraints={})
+    p = PersonaContext(
+        name="c",
+        role=None,
+        display_name=None,
+        scope=["preflight"],
+        allowed_actions=["annotate"],
+        constraints={})
     # Remove any pre-existing artifacts
     for f in ("artifacts/persona_events_v1.json", "artifacts/persona_events_v1.hash"):
         try:
             os.remove(f)
-        except Exception:
+        except Exception: # type: ignore
             pass
 
     emit_annotation(engine, p, "preflight", "note", "info")

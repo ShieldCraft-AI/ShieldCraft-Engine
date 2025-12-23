@@ -26,7 +26,7 @@ def bundle(spec_fp, items_fp, plan_fp, code_fp):
     """
     Create artifact bundle from fingerprints.
     No IO; returns structured data only.
-    
+
     Returns:
         {
             "manifest": <canonical_json>,
@@ -40,13 +40,13 @@ def bundle(spec_fp, items_fp, plan_fp, code_fp):
         "plan_fingerprint": hashlib.sha256(plan_fp.encode()).hexdigest(),
         "code_fingerprint": hashlib.sha256(code_fp.encode()).hexdigest()
     }
-    
+
     # Canonical JSON
     manifest_json = json.dumps(manifest, sort_keys=True)
-    
+
     # Signature
     signature = hashlib.sha256(manifest_json.encode()).hexdigest()
-    
+
     return {
         "manifest": manifest,
         "signature": signature,

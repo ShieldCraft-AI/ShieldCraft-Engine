@@ -16,6 +16,7 @@ import pathlib
 from typing import Any
 from shieldcraft.services.spec.normalization import build_minimal_dsl_skeleton
 
+
 def ingest_spec(path: str) -> Any:
     """Ingest a spec file at `path`.
 

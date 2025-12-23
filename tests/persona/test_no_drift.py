@@ -13,7 +13,13 @@ def test_no_drift_blocks_unlogged_persona_actions(tmp_path, monkeypatch):
 
     engine = EngineStub()
 
-    p = PersonaContext(name="x", role=None, display_name=None, scope=["preflight"], allowed_actions=["annotate"], constraints={})
+    p = PersonaContext(
+        name="x",
+        role=None,
+        display_name=None,
+        scope=["preflight"],
+        allowed_actions=["annotate"],
+        constraints={})
     # Emit an annotation but DO NOT record a decision
     emit_annotation(engine, p, "preflight", "note", "info")
 
@@ -31,6 +37,7 @@ def test_no_drift_blocks_unlogged_persona_actions(tmp_path, monkeypatch):
     # As a further check, generator should not silently ignore persona influence; call build and expect no crash
     gen = ChecklistGenerator()
     spec = {"metadata": {"product_id": "x"}, "sections": []}
-    # Build may or may not surface the guard depending on flow; ensure it completes without producing manifest without raising
+    # Build may or may not surface the guard depending on flow; ensure it
+    # completes without producing manifest without raising
     result = gen.build(spec)
     assert isinstance(result, dict)

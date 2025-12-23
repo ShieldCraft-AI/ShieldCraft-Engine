@@ -22,6 +22,6 @@ def test_selfhost_repeatability(tmp_path):
     assert outs1 == outs2
 
     # And content should be identical per path
-    map1 = {o['path']: o.get('content','') for o in r1.get('outputs',[])}
-    map2 = {o['path']: o.get('content','') for o in r2.get('outputs',[])}
+    map1 = {o['path']: o.get('content', '') for o in r1.get('outputs', [])}
+    map2 = {o['path']: o.get('content', '') for o in r2.get('outputs', [])}
     assert map1 == map2

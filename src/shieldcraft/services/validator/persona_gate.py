@@ -24,7 +24,15 @@ def enforce_persona_veto(engine) -> None:
     # Record as a DIAGNOSTIC on the engine context instead of raising
     try:
         if getattr(engine, "checklist_context", None):
-            engine.checklist_context.record_event("G7_PERSONA_VETO", "preflight", "DIAGNOSTIC", message="persona veto advisory (non-authoritative)", evidence={"persona_id": sel.get('persona_id'), "code": sel.get('code'), "explanation": expl})
+            engine.checklist_context.record_event(
+                "G7_PERSONA_VETO",
+                "preflight",
+                "DIAGNOSTIC",
+                message="persona veto advisory (non-authoritative)",
+                evidence={
+                    "persona_id": sel.get('persona_id'),
+                    "code": sel.get('code'),
+                    "explanation": expl})
     except Exception:
         pass
     # Keep a pointer to the selected veto for observability, but do not raise

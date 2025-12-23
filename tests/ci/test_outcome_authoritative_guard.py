@@ -9,7 +9,7 @@ ALLOWED_FILES = {
     os.path.join('shieldcraft', 'services', 'checklist', 'outcome.py'),
 }
 
-ASSIGNMENT_RE = re.compile(r"(?:primary_outcome\s*=|\['primary_outcome'\]\s*=|primary_outcome\s*:)" )
+ASSIGNMENT_RE = re.compile(r"(?:primary_outcome\s*=|\['primary_outcome'\]\s*=|primary_outcome\s*:)")
 
 
 def test_no_unauthorized_primary_outcome_assignments():
@@ -25,7 +25,7 @@ def test_no_unauthorized_primary_outcome_assignments():
             try:
                 with open(path, 'r', encoding='utf-8') as fh:
                     txt = fh.read()
-            except Exception:
+            except Exception: # type: ignore
                 continue
             if ASSIGNMENT_RE.search(txt):
                 violations.append(rel)

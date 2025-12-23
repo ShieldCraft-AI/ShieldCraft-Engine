@@ -9,7 +9,7 @@ def test_run_self_build_propagates_finalized_checklist(monkeypatch, tmp_path):
 
     def fake_run_self_host(self, spec, dry_run=False, emit_preview=None):
         # Simulate a finalized checklist result with no output_dir
-        return {'checklist': {'items': [], 'emitted': True, 'events': [{'gate_id':'G14_SELFHOST_INTERNAL_ERROR_RETURN'}]}}
+        return {'checklist': {'items': [], 'emitted': True, 'events': [{'gate_id': 'G14_SELFHOST_INTERNAL_ERROR_RETURN'}]}}
 
     monkeypatch.setattr('shieldcraft.engine.Engine.run_self_host', fake_run_self_host)
 

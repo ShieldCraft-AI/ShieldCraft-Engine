@@ -1,4 +1,3 @@
-from shieldcraft.services.spec import strictness_policy
 from shieldcraft.services.governance import map as govmap
 from shieldcraft.verification.readiness_contract import REQUIRED_GATES
 

@@ -6,6 +6,7 @@ class ExecutionPlan:
     pass_3: derived tasks
     pass_4: section ordering + stable IDs
     """
+
     def __init__(self, raw_items):
         self.raw = raw_items
         self.pass1 = []

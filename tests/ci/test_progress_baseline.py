@@ -9,9 +9,9 @@ def _prepare_env():
     os.makedirs('artifacts', exist_ok=True)
     open('artifacts/repo_sync_state.json', 'w').write('{}')
     import hashlib
-    h = hashlib.sha256(open('artifacts/repo_sync_state.json','rb').read()).hexdigest()
+    h = hashlib.sha256(open('artifacts/repo_sync_state.json', 'rb').read()).hexdigest()
     with open('repo_state_sync.json', 'w') as f:
-        json.dump({"files":[{"path":"artifacts/repo_sync_state.json","sha256":h}]}, f)
+        json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)
     import importlib
     importlib.import_module('shieldcraft.persona')
     import shieldcraft.persona as pmod
@@ -24,7 +24,15 @@ def test_self_host_first_observation_is_initial():
     _prepare_env()
 
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as tmp:
-        spec = {"metadata": {"product_id": "pb_first", "spec_format": "canonical_json_v1", "self_host": True}, "model": {"a": 1}, "sections": [{}]}
+        spec = {
+            "metadata": {
+                "product_id": "pb_first",
+                "spec_format": "canonical_json_v1",
+                "self_host": True},
+            "model": {
+                "a": 1},
+            "sections": [
+                {}]}
         json.dump(spec, tmp)
         path = tmp.name
 
@@ -32,7 +40,7 @@ def test_self_host_first_observation_is_initial():
         if os.path.exists('.selfhost_outputs'):
             shutil.rmtree('.selfhost_outputs')
         run_self_host(path, 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
-        s = json.loads(open('.selfhost_outputs/summary.json').read())
+        s = json.loads(open('.selfhost_outputs/summary.json', encoding='utf-8').read())
         assert 'progress_summary' in s
         assert s['progress_summary']['delta'] == 'initial'
         assert s['progress_summary'].get('previous_state') is None or s.get('previous_state') is None
@@ -53,7 +61,7 @@ def test_validation_runs_do_not_produce_false_regressions():
         if os.path.exists('.selfhost_outputs'):
             shutil.rmtree('.selfhost_outputs')
         run_self_host(spec_path, 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
-        s = json.loads(open('.selfhost_outputs/summary.json').read())
+        s = json.loads(open('.selfhost_outputs/summary.json', encoding='utf-8').read())
         assert 'progress_summary' in s
         assert s['progress_summary']['delta'] == 'initial'
         assert s['progress_summary'].get('previous_state') is None

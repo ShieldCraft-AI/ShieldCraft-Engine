@@ -40,7 +40,8 @@ def test_silence_justification_emitted_on_empty_checklist(monkeypatch):
     monkeypatch.setattr(gen_mod.ChecklistGenerator, 'build', lambda self, *a, **k: {"items": []})
 
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as tmp:
-        spec = {"metadata": {"product_id": "silence-test", "self_host": True}, "model": {"version": "1.0"}, "sections": [{"id": "core"}]}
+        spec = {"metadata": {"product_id": "silence-test", "self_host": True},
+                "model": {"version": "1.0"}, "sections": [{"id": "core"}]}
         json.dump(spec, tmp)
         path = tmp.name
 

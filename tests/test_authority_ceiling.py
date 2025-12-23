@@ -6,15 +6,22 @@ def test_tier_a_synthesis_requires_blocker_event():
     class StubContext:
         def __init__(self):
             self._events = []
+
         def record_event(self, gate_id, phase, outcome, message=None, evidence=None, **kwargs):
-            self._events.append({'gate_id': gate_id, 'phase': phase, 'outcome': outcome, 'message': message, 'evidence': evidence})
+            self._events.append({'gate_id': gate_id, 'phase': phase, 'outcome': outcome,
+                                'message': message, 'evidence': evidence})
+
         def get_events(self):
             return list(self._events)
 
     engine.checklist_context = StubContext()
 
     # Partial result contains a Tier A synthesized default but no corresponding BLOCKER event
-    partial = {'checklist': {'items': [{ 'ptr': '/agents', 'text': 'Synthesized default for agents', 'meta': {'source': 'default', 'tier': 'A', 'synthesized_default': True}}]}}
+    partial = {'checklist': {'items': [{'ptr': '/agents',
+                                        'text': 'Synthesized default for agents',
+                                        'meta': {'source': 'default',
+                                                 'tier': 'A',
+                                                 'synthesized_default': True}}]}}
 
     import pytest
     with pytest.raises(AssertionError):
@@ -29,17 +36,30 @@ def test_tier_a_synthesis_requires_blocker_and_diagnostic():
     class StubContext:
         def __init__(self):
             self._events = []
+
         def record_event(self, gate_id, phase, outcome, message=None, evidence=None, **kwargs):
-            self._events.append({'gate_id': gate_id, 'phase': phase, 'outcome': outcome, 'message': message, 'evidence': evidence})
+            self._events.append({'gate_id': gate_id, 'phase': phase, 'outcome': outcome,
+                                'message': message, 'evidence': evidence})
+
         def get_events(self):
             return list(self._events)
 
     engine.checklist_context = StubContext()
 
     # Simulate only a BLOCKER event recorded but no DIAGNOSTIC
-    engine.checklist_context.record_event('G_SYNTHESIZED_DEFAULT_AGENTS', 'compilation', 'BLOCKER', message='Synthesized Tier A default for agents', evidence={'section': 'agents'})
+    engine.checklist_context.record_event(
+        'G_SYNTHESIZED_DEFAULT_AGENTS',
+        'compilation',
+        'BLOCKER',
+        message='Synthesized Tier A default for agents',
+        evidence={
+            'section': 'agents'})
 
-    partial = {'checklist': {'items': [{ 'ptr': '/agents', 'text': 'Synthesized default for agents', 'meta': {'source': 'default', 'tier': 'A', 'synthesized_default': True}}]}}
+    partial = {'checklist': {'items': [{'ptr': '/agents',
+                                        'text': 'Synthesized default for agents',
+                                        'meta': {'source': 'default',
+                                                 'tier': 'A',
+                                                 'synthesized_default': True}}]}}
 
     import pytest
     with pytest.raises(AssertionError):
@@ -54,15 +74,23 @@ def test_refusal_requires_authority():
     class StubContext:
         def __init__(self):
             self._events = []
+
         def record_event(self, gate_id, phase, outcome, message=None, evidence=None, **kwargs):
-            self._events.append({'gate_id': gate_id, 'phase': phase, 'outcome': outcome, 'message': message, 'evidence': evidence})
+            self._events.append({'gate_id': gate_id, 'phase': phase, 'outcome': outcome,
+                                'message': message, 'evidence': evidence})
+
         def get_events(self):
             return list(self._events)
 
     engine.checklist_context = StubContext()
 
     # Emit a REFUSAL event without authority in evidence
-    engine.checklist_context.record_event('G2_GOVERNANCE_PRESENCE_CHECK', 'finalize', 'REFUSAL', message='missing governance', evidence={})
+    engine.checklist_context.record_event(
+        'G2_GOVERNANCE_PRESENCE_CHECK',
+        'finalize',
+        'REFUSAL',
+        message='missing governance',
+        evidence={})
 
     import pytest
     with pytest.raises(AssertionError):

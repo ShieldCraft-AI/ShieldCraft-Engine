@@ -32,7 +32,16 @@ def test_selfhost_writes_errors_on_validation(monkeypatch, tmp_path):
 
     # Patch Engine._validate_spec so any Engine instance will raise ValidationError
     import shieldcraft.engine as engmod
-    monkeypatch.setattr(engmod.Engine, '_validate_spec', lambda self, spec: (_ for _ in ()).throw(ValidationError(code="missing_provenance", message="missing provenance", location="/metadata")))
+    monkeypatch.setattr(
+        engmod.Engine,
+        '_validate_spec',
+        lambda self,
+        spec: (
+            _ for _ in ()).throw(
+            ValidationError(
+                code="missing_provenance",
+                message="missing provenance",
+                location="/metadata")))
 
     # Run via main.run_self_host wrapper to exercise error serialization
     from shieldcraft.main import run_self_host
@@ -51,4 +60,10 @@ def test_selfhost_writes_errors_on_validation(monkeypatch, tmp_path):
     # Ensure no other file types were emitted besides optional summary/manifest, checklist draft and spec feedback
     entries = [p for p in os.listdir('.selfhost_outputs') if not p.startswith('.')]
     assert 'errors.json' in entries
-    assert set(entries) <= {'errors.json', 'summary.json', 'manifest.json', 'checklist_draft.json', 'spec_feedback.json', 'checklist.json'}
+    assert set(entries) <= {
+        'errors.json',
+        'summary.json',
+        'manifest.json',
+        'checklist_draft.json',
+        'spec_feedback.json',
+        'checklist.json'}

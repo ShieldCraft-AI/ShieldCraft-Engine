@@ -16,10 +16,10 @@ def test_pointer_range_error_missing_array():
             }
         ]
     }
-    
+
     # Create minimal AST
     ast = ASTBuilder().build(raw)
-    
+
     # Create checklist item with wildcard reference to non-existent array
     items = [
         {
@@ -27,9 +27,9 @@ def test_pointer_range_error_missing_array():
             "ptr": "/sections/0/missing_array[*]"
         }
     ]
-    
+
     result = pointer_audit(raw, ast, items)
-    
+
     # Should have pointer range error
     assert len(result["pointer_range_errors"]) == 1
     error = result["pointer_range_errors"][0]
@@ -47,9 +47,9 @@ def test_pointer_range_error_not_array():
             }
         ]
     }
-    
+
     ast = ASTBuilder().build(raw)
-    
+
     # Create item referencing string field with wildcard
     items = [
         {
@@ -57,9 +57,9 @@ def test_pointer_range_error_not_array():
             "ptr": "/sections/0/name[*]"
         }
     ]
-    
+
     result = pointer_audit(raw, ast, items)
-    
+
     # Should have error
     assert len(result["pointer_range_errors"]) == 1
     error = result["pointer_range_errors"][0]
@@ -76,9 +76,9 @@ def test_pointer_range_error_empty_array():
             }
         ]
     }
-    
+
     ast = ASTBuilder().build(raw)
-    
+
     # Create item referencing empty array with wildcard
     items = [
         {
@@ -86,9 +86,9 @@ def test_pointer_range_error_empty_array():
             "ptr": "/sections/0/tasks[*]"
         }
     ]
-    
+
     result = pointer_audit(raw, ast, items)
-    
+
     # Should have error
     assert len(result["pointer_range_errors"]) == 1
     error = result["pointer_range_errors"][0]
@@ -108,9 +108,9 @@ def test_pointer_range_valid():
             }
         ]
     }
-    
+
     ast = ASTBuilder().build(raw)
-    
+
     # Create item referencing valid array with wildcard
     items = [
         {
@@ -118,9 +118,9 @@ def test_pointer_range_valid():
             "ptr": "/sections/0/tasks[*]"
         }
     ]
-    
+
     result = pointer_audit(raw, ast, items)
-    
+
     # Should have no errors
     assert len(result["pointer_range_errors"]) == 0
 
@@ -132,9 +132,9 @@ def test_pointer_range_wildcard_slash():
             "items": [1, 2, 3]
         }
     }
-    
+
     ast = ASTBuilder().build(raw)
-    
+
     # Use /* notation
     items = [
         {
@@ -142,8 +142,8 @@ def test_pointer_range_wildcard_slash():
             "ptr": "/config/items/*"
         }
     ]
-    
+
     result = pointer_audit(raw, ast, items)
-    
+
     # Should have no errors (valid array)
     assert len(result["pointer_range_errors"]) == 0

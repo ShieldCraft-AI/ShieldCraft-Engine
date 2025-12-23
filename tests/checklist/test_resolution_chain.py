@@ -20,9 +20,9 @@ def test_resolution_chain_basic():
             "depends_on": ["/sections/0/task1"]
         }
     ]
-    
+
     chains = build_chain(items)
-    
+
     # Should have chain for derived task
     assert "fix-dep-1" in chains
     assert len(chains["fix-dep-1"]) > 0
@@ -34,9 +34,9 @@ def test_resolution_chain_verification():
         "task-1": ["/a", "/b", "/c"],
         "task-2": ["/x", "/y"]
     }
-    
+
     result = verify_chains(chains)
-    
+
     assert result["ok"] is True
     assert len(result["violations"]) == 0
 
@@ -46,9 +46,9 @@ def test_resolution_chain_loop_detection():
     chains = {
         "task-1": ["/a", "/b", "/a"]  # Loop
     }
-    
+
     result = verify_chains(chains)
-    
+
     assert result["ok"] is False
     assert len(result["violations"]) > 0
     assert result["violations"][0]["issue"] == "chain_contains_loop"

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Utility: remove stale __pycache__ and .pyc files in the repository (for CI hygiene)."""
-import os
 import pathlib
 
 root = pathlib.Path(__file__).resolve().parents[2]

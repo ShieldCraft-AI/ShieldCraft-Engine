@@ -1,7 +1,6 @@
 """
 Test pointer strict mode enforcement.
 """
-import pytest
 from shieldcraft.services.ast.builder import ASTBuilder
 from shieldcraft.services.spec.fingerprint import compute_spec_fingerprint
 from shieldcraft.services.spec.model import SpecModel
@@ -17,11 +16,11 @@ def test_strict_mode_disabled_by_default():
         },
         "sections": []
     }
-    
+
     ast_builder = ASTBuilder()
     ast = ast_builder.build(spec)
     fingerprint = compute_spec_fingerprint(spec)
-    
+
     # Default: strict_mode=False
     spec_model = SpecModel(spec, ast, fingerprint)
     assert spec_model.strict_mode == False
@@ -53,22 +52,22 @@ def test_strict_mode_enforces_full_coverage():
             }
         ]
     }
-    
+
     ast_builder = ASTBuilder()
     ast = ast_builder.build(spec)
     fingerprint = compute_spec_fingerprint(spec)
-    
+
     # Enable strict mode
     spec_model = SpecModel(spec, ast, fingerprint, strict_mode=True)
-    
+
     # Build checklist (should cover all items)
     generator = ChecklistGenerator()
     checklist_result = generator.build(spec)
     items = checklist_result["items"]
-    
+
     # Validate coverage
     ok, missing = spec_model.validate_pointer_strict_mode(items)
-    
+
     # Should pass (all pointers covered)
     assert ok, f"Strict mode validation failed with missing pointers: {missing}"
     assert len(missing) == 0
@@ -95,14 +94,14 @@ def test_strict_mode_detects_missing_pointers():
             }
         ]
     }
-    
+
     ast_builder = ASTBuilder()
     ast = ast_builder.build(spec)
     fingerprint = compute_spec_fingerprint(spec)
-    
+
     # Enable strict mode
     spec_model = SpecModel(spec, ast, fingerprint, strict_mode=True)
-    
+
     # Provide incomplete checklist (missing some pointers)
     incomplete_items = [
         {
@@ -112,10 +111,10 @@ def test_strict_mode_detects_missing_pointers():
             "lineage_id": "test123"
         }
     ]
-    
+
     # Validate coverage
     ok, missing = spec_model.validate_pointer_strict_mode(incomplete_items)
-    
+
     # Should fail (missing pointers)
     assert not ok, "Strict mode should detect missing pointers"
     assert len(missing) > 0, "Should have missing pointers"
@@ -139,22 +138,22 @@ def test_strict_mode_allows_complete_coverage():
         },
         "sections": []
     }
-    
+
     ast_builder = ASTBuilder()
     ast = ast_builder.build(spec)
     fingerprint = compute_spec_fingerprint(spec)
-    
+
     # Enable strict mode
     spec_model = SpecModel(spec, ast, fingerprint, strict_mode=True)
-    
+
     # Build full checklist
     generator = ChecklistGenerator()
     checklist_result = generator.build(spec)
     items = checklist_result["items"]
-    
+
     # Validate coverage
     ok, missing = spec_model.validate_pointer_strict_mode(items)
-    
+
     # Should pass (complete coverage)
     assert ok, f"Strict mode should pass with complete coverage. Missing: {missing}"
 
@@ -177,14 +176,14 @@ def test_strict_mode_disabled_allows_partial_coverage():
             }
         ]
     }
-    
+
     ast_builder = ASTBuilder()
     ast = ast_builder.build(spec)
     fingerprint = compute_spec_fingerprint(spec)
-    
+
     # Strict mode disabled (default)
     spec_model = SpecModel(spec, ast, fingerprint, strict_mode=False)
-    
+
     # Partial checklist
     partial_items = [
         {
@@ -194,10 +193,10 @@ def test_strict_mode_disabled_allows_partial_coverage():
             "lineage_id": "test123"
         }
     ]
-    
+
     # Validate coverage
     ok, missing = spec_model.validate_pointer_strict_mode(partial_items)
-    
+
     # Should pass (strict mode disabled)
     assert ok, "Disabled strict mode should allow partial coverage"
     assert len(missing) == 0

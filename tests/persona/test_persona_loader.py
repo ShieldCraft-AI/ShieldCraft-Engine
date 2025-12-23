@@ -1,9 +1,7 @@
 import json
-import os
-import tempfile
 import pytest
 
-from shieldcraft.persona import load_persona, PersonaError, _is_worktree_clean
+from shieldcraft.persona import load_persona, PersonaError
 
 
 def test_valid_persona_loads(monkeypatch, tmp_path):
@@ -12,7 +10,13 @@ def test_valid_persona_loads(monkeypatch, tmp_path):
     # Make worktree appear clean
     monkeypatch.setattr("shieldcraft.persona._is_worktree_clean", lambda: True)
 
-    persona = {"persona_version": "v1", "version": "1.0", "name": "Fiona", "role": "cofounder", "scope": ["engineering"], "allowed_actions": ["advise"]}
+    persona = {
+        "persona_version": "v1",
+        "version": "1.0",
+        "name": "Fiona",
+        "role": "cofounder",
+        "scope": ["engineering"],
+        "allowed_actions": ["advise"]}
     p = tmp_path / "persona.json"
     p.write_text(json.dumps(persona))
 

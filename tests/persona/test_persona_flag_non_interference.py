@@ -1,6 +1,4 @@
 import json
-import os
-import tempfile
 
 from shieldcraft.engine import Engine
 

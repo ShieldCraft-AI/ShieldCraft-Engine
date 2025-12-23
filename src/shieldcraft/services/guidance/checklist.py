@@ -63,7 +63,10 @@ def checklist_summary(items: List[Dict], current_state: str) -> Dict:
     }
 
 
-def annotate_items_with_blockers(items: List[Dict], validation_errors: List[str] | None = None, readiness_results: Dict | None = None) -> List[Dict]:
+def annotate_items_with_blockers(
+        items: List[Dict],
+        validation_errors: List[str] | None = None,
+        readiness_results: Dict | None = None) -> List[Dict]:
     """Annotate checklist items with `status` and `blocked_by` based on validation/readiness.
 
     - If `validation_errors` is non-empty: all items get `status` = "draft" and `blocked_by` = validation_errors.
@@ -119,7 +122,7 @@ def enrich_with_confidence_and_evidence(items: List[Dict], spec: Dict | None = N
     for it in items:
         ptr = it.get("ptr")
         value = it.get("value")
-        text = it.get("text", "")
+        _text = it.get("_text", "")
 
         # Base evidence.source
         try:
@@ -131,13 +134,13 @@ def enrich_with_confidence_and_evidence(items: List[Dict], spec: Dict | None = N
 
         # Default flags
         it["inferred_from_prose"] = False
-        # Heuristic: prose if value is a string or the generated text contains obligation language
+        # Heuristic: prose if value is a string or the generated _text contains obligation language
         is_prose = False
         lowv = ""
         if isinstance(value, str):
             lowv = value.lower()
-        if isinstance(text, str):
-            lowtxt = text.lower()
+        if isinstance(_text, str):
+            lowtxt = _text.lower()
         else:
             lowtxt = ""
         if "/sections" in (ptr or ""):
@@ -159,7 +162,7 @@ def enrich_with_confidence_and_evidence(items: List[Dict], spec: Dict | None = N
             # Confidence provenance for auditability
             it["confidence_meta"] = {"source": "heuristic:prose", "justification": "heuristic_prose_keyword_match"}
             # source excerpt hash for provenance
-            excerpt_text = str(value) if value is not None else str(text or "")
+            excerpt_text = str(value) if value is not None else str(_text or "")
             excerpt = excerpt_text[:512]
             it["evidence"]["source_excerpt_hash"] = hashlib.sha256(excerpt.encode()).hexdigest()[:12]
         else:
@@ -181,7 +184,7 @@ def enrich_with_confidence_and_evidence(items: List[Dict], spec: Dict | None = N
                 it["confidence_meta"] = {"source": "derived", "justification": "explicit_fields"}
 
         # Intent category detection (keyword-based)
-        lowtxt = (text or "").lower()
+        lowtxt = (_text or "").lower()
         cat = "misc"
         for k, v in intent_map.items():
             if k in lowtxt:
@@ -193,13 +196,13 @@ def enrich_with_confidence_and_evidence(items: List[Dict], spec: Dict | None = N
         it["intent_category"] = cat
         # Add a short quote for human consumption when available
         try:
-            excerpt_text = str(value) if value is not None else str(text or "")
+            excerpt_text = str(value) if value is not None else str(_text or "")
             if excerpt_text:
                 it["evidence"]["quote"] = excerpt_text.strip()[:200]
         except Exception:
             pass
 
-        # Derive an actionable imperative `action` string from the item text/claim
+        # Derive an actionable imperative `action` string from the item _text/claim
         try:
             import re
 
@@ -216,7 +219,42 @@ def enrich_with_confidence_and_evidence(items: List[Dict], spec: Dict | None = N
                     return f"Implement a refusal check to ensure the system rejects the operation described: \"{s}\"."
                 # If starts with an imperative verb, preserve capitalization
                 first = s.split()[0].lower()
-                verbs = {"verify", "ensure", "confirm", "prevent", "reject", "refuse", "avoid", "maintain", "record", "attach", "add", "update", "remove", "delete", "create", "preserve", "lock", "authorize", "test", "run", "execute", "enforce", "log", "audit", "annotate", "synthesize", "generate", "persist", "validate", "confirm", "fix", "resolve", "implement", "design", "build"}
+                verbs = {
+                    "verify",
+                    "ensure",
+                    "confirm",
+                    "prevent",
+                    "reject",
+                    "refuse",
+                    "avoid",
+                    "maintain",
+                    "record",
+                    "attach",
+                    "add",
+                    "update",
+                    "remove",
+                    "delete",
+                    "create",
+                    "preserve",
+                    "lock",
+                    "authorize",
+                    "test",
+                    "run",
+                    "execute",
+                    "enforce",
+                    "log",
+                    "audit",
+                    "annotate",
+                    "synthesize",
+                    "generate",
+                    "persist",
+                    "validate",
+                    "confirm",
+                    "fix",
+                    "resolve",
+                    "implement",
+                    "design",
+                    "build"}
                 if first in verbs:
                     return s[0].upper() + s[1:]
                 # Replace modals with imperative
@@ -228,7 +266,7 @@ def enrich_with_confidence_and_evidence(items: List[Dict], spec: Dict | None = N
                     return f"Ensure {s2}"
                 return f"Verify: {s}"
 
-            base_txt = it.get("claim") or it.get("text") or it.get("value") or ""
+            base_txt = it.get("claim") or it.get("_text") or it.get("value") or ""
             it["action"] = _create_action(str(base_txt))
         except Exception:
             it["action"] = "Investigate unclear requirement and add an explicit invariant or test_ref."
@@ -282,155 +320,152 @@ def ensure_item_fields(items: List[Dict]) -> List[Dict]:
     return items
 
 
-def annotate_items_with_readiness_impact(items: List[Dict], readiness_results: Dict | None = None, spec: Dict | None = None) -> Dict:
-        """Annotate items with `readiness_impact` and return a trace mapping.
+def annotate_items_with_readiness_impact(
+        items: List[Dict],
+        readiness_results: Dict | None = None,
+        spec: Dict | None = None) -> Dict:
+    """Annotate items with `readiness_impact` and return a trace mapping.
 
-        The trace maps failing readiness gates to the checklist item ids that
-        are likely responsible, along with rationale and evidence references.
+    The trace maps failing readiness gates to the checklist item ids that
+    are likely responsible, along with rationale and evidence references.
 
-        This function does not change readiness logic; it only annotates items
-        and produces a deterministic trace for authoring and CI.
-        """
-        trace = {}
-        if not readiness_results or not isinstance(readiness_results, dict):
-            return trace
-
-
-        def generate_remediation_hint(item: Dict, spec: Dict | None = None) -> str:
-            """Create a human-readable, deterministic remediation hint for a checklist item.
-
-            Hints suggest which DSL section to add or enrich (e.g., sections, invariants, metadata).
-            """
-            ptr = item.get("ptr") or ""
-            cat = item.get("intent_category") or "misc"
-            text = (item.get("text") or "").strip()
-
-            # Missing test refs advice
-            if not item.get("test_refs"):
-                return "Attach `test_refs` to this item so tests can be discovered (refer to tests_attached gate)."
-
-            # Pointer-driven suggestions
-            if "/metadata" in ptr:
-                return "Add or enrich `metadata` (product_id, owner, version) to make provenance explicit."
-            if "/invariants" in ptr or item.get("classification") == "resolve-invariant":
-                return "Add explicit `invariants` expressing the requirement so it can be validated."
-            if "/sections" in ptr or item.get("inferred_from_prose"):
-                return "Clarify this `sections` entry: add explicit constraints, invariants, or a linked test_ref."
-            if "/instructions" in ptr:
-                return "Add deterministic `instructions` or break into smaller steps; attach `test_refs` where applicable."
-
-            # Intent-driven fallbacks
-            if cat == "safety":
-                return "Turn this into an explicit `invariant` or governance policy under `governance` to increase confidence."
-            if cat == "governance":
-                return "Add a governance clause or policy section to express this enforcement as a rule."
-
-            # Generic fallback
-            return "Clarify this item in `sections` or add explicit `invariants`/`metadata` so it becomes high-confidence."
-
-
-        def annotate_items_with_remediation(items: List[Dict], spec: Dict | None = None) -> List[Dict]:
-            """Annotate items in-place with `remediation_hint` when confidence != 'high'.
-
-            Returns the items list (idempotent).
-            """
-            for it in items:
-                # Only add hints when item is not high confidence
-                if (it.get("confidence") or "") != "high":
-                    try:
-                        it["remediation_hint"] = generate_remediation_hint(it, spec)
-                    except Exception:
-                        it["remediation_hint"] = "Consider clarifying this item (add invariants, metadata or tests)."
-            return items
-
-
-
-
-
-        results = readiness_results.get("results") or {}
-
-        # Pre-index items by simple heuristics
-        id_to_item = {it.get("id"): it for it in items}
-
-        def _select_for_tests_attached():
-            # Use the contract validator to find missing test refs deterministically
-            try:
-                from shieldcraft.verification.checklist_test_contract import validate_test_contract
-                violations = validate_test_contract(items)
-                ids = [v.get("id") for v in violations]
-                if ids:
-                    return ids, "missing_test_refs"
-            except Exception:
-                pass
-            # Fallback: items with empty test_refs
-            ids = [it.get("id") for it in items if not it.get("test_refs")]
-            return ids, "no_test_refs"
-
-        def _select_by_intent(keywords):
-            ids = []
-            for it in items:
-                txt = (it.get("text") or "").lower()
-                if any(k in txt for k in keywords) or it.get("intent_category") in keywords:
-                    ids.append(it.get("id"))
-            return ids
-
-        for gate in sorted(results.keys()):
-            v = results[gate]
-            if isinstance(v, dict) and not v.get("ok"):
-                blocking = bool(v.get("blocking"))
-                rationale = v.get("reason") or v.get("governance") or "failed_gate"
-                item_ids = []
-                evidence_refs = []
-
-                # Gate-specific heuristics
-                if gate == "tests_attached":
-                    ids, reason = _select_for_tests_attached()
-                    rationale = f"tests_attached:{reason}"
-                    item_ids = ids
-                elif gate == "determinism_replay":
-                    ids = _select_by_intent(["determinism"])
-                    if not ids:
-                        ids = sorted([it.get("id") for it in items if "determin" in (it.get("text") or "").lower()])
-                    item_ids = ids
-                elif gate == "spec_fuzz_stability":
-                    ids = _select_by_intent(["governance"]) or sorted([it.get("id") for it in items if it.get("relevance_reason") == "dependency"]) or []
-                    item_ids = ids
-                elif gate == "persona_no_veto":
-                    ids = _select_by_intent(["refusal", "safety"]) or []
-                    item_ids = ids
-                else:
-                    # Generic fallback: pick items applicable to READY or first item
-                    ids = [it.get("id") for it in items if "READY" in (it.get("applicable_states") or [])]
-                    if not ids:
-                        ids = sorted([it.get("id") for it in items])[:1]
-                    item_ids = ids
-
-                # Ensure deterministic non-empty mapping per acceptance criteria
-                if not item_ids and items:
-                    item_ids = [sorted([it.get("id") for it in items])[0]]
-
-                # Collect evidence refs (source_excerpt_hash) when available
-                for iid in item_ids:
-                    it = id_to_item.get(iid)
-                    if it:
-                        h = (it.get("evidence") or {}).get("source_excerpt_hash")
-                        if h:
-                            evidence_refs.append(h)
-                        # Annotate item readiness impact (blocks > degrades > neutral)
-                        current = it.get("readiness_impact") or "neutral"
-                        new = "blocks" if blocking else "degrades"
-                        if current == "blocks":
-                            pass
-                        elif current == "degrades" and new == "blocks":
-                            it["readiness_impact"] = "blocks"
-                        elif current == "neutral":
-                            it["readiness_impact"] = new
-
-                trace[gate] = {
-                    "blocking": blocking,
-                    "reason": rationale,
-                    "item_ids": sorted(item_ids),
-                    "evidence_refs": sorted(set(evidence_refs)),
-                }
-
+    This function does not change readiness logic; it only annotates items
+    and produces a deterministic trace for authoring and CI.
+    """
+    trace = {}
+    if not readiness_results or not isinstance(readiness_results, dict):
         return trace
+
+    def generate_remediation_hint(item: Dict, spec: Dict | None = None) -> str:
+        """Create a human-readable, deterministic remediation hint for a checklist item.
+
+        Hints suggest which DSL section to add or enrich (e.g., sections, invariants, metadata).
+        """
+        ptr = item.get("ptr") or ""
+        cat = item.get("intent_category") or "misc"
+
+        # Missing test refs advice
+        if not item.get("test_refs"):
+            return "Attach `test_refs` to this item so tests can be discovered (refer to tests_attached gate)."
+
+        # Pointer-driven suggestions
+        if "/metadata" in ptr:
+            return "Add or enrich `metadata` (product_id, owner, version) to make provenance explicit."
+        if "/invariants" in ptr or item.get("classification") == "resolve-invariant":
+            return "Add explicit `invariants` expressing the requirement so it can be validated."
+        if "/sections" in ptr or item.get("inferred_from_prose"):
+            return "Clarify this `sections` entry: add explicit constraints, invariants, or a linked test_ref."
+        if "/instructions" in ptr:
+            return "Add deterministic `instructions` or break into smaller steps; attach `test_refs` where applicable."
+
+        # Intent-driven fallbacks
+        if cat == "safety":
+            return "Turn this into an explicit `invariant` or governance policy under `governance` to increase confidence."
+        if cat == "governance":
+            return "Add a governance clause or policy section to express this enforcement as a rule."
+
+        # Generic fallback
+        return "Clarify this item in `sections` or add explicit `invariants`/`metadata` so it becomes high-confidence."
+
+    def annotate_items_with_remediation(items: List[Dict], spec: Dict | None = None) -> List[Dict]:
+        """Annotate items in-place with `remediation_hint` when confidence != 'high'.
+
+        Returns the items list (idempotent).
+        """
+        for it in items:
+            # Only add hints when item is not high confidence
+            if (it.get("confidence") or "") != "high":
+                try:
+                    it["remediation_hint"] = generate_remediation_hint(it, spec)
+                except Exception:
+                    it["remediation_hint"] = "Consider clarifying this item (add invariants, metadata or tests)."
+        return items
+
+    results = readiness_results.get("results") or {}
+
+    # Pre-index items by simple heuristics
+    id_to_item = {it.get("id"): it for it in items}
+
+    def _select_for_tests_attached():
+        # Use the contract validator to find missing test refs deterministically
+        try:
+            from shieldcraft.verification.checklist_test_contract import validate_test_contract
+            violations = validate_test_contract(items)
+            ids = [v.get("id") for v in violations]
+            if ids:
+                return ids, "missing_test_refs"
+        except Exception:
+            pass
+        # Fallback: items with empty test_refs
+        ids = [it.get("id") for it in items if not it.get("test_refs")]
+        return ids, "no_test_refs"
+
+    def _select_by_intent(keywords):
+        ids = []
+        for it in items:
+            txt = (it.get("_text") or "").lower()
+            if any(k in txt for k in keywords) or it.get("intent_category") in keywords:
+                ids.append(it.get("id"))
+        return ids
+
+    for gate in sorted(results.keys()):
+        v = results[gate]
+        if isinstance(v, dict) and not v.get("ok"):
+            blocking = bool(v.get("blocking"))
+            rationale = v.get("reason") or v.get("governance") or "failed_gate"
+            item_ids = []
+            evidence_refs = []
+
+            # Gate-specific heuristics
+            if gate == "tests_attached":
+                ids, reason = _select_for_tests_attached()
+                rationale = f"tests_attached:{reason}"
+                item_ids = ids
+            elif gate == "determinism_replay":
+                ids = _select_by_intent(["determinism"])
+                if not ids:
+                    ids = sorted([it.get("id") for it in items if "determin" in (it.get("_text") or "").lower()])
+                item_ids = ids
+            elif gate == "spec_fuzz_stability":
+                ids = _select_by_intent(["governance"]) or sorted([it.get("id")
+                                                                   for it in items if it.get("relevance_reason") == "dependency"]) or []
+                item_ids = ids
+            elif gate == "persona_no_veto":
+                ids = _select_by_intent(["refusal", "safety"]) or []
+                item_ids = ids
+            else:
+                # Generic fallback: pick items applicable to READY or first item
+                ids = [it.get("id") for it in items if "READY" in (it.get("applicable_states") or [])]
+                if not ids:
+                    ids = sorted([it.get("id") for it in items])[:1]
+                item_ids = ids
+
+            # Ensure deterministic non-empty mapping per acceptance criteria
+            if not item_ids and items:
+                item_ids = [sorted([it.get("id") for it in items])[0]]
+
+            # Collect evidence refs (source_excerpt_hash) when available
+            for iid in item_ids:
+                it = id_to_item.get(iid)
+                if it:
+                    h = (it.get("evidence") or {}).get("source_excerpt_hash")
+                    if h:
+                        evidence_refs.append(h)
+                    # Annotate item readiness impact (blocks > degrades > neutral)
+                    current = it.get("readiness_impact") or "neutral"
+                    new = "blocks" if blocking else "degrades"
+                    if current == "blocks":
+                        pass
+                    elif current == "degrades" and new == "blocks":
+                        it["readiness_impact"] = "blocks"
+                    elif current == "neutral":
+                        it["readiness_impact"] = new
+
+            trace[gate] = {
+                "blocking": blocking,
+                "reason": rationale,
+                "item_ids": sorted(item_ids),
+                "evidence_refs": sorted(set(evidence_refs)),
+            }
+
+    return trace

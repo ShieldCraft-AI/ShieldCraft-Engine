@@ -24,4 +24,5 @@ def explain_diff(a: Dict[str, Any], b: Dict[str, Any]) -> Dict[str, Any]:
         if ai.get(id_) != bi.get(id_):
             item_diffs.append({"id": id_, "a": ai.get(id_), "b": bi.get(id_)})
 
-    return {"match": False, "diff_keys": diffs, "item_diffs_count": len(item_diffs), "item_diffs_sample": item_diffs[:5]}
+    return {"match": False, "diff_keys": diffs, "item_diffs_count": len(
+        item_diffs), "item_diffs_sample": item_diffs[:5]}

@@ -4,10 +4,10 @@ import hashlib
 def digest_bytes(data: bytes) -> str:
     """
     Compute SHA256 hex digest of bytes.
-    
+
     Args:
         data: Raw bytes to hash
-        
+
     Returns:
         SHA256 hex digest string
     """
@@ -17,11 +17,11 @@ def digest_bytes(data: bytes) -> str:
 def digest_text(text: str, encoding='utf-8') -> str:
     """
     Compute SHA256 hex digest of text with canonicalized newlines.
-    
+
     Args:
         text: Text string to hash
         encoding: Text encoding (default utf-8)
-        
+
     Returns:
         SHA256 hex digest string
     """

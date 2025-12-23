@@ -22,7 +22,11 @@ def test_readiness_trace_maps_tests_attached_to_items(monkeypatch):
             shutil.rmtree('.selfhost_outputs')
 
         # Force tests_attached gate to fail
-        monkeypatch.setattr('shieldcraft.verification.readiness_evaluator.enforce_tests_attached', lambda items: (_ for _ in ()).throw(RuntimeError('no tests')))
+        monkeypatch.setattr(
+            'shieldcraft.verification.readiness_evaluator.enforce_tests_attached',
+            lambda items: (
+                _ for _ in ()).throw(
+                RuntimeError('no tests')))
 
         # Allow dirty worktree for test isolation
         os.environ['SHIELDCRAFT_SELFBUILD_ALLOW_DIRTY'] = '1'

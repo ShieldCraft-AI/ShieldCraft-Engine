@@ -1,7 +1,6 @@
 import json
 import os
 import shutil
-import tempfile
 import pytest
 from shieldcraft.services.sync import verify_repo_sync, SyncError, SYNC_MISSING, SYNC_HASH_MISMATCH
 from shieldcraft.services.sync import REPO_STATE_FILENAME, REPO_SYNC_ARTIFACT, SYNC_TREE_MISMATCH

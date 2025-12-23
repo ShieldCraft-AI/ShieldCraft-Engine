@@ -13,7 +13,15 @@ from shieldcraft.services.spec.schema_validator import validate_spec_against_sch
 from shieldcraft.services.validator import validate_instruction_block, ValidationError
 
 
-SECTION_KEYS = ("metadata", "model", "sections", "invariants", "instructions", "codegen_targets", "execution", "pointer_map")
+SECTION_KEYS = (
+    "metadata",
+    "model",
+    "sections",
+    "invariants",
+    "instructions",
+    "codegen_targets",
+    "execution",
+    "pointer_map")
 
 
 def _is_empty(v: Any) -> bool:

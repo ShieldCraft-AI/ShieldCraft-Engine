@@ -1,10 +1,10 @@
 import copy
-import json
-from pathlib import Path
 from shieldcraft.persona.persona_evaluator import evaluate_personas
 from types import SimpleNamespace
 
 # Minimal persona-like object
+
+
 class DummyPersona:
     def __init__(self, name, constraints):
         self.name = name

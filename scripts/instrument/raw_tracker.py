@@ -2,6 +2,7 @@ from collections.abc import MutableMapping
 import json
 from pathlib import Path
 
+
 class Recorder:
     def __init__(self):
         self.paths = set()
@@ -21,6 +22,7 @@ class Recorder:
         Path(out_path).parent.mkdir(parents=True, exist_ok=True)
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(sorted(self.paths), f, indent=2)
+
 
 class TrackingDict(MutableMapping):
     def __init__(self, data, recorder):

@@ -22,7 +22,8 @@ def test_ingestion_promotes_and_engine_accepts(tmp_path, monkeypatch):
     monkeypatch.setenv("SHIELDCRAFT_PERSONA_ENABLED", "0")
     # For compatibility with default strictness in CI, disable semantic strictness here
     monkeypatch.setenv("SEMANTIC_STRICTNESS_DISABLED", "1")
-    monkeypatch.setattr("shieldcraft.services.sync.verify_repo_state_authoritative", lambda root: {"ok": True, "sha256": "abc"})
+    monkeypatch.setattr("shieldcraft.services.sync.verify_repo_state_authoritative",
+                        lambda root: {"ok": True, "sha256": "abc"})
 
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
     # Ensure engine enforces dict-shaped spec (ingestion contract)

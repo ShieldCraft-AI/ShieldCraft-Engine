@@ -1,5 +1,5 @@
 import json
-from shieldcraft.snapshot import write_snapshot, validate_snapshot, SNAPSHOT_INVALID, SnapshotError
+from shieldcraft.snapshot import validate_snapshot, SNAPSHOT_INVALID, SnapshotError
 
 
 def test_unknown_version_guard(tmp_path):

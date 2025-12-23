@@ -1,4 +1,3 @@
-import pytest
 from shieldcraft.services.checklist.derived import infer_tasks
 from shieldcraft.services.checklist.classify import classify_item
 
@@ -14,9 +13,9 @@ def test_bootstrap_derived_tasks():
         "type": "spec_loader",
         "text": "Bootstrap spec loader"
     }
-    
+
     derived = infer_tasks(item)
-    
+
     # Should generate bootstrap_impl task
     assert len(derived) > 0
     impl_task = derived[0]
@@ -30,9 +29,9 @@ def test_bootstrap_classification():
         "ptr": "/metadata/product_id",
         "source_section": "metadata"
     }
-    
+
     category = classify_item(item)
-    
+
     assert category == "bootstrap"
 
 
@@ -46,12 +45,12 @@ def test_bootstrap_derived_task_structure():
         "category": "bootstrap",
         "type": "default"
     }
-    
+
     derived = infer_tasks(item)
-    
+
     assert len(derived) > 0
     task = derived[0]
-    
+
     # Check required fields
     assert "id" in task
     assert "ptr" in task
@@ -72,9 +71,9 @@ def test_non_bootstrap_no_derived():
         "category": "features",
         "text": "Auth feature"
     }
-    
+
     derived = infer_tasks(item)
-    
+
     # Should not generate bootstrap tasks
     bootstrap_tasks = [d for d in derived if d.get("type") == "bootstrap_impl"]
     assert len(bootstrap_tasks) == 0
@@ -83,13 +82,13 @@ def test_non_bootstrap_no_derived():
 def test_bootstrap_sections_classification():
     """Test all bootstrap sections are classified correctly."""
     bootstrap_sections = ["metadata", "model", "sections"]
-    
+
     for section in bootstrap_sections:
         item = {
             "ptr": f"/{section}/test",
             "source_section": section
         }
-        
+
         category = classify_item(item)
         assert category == "bootstrap", f"Section {section} not classified as bootstrap"
 
@@ -104,9 +103,9 @@ def test_derived_tasks_deterministic():
         "category": "bootstrap",
         "type": "engine_core"
     }
-    
+
     derived1 = infer_tasks(item)
     derived2 = infer_tasks(item)
-    
+
     # Should be identical
     assert derived1 == derived2

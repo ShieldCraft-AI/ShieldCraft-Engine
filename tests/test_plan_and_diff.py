@@ -7,7 +7,7 @@ def test_plan_minimal():
 
 
 def test_diff_basic():
-    a = {"x":1}
-    b = {"x":2}
-    r = diff(a,b)
+    a = {"x": 1}
+    b = {"x": 2}
+    r = diff(a, b)
     assert len(r["changed"]) == 1

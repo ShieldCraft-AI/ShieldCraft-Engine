@@ -1,7 +1,5 @@
 import json
 import os
-import shutil
-import tempfile
 
 
 def test_run_self_host_writes_sync_errors(tmp_path):
@@ -28,6 +26,11 @@ def test_run_self_host_writes_sync_errors(tmp_path):
             data = json.load(f)
         assert isinstance(data.get("errors"), list)
         # Ensure the CLI error uses a sync or snapshot-related error code
-        assert data["errors"][0]["code"] in ("sync_missing", "sync_hash_mismatch", "sync_invalid_format", "snapshot_missing", "snapshot_invalid")
+        assert data["errors"][0]["code"] in (
+            "sync_missing",
+            "sync_hash_mismatch",
+            "sync_invalid_format",
+            "snapshot_missing",
+            "snapshot_invalid")
     finally:
         os.chdir(cwd)

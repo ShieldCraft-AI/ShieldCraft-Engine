@@ -1,5 +1,4 @@
-import json
-from shieldcraft.snapshot import generate_snapshot, diff_snapshots, write_snapshot
+from shieldcraft.snapshot import generate_snapshot, diff_snapshots
 
 
 def test_snapshot_diff_symmetry(tmp_path):

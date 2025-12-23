@@ -9,7 +9,8 @@ Score range: 0–100 (higher is better). Factors:
 from typing import List, Dict, Any
 
 
-def compute_checklist_quality(items: List[Dict[str, Any]], synthesized_count: int = 0, insufficiency_count: int = 0) -> int:
+def compute_checklist_quality(items: List[Dict[str, Any]],
+                              synthesized_count: int = 0, insufficiency_count: int = 0) -> int:
     score = 100
     # Count Tier A blocker items deterministically
     tier_a_blockers = 0

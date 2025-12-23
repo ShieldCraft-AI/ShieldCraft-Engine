@@ -26,13 +26,19 @@ spec_canon = canonicalize(spec)
 SPEC_JSON.write_text(spec_canon)
 
 # Helper to run engine and collect artifacts
+
+
 def run_once(tag: str):
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
     engine.persona_enabled = True
 
     # Clear transient observability files to avoid cross-run bleed
     exec_dir = Path("artifacts")
-    for fname in ["execution_state_v1.json", "persona_annotations_v1.json", "persona_events_v1.json", "persona_events_v1.hash"]:
+    for fname in [
+        "execution_state_v1.json",
+        "persona_annotations_v1.json",
+        "persona_events_v1.json",
+            "persona_events_v1.hash"]:
         p = exec_dir / fname
         if p.exists():
             p.unlink()
@@ -88,6 +94,7 @@ def run_once(tag: str):
     produced = list(run_dir.rglob("**/*"))
     produced = [str(p.relative_to(run_dir)) for p in produced if p.is_file()]
     return run_dir, produced
+
 
 # First run
 run1_dir, run1_files = run_once("run1")

@@ -2,12 +2,32 @@ from shieldcraft.engine import Engine
 import pytest
 
 
-@pytest.mark.parametrize("gate,patch_target,return_value", [
-    ("G16_MINIMALITY_INVARIANT_FAILED", 'shieldcraft.checklist.equivalence.detect_and_collapse', ([], {'proof_of_minimality': [{'necessary': False}], 'removed_count': 1, 'equivalence_groups': []})),
-    ("G17_EXECUTION_CYCLE_DETECTED", 'shieldcraft.checklist.execution_graph.build_execution_plan', {'ordered_item_ids': [], 'cycles': ['a'], 'missing_artifacts': [], 'priority_violations': []}),
-    ("G18_MISSING_ARTIFACT_PRODUCER", 'shieldcraft.checklist.execution_graph.build_execution_plan', {'ordered_item_ids': [], 'cycles': [], 'missing_artifacts': ['x'], 'priority_violations': []}),
-    ("G19_PRIORITY_VIOLATION_DETECTED", 'shieldcraft.checklist.execution_graph.build_execution_plan', {'ordered_item_ids': [], 'cycles': [], 'missing_artifacts': [], 'priority_violations': ['p']}),
-])
+@pytest.mark.parametrize("gate,patch_target,return_value",
+                         [("G16_MINIMALITY_INVARIANT_FAILED",
+                           'shieldcraft.checklist.equivalence.detect_and_collapse',
+                           ([],
+                            {'proof_of_minimality': [{'necessary': False}],
+                               'removed_count': 1,
+                               'equivalence_groups': []})),
+                             ("G17_EXECUTION_CYCLE_DETECTED",
+                              'shieldcraft.checklist.execution_graph.build_execution_plan',
+                              {'ordered_item_ids': [],
+                               'cycles': ['a'],
+                               'missing_artifacts': [],
+                               'priority_violations': []}),
+                             ("G18_MISSING_ARTIFACT_PRODUCER",
+                              'shieldcraft.checklist.execution_graph.build_execution_plan',
+                              {'ordered_item_ids': [],
+                               'cycles': [],
+                               'missing_artifacts': ['x'],
+                               'priority_violations': []}),
+                             ("G19_PRIORITY_VIOLATION_DETECTED",
+                              'shieldcraft.checklist.execution_graph.build_execution_plan',
+                              {'ordered_item_ids': [],
+                               'cycles': [],
+                               'missing_artifacts': [],
+                               'priority_violations': ['p']}),
+                          ])
 def test_selfhost_postprocessing_gates_return_checklist(monkeypatch, tmp_path, gate, patch_target, return_value):
     engine = Engine('src/shieldcraft/dsl/schema/se_dsl.schema.json')
 

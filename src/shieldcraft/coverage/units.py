@@ -50,7 +50,7 @@ def build_units_from_spec(spec: Dict[str, Any]) -> List[Dict[str, Any]]:
             if structural:
                 u['structural_dump'] = True
             units.append(u)
-    except Exception:
+    except (AttributeError, TypeError):
         pass
 
     # invariants / constraints

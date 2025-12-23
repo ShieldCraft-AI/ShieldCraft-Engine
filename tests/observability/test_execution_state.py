@@ -10,7 +10,7 @@ def _seq(s):
 def test_preflight_emits_states_and_idempotent():
     from shieldcraft.engine import Engine
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
-    spec = json.load(open("spec/se_dsl_v1.spec.json"))
+    spec = json.load(open("spec/se_dsl_v1.spec.json", encoding='utf-8'))
 
     engine.preflight(spec)
     s1 = read_state()
@@ -32,8 +32,15 @@ def test_failure_state_terminal(monkeypatch):
 
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
     # Force validation to fail deterministically
-    monkeypatch.setattr(engine, "_validate_spec", lambda spec: (_ for _ in ()).throw(ValidationError(code="bad_invariant", message="bad")))
-    spec = json.load(open("spec/se_dsl_v1.spec.json"))
+    monkeypatch.setattr(
+        engine,
+        "_validate_spec",
+        lambda spec: (
+            _ for _ in ()).throw(
+            ValidationError(
+                code="bad_invariant",
+                message="bad")))
+    spec = json.load(open("spec/se_dsl_v1.spec.json", encoding='utf-8'))
     try:
         engine.preflight(spec)
         assert False, "Expected ValidationError"
@@ -48,9 +55,10 @@ def test_failure_state_terminal(monkeypatch):
 def test_selfhost_emits_states_and_non_interference(monkeypatch):
     from shieldcraft.engine import Engine
     engine = Engine("src/shieldcraft/dsl/schema/se_dsl.schema.json")
-    spec = json.load(open("spec/se_dsl_v1.spec.json"))
+    spec = json.load(open("spec/se_dsl_v1.spec.json", encoding='utf-8'))
     # Monkeypatch authoritative sync check to succeed to avoid snapshot/missing issues in local test env
-    monkeypatch.setattr("shieldcraft.services.sync.verify_repo_state_authoritative", lambda root: {"ok": True, "sha256": "abc"})
+    monkeypatch.setattr("shieldcraft.services.sync.verify_repo_state_authoritative",
+                        lambda root: {"ok": True, "sha256": "abc"})
     # Ensure worktree is considered clean for this test
     monkeypatch.setattr("shieldcraft.persona._is_worktree_clean", lambda: True)
 

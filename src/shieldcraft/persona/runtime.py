@@ -20,9 +20,15 @@ class PersonaRuntime:
         # Deterministic decision derivation: base on persona name + action + inputs canonicalized
         # For simplicity, create a stable decision structure.
         if action == "annotate":
-            decision = {"action": "annotate", "message": inputs.get("message", ""), "severity": inputs.get("severity", "info")}
+            decision = {
+                "action": "annotate", "message": inputs.get(
+                    "message", ""), "severity": inputs.get(
+                    "severity", "info")}
         elif action == "veto":
-            decision = {"action": "veto", "code": inputs.get("code", "veto"), "explanation": inputs.get("explanation", {})}
+            decision = {
+                "action": "veto", "code": inputs.get(
+                    "code", "veto"), "explanation": inputs.get(
+                    "explanation", {})}
         elif action == "suggest":
             # Suggest a single deterministic option by hashing input key names
             opts = inputs.get("options", [])

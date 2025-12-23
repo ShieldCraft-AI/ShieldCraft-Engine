@@ -1,4 +1,3 @@
-import pytest
 from shieldcraft.persona import PersonaContext, emit_veto
 
 
@@ -10,7 +9,13 @@ def test_veto_blocks_preflight(monkeypatch, tmp_path):
         pass
 
     engine = EngineStub()
-    p = PersonaContext(name="v", role=None, display_name=None, scope=["preflight"], allowed_actions=["veto"], constraints={})
+    p = PersonaContext(
+        name="v",
+        role=None,
+        display_name=None,
+        scope=["preflight"],
+        allowed_actions=["veto"],
+        constraints={})
     # emit_veto does not raise immediately; it records a veto in engine state and emits an event
     emit_veto(engine, p, "preflight", "stop", {"explanation_code": "e1", "details": "stop"}, "high")
     # Ensure veto recorded on engine and events persisted

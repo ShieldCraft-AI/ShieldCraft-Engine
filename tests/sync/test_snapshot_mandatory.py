@@ -1,4 +1,3 @@
-import os
 import pytest
 from shieldcraft.engine import Engine
 from shieldcraft.snapshot import SnapshotError

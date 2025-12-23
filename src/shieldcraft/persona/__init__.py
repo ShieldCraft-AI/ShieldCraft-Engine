@@ -18,7 +18,6 @@ import os
 import subprocess
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
-import json
 import pathlib
 from dataclasses import field
 from shieldcraft.util.json_canonicalizer import canonicalize
@@ -145,6 +144,7 @@ def resolve_persona_files(paths: List[str]) -> Optional[str]:
     if not paths:
         return None
     # Load version info deterministically
+
     def _parse_version(p: str) -> List[int]:
         try:
             d = json.loads(open(p).read())
@@ -232,21 +232,24 @@ def validate_persona_dict(d: Dict[str, Any]) -> None:
 
 
 def _validate_against_schema(data: Dict[str, Any]) -> None:
-    """Validate persona dict against the frozen persona_v1 schema.
+    """Validate persona dict against the frozen persona_v1 _schema.
     This is intentionally minimal and deterministic; we avoid heavy deps.
     """
-    schema_path = pathlib.Path(__file__).parent / "persona_v1.schema.json"
+    schema_path = pathlib.Path(__file__).parent / "persona_v1._schema.json"
     try:
-        with open(schema_path) as f:
-            schema = json.load(f)
-    except Exception:
-        # If schema missing, be permissive (should not happen in CI).
+        with open(schema_path, encoding='utf-8') as f:
+            json.load(f)
+    except (IOError, OSError, json.JSONDecodeError, ValueError):
+        # If _schema missing, be permissive (should not happen in CI).
         return
 
     # Check persona_version
     pv = data.get("persona_version")
     if pv != "v1":
-        raise PersonaError(PERSONA_VERSION_INCOMPATIBLE, f"unsupported persona_version; expected 'v1', got '{pv}'", "/persona_version")
+        raise PersonaError(
+            PERSONA_VERSION_INCOMPATIBLE,
+            f"unsupported persona_version; expected 'v1', got '{pv}'",
+            "/persona_version")
 
 
 def load_persona(path: str) -> Persona:
@@ -265,11 +268,14 @@ def load_persona(path: str) -> Persona:
 
     # Ensure worktree is clean
     if not _is_worktree_clean():
-        raise PersonaError("worktree_dirty", "git worktree appears dirty; commit or stash changes before loading personas", "/")
+        raise PersonaError(
+            "worktree_dirty",
+            "git worktree appears dirty; commit or stash changes before loading personas",
+            "/")
 
     # Load JSON from disk
     try:
-        with open(path) as f:
+        with open(path, encoding='utf-8') as f:
             data = json.load(f)
     except FileNotFoundError:
         raise PersonaError(PERSONA_MISSING_FILE, f"persona file not found: {path}", path)
@@ -341,11 +347,18 @@ def emit_annotation(engine, persona: PersonaContext, phase: str, message: str, s
         raise PersonaError(PERSONA_CONFLICT_INCOMPATIBLE_SCOPE, f"persona scope does not include phase: {phase}")
     # Enforce capability: persona must have 'annotate' permission
     if "annotate" not in (persona.allowed_actions or []):
-        raise PersonaError(PERSONA_ACTION_NOT_ALLOWED, "persona not permitted to annotate", f"/personas/{persona.name}/allowed_actions")
+        raise PersonaError(
+            PERSONA_ACTION_NOT_ALLOWED,
+            "persona not permitted to annotate",
+            f"/personas/{persona.name}/allowed_actions")
     # Deterministic rate limiting: count prior annotations for this persona+phase
-    existing = [a for a in getattr(engine, "_persona_annotations", []) if a.get("persona_id") == persona.name and a.get("phase") == phase]
+    existing = [a for a in getattr(engine, "_persona_annotations", []) if a.get(
+        "persona_id") == persona.name and a.get("phase") == phase]
     if len(existing) >= ANNOTATION_RATE_LIMIT_PER_PERSONA_PER_PHASE:
-        raise PersonaError(PERSONA_RATE_LIMIT_EXCEEDED, "persona exceeded annotation rate limit for phase", f"/personas/{persona.name}")
+        raise PersonaError(
+            PERSONA_RATE_LIMIT_EXCEEDED,
+            "persona exceeded annotation rate limit for phase",
+            f"/personas/{persona.name}")
     try:
         from shieldcraft.observability import emit_persona_annotation
         emit_persona_annotation(engine, persona.name, phase, message, severity)
@@ -362,13 +375,20 @@ def _validate_veto_explanation(explanation: Dict[str, Any]) -> None:
     if not isinstance(explanation, dict):
         raise PersonaError(PERSONA_INVALID_VETO_EXPLANATION, "veto explanation must be an object", "/explanation")
     if "explanation_code" not in explanation or not isinstance(explanation["explanation_code"], str):
-        raise PersonaError(PERSONA_INVALID_VETO_EXPLANATION, "veto explanation must include 'explanation_code' string", "/explanation/explanation_code")
+        raise PersonaError(
+            PERSONA_INVALID_VETO_EXPLANATION,
+            "veto explanation must include 'explanation_code' string",
+            "/explanation/explanation_code")
     if "details" not in explanation or not isinstance(explanation["details"], str):
-        raise PersonaError(PERSONA_INVALID_VETO_EXPLANATION, "veto explanation must include 'details' string", "/explanation/details")
+        raise PersonaError(
+            PERSONA_INVALID_VETO_EXPLANATION,
+            "veto explanation must include 'details' string",
+            "/explanation/details")
 
 
 @persona_entry("veto")
-def emit_veto(engine, persona: PersonaContext, phase: str, code: str, explanation: Dict[str, Any], severity: str = "high") -> None:
+def emit_veto(engine, persona: PersonaContext, phase: str, code: str,
+              explanation: Dict[str, Any], severity: str = "high") -> None:
     """Persona-facing API to emit a veto; recorded for deterministic resolution.
 
     Veto does not propose alternatives. Engine checks for vetoes at deterministic
@@ -380,8 +400,11 @@ def emit_veto(engine, persona: PersonaContext, phase: str, code: str, explanatio
         raise PersonaError(PERSONA_CONFLICT_INCOMPATIBLE_SCOPE, f"persona scope does not include phase: {phase}")
     # Enforce capability: persona must have 'veto' permission
     if "veto" not in (persona.allowed_actions or []):
-        raise PersonaError(PERSONA_ACTION_NOT_ALLOWED, "persona not permitted to veto", f"/personas/{persona.name}/allowed_actions")
-    # Validate explanation schema
+        raise PersonaError(
+            PERSONA_ACTION_NOT_ALLOWED,
+            "persona not permitted to veto",
+            f"/personas/{persona.name}/allowed_actions")
+    # Validate explanation _schema
     _validate_veto_explanation(explanation)
     if not hasattr(engine, "_persona_vetoes"):
         engine._persona_vetoes = []  # type: ignore
@@ -390,7 +413,12 @@ def emit_veto(engine, persona: PersonaContext, phase: str, code: str, explanatio
     # also emit an annotation for audit
     try:
         from shieldcraft.observability import emit_persona_annotation
-        emit_persona_annotation(engine, persona.name, phase, f"VETO: {code}: {explanation.get('explanation_code')}", severity)
+        emit_persona_annotation(
+            engine,
+            persona.name,
+            phase,
+            f"VETO: {code}: {explanation.get('explanation_code')}",
+            severity)
         # Emit a PersonaEvent for audit purposes (payload_ref is canonicalized explanation)
         from shieldcraft.observability import emit_persona_event
         from shieldcraft.util.json_canonicalizer import canonicalize

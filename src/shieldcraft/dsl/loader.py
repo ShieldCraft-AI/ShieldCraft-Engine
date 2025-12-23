@@ -2,8 +2,6 @@
 Canonical DSL loader for ShieldCraft Engine.
 Exclusively loads canonical JSON specs.
 """
-import json
-import pathlib
 import logging
 from shieldcraft.dsl.canonical_loader import load_canonical_spec
 from shieldcraft.services.spec.ingestion import ingest_spec
@@ -18,17 +16,16 @@ def load_spec(path):
     """
     Load spec from path using canonical loader.
     Returns SpecModel for canonical specs or raw dict for legacy.
-    
+
     AUTHORITY: Enforces dsl_version == canonical_v1_frozen.
     """
-    file_path = pathlib.Path(path)
     data = ingest_spec(path)
 
     # Ensure loader always returns a dict; ingestion guarantees this envelope
     if not isinstance(data, dict):
         # As a defensive fallback, wrap into the canonical envelope
         data = {"metadata": {"source_format": "unknown", "normalized": True}, "raw_input": data}
-    
+
     # Enforce DSL version from top-level or metadata spec_format when explicitly present.
     # If neither is present, treat as a legacy spec and return raw data (no hard failure).
     dsl_version = data.get('dsl_version')
@@ -59,9 +56,10 @@ def load_spec(path):
             )
     else:
         # No dsl_version and no spec_format: legacy spec; return raw data but log deprecation.
-        logger.warning(f"DEPRECATION: old DSL format detected at {path}; treat as legacy and migrate to canonical JSON.")
+        logger.warning(
+            f"DEPRECATION: old DSL format detected at {path}; treat as legacy and migrate to canonical JSON.")
         return data
-    
+
     # Detect canonical vs legacy and prefer dsl_version/spec_format mapping
     if dsl_version == _DSL_VERSION_REQUIRED:
         return load_canonical_spec(path)

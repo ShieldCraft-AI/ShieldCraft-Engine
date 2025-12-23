@@ -1,14 +1,13 @@
 import json
-import tempfile
 from shieldcraft.engine import Engine
-import importlib
 
 
 def test_schema_validation_records_G4_and_emits_diagnostic(tmp_path, monkeypatch):
     engine = Engine('src/shieldcraft/dsl/schema/se_dsl.schema.json')
 
     # Monkeypatch validate_spec_against_schema to return invalid
-    monkeypatch.setattr('shieldcraft.engine.validate_spec_against_schema', lambda spec, schema_path: (False, ['schema_missing']))
+    monkeypatch.setattr('shieldcraft.engine.validate_spec_against_schema',
+                        lambda spec, schema_path: (False, ['schema_missing']))
 
     # Create a temporary spec file
     spec_path = tmp_path / 'bad_spec.json'

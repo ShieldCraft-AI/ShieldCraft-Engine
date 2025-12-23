@@ -28,7 +28,11 @@ def run_once(tag: str):
 
     # Clear persona/exec state
     exec_dir = Path("artifacts")
-    for fname in ["execution_state_v1.json", "persona_annotations_v1.json", "persona_events_v1.json", "persona_events_v1.hash"]:
+    for fname in [
+        "execution_state_v1.json",
+        "persona_annotations_v1.json",
+        "persona_events_v1.json",
+            "persona_events_v1.hash"]:
         p = exec_dir / fname
         if p.exists():
             p.unlink()
@@ -83,6 +87,8 @@ def run_once(tag: str):
     return run_dir, produced
 
 # Run twice
+
+
 def main():
     run1_dir, run1_files = run_once("run1")
     run2_dir, run2_files = run_once("run2")

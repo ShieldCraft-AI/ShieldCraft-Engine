@@ -14,7 +14,7 @@ def verify_generation_contract(spec, checklist_items, uncovered_ptrs):
 
     Return (ok: bool, violations:list[str])
     """
-    violations=[]
+    violations = []
 
     required = {
         "/metadata",
@@ -26,14 +26,14 @@ def verify_generation_contract(spec, checklist_items, uncovered_ptrs):
     }
 
     for r in required:
-        if any(r == u or u.startswith(r+"/") for u in uncovered_ptrs):
+        if any(r == u or u.startswith(r + "/") for u in uncovered_ptrs):
             violations.append(f"Required field missing coverage: {r}")
 
     ptrs = set(extract_json_pointers(spec))
     for it in checklist_items:
         if it["ptr"] not in ptrs:
             violations.append(f"Checklist item references nonexistent pointer: {it['id']} → {it['ptr']}")
-    
+
     # Checklist test coverage: report items missing explicit test references
     cov_viol = check_checklist_test_coverage(checklist_items)
     for v in cov_viol:
@@ -43,11 +43,12 @@ def verify_generation_contract(spec, checklist_items, uncovered_ptrs):
     if lockfile_path.exists():
         lockfile = json.loads(lockfile_path.read_text())
         lockfile_version = lockfile.get("generator_version", "unknown")
-        
+
         spec_version = spec.get("metadata", {}).get("generator_version", "unknown")
-        
+
         if spec_version != lockfile_version:
-            violations.append(f"GENERATOR_LOCKFILE_MISMATCH: expected {lockfile_version} but spec requests {spec_version}")
+            violations.append(
+                f"GENERATOR_LOCKFILE_MISMATCH: expected {lockfile_version} but spec requests {spec_version}")
 
     ok = not violations
     return ok, violations

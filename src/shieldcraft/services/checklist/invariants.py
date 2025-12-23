@@ -3,12 +3,12 @@ def extract_invariants(ast):
     Extract invariant checks from AST.
     Scans for 'invariant', 'must', 'forbid', 'require' fields.
     Returns structured invariant objects with canonical sorting.
-    
+
     Returns:
         List of dicts with keys: id, spec_ptr, expr, severity
     """
     invariants = []
-    
+
     # Handle AST object
     if hasattr(ast, 'walk'):
         for node in ast.walk():
@@ -47,33 +47,33 @@ def extract_invariants(ast):
                         for idx, item in enumerate(v):
                             _scan_dict(item, f"{ptr}/{idx}")
         _scan_dict(ast, "")
-    
+
     # Canonical sort by pointer
     invariants.sort(key=lambda inv: inv.get("pointer", inv.get("id", "")))
-    
+
     return invariants
 
 
 def evaluate_invariant(expr: str, context: dict) -> bool:
     """
     Evaluate invariant expression with safe sandboxing.
-    
+
     Supports minimal expression operations:
     - exists(ptr): check if pointer exists in context
     - count(ptr) > N: count items at pointer
     - unique(ptrs): check uniqueness across pointers
-    
+
     Args:
         expr: invariant expression string
         context: dict with 'items' list and 'spec' dict
-    
+
     Returns:
         bool: True if invariant passes, False otherwise
     """
     expr = expr.strip()
     items = context.get("items", [])
     spec = context.get("spec", {})
-    
+
     # exists(ptr) - check if pointer exists
     if expr.startswith("exists(") and expr.endswith(")"):
         ptr = expr[7:-1].strip().strip("'\"")
@@ -83,7 +83,7 @@ def evaluate_invariant(expr: str, context: dict) -> bool:
                 return True
         # Check if spec has this pointer
         return _resolve_ptr(spec, ptr) is not None
-    
+
     # count(ptr) > N, count(ptr) >= N, count(ptr) == N
     if expr.startswith("count("):
         import re
@@ -92,10 +92,10 @@ def evaluate_invariant(expr: str, context: dict) -> bool:
             ptr = match.group(1).strip().strip("'\"")
             op = match.group(2)
             threshold = int(match.group(3))
-            
+
             # Count items with this pointer prefix
             count = sum(1 for item in items if item.get("ptr", "").startswith(ptr))
-            
+
             if op == ">":
                 return count > threshold
             elif op == ">=":
@@ -106,7 +106,7 @@ def evaluate_invariant(expr: str, context: dict) -> bool:
                 return count < threshold
             elif op == "<=":
                 return count <= threshold
-    
+
     # unique(ptrs) - check uniqueness
     if expr.startswith("unique(") and expr.endswith(")"):
         ptr_pattern = expr[7:-1].strip().strip("'\"")
@@ -120,7 +120,7 @@ def evaluate_invariant(expr: str, context: dict) -> bool:
                     values.append(val)
         # Check if all unique
         return len(values) == len(set(values))
-    
+
     # Default: assume true for unknown expressions (safe default)
     # Record explainability info in context for the caller to attach to items
     try:
@@ -155,15 +155,14 @@ def _resolve_ptr(spec, ptr):
     """Resolve a pointer in spec dict."""
     if not ptr or ptr == "/":
         return spec
-    
+
     parts = ptr.strip("/").split("/")
     current = spec
-    
+
     for part in parts:
         if isinstance(current, dict) and part in current:
             current = current[part]
         else:
             return None
-    
-    return current
 
+    return current

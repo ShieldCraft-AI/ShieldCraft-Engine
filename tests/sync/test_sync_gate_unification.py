@@ -1,12 +1,10 @@
 import json
-import tempfile
-import os
 import pathlib
 
 
 def test_sync_gate_invoked_for_all_modes(monkeypatch, tmp_path):
     from shieldcraft.engine import Engine
-    from shieldcraft.services.sync import REPO_STATE_FILENAME, REPO_SYNC_ARTIFACT
+    from shieldcraft.services.sync import REPO_SYNC_ARTIFACT
 
     calls = []
 
@@ -34,12 +32,12 @@ def test_sync_gate_invoked_for_all_modes(monkeypatch, tmp_path):
     engine.preflight(str(spec_path))
     try:
         engine.execute(str(spec_path))
-    except Exception:
+    except Exception: # type: ignore
         # may raise for other reasons but sync should have been invoked
         pass
     try:
         engine.run_self_host(data, dry_run=True)
-    except Exception:
+    except Exception: # type: ignore
         pass
 
     # Expect spy to have been called at least once per attempted invocation

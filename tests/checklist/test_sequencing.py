@@ -3,15 +3,15 @@ import os
 import shutil
 import hashlib
 
-from shieldcraft.checklist.dependencies import infer_item_dependencies, build_graph, detect_cycles, build_sequence
+from shieldcraft.checklist.dependencies import detect_cycles
 
 
 def _prepare_env():
     os.makedirs('artifacts', exist_ok=True)
     open('artifacts/repo_sync_state.json', 'w').write('{}')
-    h = hashlib.sha256(open('artifacts/repo_sync_state.json','rb').read()).hexdigest()
-    with open('repo_state_sync.json','w') as f:
-        json.dump({"files":[{"path":"artifacts/repo_sync_state.json","sha256":h}]}, f)
+    h = hashlib.sha256(open('artifacts/repo_sync_state.json', 'rb').read()).hexdigest()
+    with open('repo_state_sync.json', 'w') as f:
+        json.dump({"files": [{"path": "artifacts/repo_sync_state.json", "sha256": h}]}, f)
     import importlib
     importlib.import_module('shieldcraft.persona')
     import shieldcraft.persona as pmod
@@ -47,9 +47,9 @@ def test_sequence_deterministic(tmp_path):
     if os.path.exists('.selfhost_outputs'):
         shutil.rmtree('.selfhost_outputs')
     run_self_host('spec/se_dsl_v1.spec.json', 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
-    a = open('.selfhost_outputs/checklist_sequence.json','rb').read()
+    a = open('.selfhost_outputs/checklist_sequence.json', 'rb').read()
     if os.path.exists('.selfhost_outputs'):
         shutil.rmtree('.selfhost_outputs')
     run_self_host('spec/se_dsl_v1.spec.json', 'src/shieldcraft/dsl/schema/se_dsl.schema.json')
-    b = open('.selfhost_outputs/checklist_sequence.json','rb').read()
+    b = open('.selfhost_outputs/checklist_sequence.json', 'rb').read()
     assert a == b
