@@ -24,6 +24,7 @@ wheels/
 venv/
 ENV/
 env/
+.venv/
 
 # IDEs
 .vscode/
@@ -40,15 +41,58 @@ htmlcov/
 # Project-specific
 /artifacts/
 .selfhost_outputs/
-products/*/
+products/
 evidence/
 src/generated/**
+test_output/
+generated/
+
+# Generated manifests and artifacts
+*_manifest.json
+api_manifest.json
+service_manifest.json
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Angular
+dist/
+.tmp/
+
+# Build outputs
+build/
+target/
 
 # OS
 .DS_Store
 Thumbs.db
 
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
 
 list_tree.sh
 tree.txt
 tmp.txt
+
+# Temporary test and demo files
+temp_request.json
+test_api.py
+*_test_results.json
+demo_*.json
+demo_*.py
+discover_*.json
+discover_*.spec.json
+gap_detector.py
+generate_*.py
+run_product_spec.py

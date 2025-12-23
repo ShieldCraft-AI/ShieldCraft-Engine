@@ -62,22 +62,22 @@
       }
     },
     "sections": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id"],
-        "properties": {
-          "id": {"type": "string"},
-          "description": {"type": "string"},
-          "tasks": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": ["id", "type", "ptr"],
-              "properties": {
-                "id": {"type": "string"},
-                "type": {"type": "string"},
-                "ptr": {"type": "string"},
+      "type": ["array", "object"],
+          "items": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+              "id": {"type": "string"},
+              "description": {"type": "string"},
+              "tasks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["id", "type", "ptr"],
+                  "properties": {
+                    "id": {"type": "string"},
+                    "type": {"type": "string"},
+                    "ptr": {"type": "string"},
                 "description": {"type": "string"},
                 "requires": {"type": "array", "items": {"type": "string"}}
               }

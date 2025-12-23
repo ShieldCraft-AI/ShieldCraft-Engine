@@ -79,7 +79,7 @@ class SpecExtractor:
 
                 items.append({
                     "ptr": ptr,
-                    "key": str(idx),
+                    "key": self._generate_semantic_key(v, f"item_{idx}"),
                     "value": v,
                     "source_pointer": ptr,
                     "source_section": source_section,
@@ -120,6 +120,26 @@ class SpecExtractor:
     def get_reverse_index(self):
         """Return the pointer → item_ids mapping."""
         return {k: sorted(v) for k, v in sorted(self.reverse_index.items())}
+
+    def _generate_semantic_key(self, value, fallback_prefix="item"):
+        """Generate a semantic key from the value, falling back to sanitized prefix."""
+        if isinstance(value, dict):
+            # Prefer name for readability, then id, then key, then title
+            for field in ['name', 'id', 'key', 'title']:
+                if field in value and value[field]:
+                    base_key = str(value[field])
+                    break
+            else:
+                base_key = fallback_prefix
+        else:
+            base_key = fallback_prefix
+        
+        # Sanitize to valid Python identifier
+        import re
+        sanitized = re.sub(r'[^a-zA-Z0-9_]', '', base_key)
+        if not sanitized or not (sanitized[0].isalpha() or sanitized[0] == '_'):
+            sanitized = '_' + sanitized
+        return sanitized
 
     def _compute_line(self, ptr):
         """Deterministic line number computation from pointer."""

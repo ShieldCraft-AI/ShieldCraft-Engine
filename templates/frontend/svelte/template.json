@@ -1,0 +1,216 @@
+{
+  "framework": "svelte",
+  "language": "typescript",
+  "version": "1.0.0",
+  "description": "SvelteKit frontend framework template",
+
+  "variables": {
+    "app_name": {
+      "type": "string",
+      "description": "Name of the application",
+      "required": true,
+      "default": "ShieldCraftSvelteApp"
+    },
+    "app_description": {
+      "type": "string",
+      "description": "Description of the application",
+      "required": true,
+      "default": "A SvelteKit application"
+    },
+    "svelte_version": {
+      "type": "enum",
+      "values": ["4"],
+      "description": "Svelte version",
+      "default": "4"
+    },
+    "use_stores": {
+      "type": "boolean",
+      "description": "Use Svelte stores for state management",
+      "default": true
+    },
+    "use_routing": {
+      "type": "boolean",
+      "description": "Use SvelteKit routing",
+      "default": true
+    },
+    "entities": {
+      "type": "array",
+      "description": "List of entities to generate",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "type": {"type": "string"},
+                "required": {"type": "boolean", "default": true}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "files": [
+    {
+      "template": "package.json.mustache",
+      "output": "package.json",
+      "description": "SvelteKit project dependencies and scripts"
+    },
+    {
+      "template": "svelte.config.js.mustache",
+      "output": "svelte.config.js",
+      "description": "SvelteKit configuration"
+    },
+    {
+      "template": "vite.config.ts.mustache",
+      "output": "vite.config.ts",
+      "description": "Vite configuration for SvelteKit"
+    },
+    {
+      "template": "tsconfig.json.mustache",
+      "output": "tsconfig.json",
+      "description": "TypeScript configuration"
+    },
+    {
+      "template": "tailwind.config.js.mustache",
+      "output": "tailwind.config.js",
+      "description": "Tailwind CSS configuration"
+    },
+    {
+      "template": "postcss.config.js.mustache",
+      "output": "postcss.config.js",
+      "description": "PostCSS configuration"
+    },
+    {
+      "template": "src/app.html.mustache",
+      "output": "src/app.html",
+      "description": "HTML template"
+    },
+    {
+      "template": "src/app.d.ts.mustache",
+      "output": "src/app.d.ts",
+      "description": "TypeScript declarations"
+    },
+    {
+      "template": "src/lib/types/index.ts.mustache",
+      "output": "src/lib/types/index.ts",
+      "description": "TypeScript type definitions"
+    },
+    {
+      "template": "src/lib/stores/entities.ts.mustache",
+      "output": "src/lib/stores/entities.ts",
+      "description": "Svelte stores for entities"
+    },
+    {
+      "template": "src/lib/api.ts.mustache",
+      "output": "src/lib/api.ts",
+      "description": "API service layer"
+    },
+    {
+      "template": "src/routes/+page.svelte.mustache",
+      "output": "src/routes/+page.svelte",
+      "description": "Home page component"
+    },
+    {
+      "template": "src/routes/+layout.svelte.mustache",
+      "output": "src/routes/+layout.svelte",
+      "description": "Root layout component"
+    },
+    {
+      "template": "src/lib/components/EntityList.svelte.mustache",
+      "output": "src/lib/components/EntityList.svelte",
+      "description": "Reusable entity list component"
+    },
+    {
+      "template": "src/lib/components/EntityForm.svelte.mustache",
+      "output": "src/lib/components/EntityForm.svelte",
+      "description": "Reusable entity form component"
+    },
+    {
+      "template": "src/lib/components/EntityDetail.svelte.mustache",
+      "output": "src/lib/components/EntityDetail.svelte",
+      "description": "Reusable entity detail component"
+    },
+    {
+      "template": "src/routes/entities/[entity]/+page.svelte.mustache",
+      "output": "src/routes/entities/[entity]/+page.svelte",
+      "description": "Entity list route template"
+    },
+    {
+      "template": "src/routes/entities/[entity]/[id]/+page.svelte.mustache",
+      "output": "src/routes/entities/[entity]/[id]/+page.svelte",
+      "description": "Entity detail route template"
+    },
+    {
+      "template": "src/routes/entities/[entity]/new/+page.svelte.mustache",
+      "output": "src/routes/entities/[entity]/new/+page.svelte",
+      "description": "Entity create route template"
+    },
+    {
+      "template": "src/routes/entities/[entity]/[id]/edit/+page.svelte.mustache",
+      "output": "src/routes/entities/[entity]/[id]/edit/+page.svelte",
+      "description": "Entity edit route template"
+    },
+    {
+      "template": "README.md.mustache",
+      "output": "README.md",
+      "description": "Project documentation"
+    },
+    {
+      "template": ".gitignore.mustache",
+      "output": ".gitignore",
+      "description": "Git ignore rules"
+    }
+  ],
+
+  "dependencies": {
+    "required": [
+      "@sveltejs/kit",
+      "svelte",
+      "@sveltejs/vite-plugin-svelte",
+      "typescript",
+      "svelte-check",
+      "tslib",
+      "axios"
+    ],
+    "devDependencies": [
+      "vite",
+      "@types/node",
+      "autoprefixer",
+      "postcss",
+      "tailwindcss",
+      "@sveltejs/adapter-auto",
+      "@sveltejs/adapter-node",
+      "@typescript-eslint/eslint-plugin",
+      "@typescript-eslint/parser",
+      "eslint",
+      "eslint-config-prettier",
+      "eslint-plugin-svelte3",
+      "prettier",
+      "prettier-plugin-svelte"
+    ]
+  },
+
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "lint": "prettier --plugin-search-dir . --check . && eslint .",
+    "format": "prettier --plugin-search-dir . --write ."
+  },
+
+  "metadata": {
+    "author": "ShieldCraft Engine",
+    "license": "MIT",
+    "repository": "https://github.com/your-org/shieldcraft-engine",
+    "documentation": "https://shieldcraft-engine.readthedocs.io/"
+  }
+}

@@ -22,6 +22,7 @@ def build_minimal_dsl_skeleton(raw_input: Any, source_format: str | None = None)
       `spec_format`, and `normalized` flag.
     - Preserve `raw_input` under `metadata.source_material` for diagnostics.
     - Do not add instruction semantics (no `invariants`/`instructions` unless present).
+    - Adapt sections: if dict, convert to array format.
     """
     md = {
         "product_id": "unknown",
@@ -34,9 +35,36 @@ def build_minimal_dsl_skeleton(raw_input: Any, source_format: str | None = None)
     # Attach raw input deterministically for diagnostics and provenance.
     md["source_material"] = raw_input
 
+    sections = {}
+    if isinstance(raw_input, dict) and "sections" in raw_input:
+        sections = adapt_sections(raw_input["sections"])
+    elif isinstance(raw_input, dict):
+        # If raw_input is dict but no sections, check if it has other keys that could be sections
+        # For now, keep empty
+        pass
+
     skeleton = {
         "metadata": md,
         "model": {},
-        "sections": {},
+        "sections": sections,
     }
     return skeleton
+
+
+def adapt_sections(sections: Any) -> list:
+    """Adapt sections to array format if it's a dict."""
+    if isinstance(sections, list):
+        return sections
+    elif isinstance(sections, dict):
+        # Convert dict like {"main": ["task1"]} to [{"id": "main", "tasks": ["task1"]}]
+        adapted = []
+        for name, tasks in sections.items():
+            if isinstance(tasks, list):
+                adapted.append({"id": name, "tasks": tasks})
+            else:
+                # If tasks is not a list, wrap it
+                adapted.append({"id": name, "tasks": [str(tasks)]})
+        return adapted
+    else:
+        # If not dict or list, return empty array
+        return []

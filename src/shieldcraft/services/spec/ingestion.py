@@ -14,7 +14,7 @@ from __future__ import annotations
 import json
 import pathlib
 from typing import Any
-from shieldcraft.services.spec.normalization import build_minimal_dsl_skeleton
+from shieldcraft.services.spec.normalization import build_minimal_dsl_skeleton, adapt_sections
 
 
 def ingest_spec(path: str) -> Any:
@@ -45,6 +45,9 @@ def ingest_spec(path: str) -> Any:
         obj = json.loads(text)
         source_format = "json"
         if isinstance(obj, dict):
+            # Adapt sections to array format
+            if "sections" in obj:
+                obj["sections"] = adapt_sections(obj["sections"])
             # If this is already a DSL-shaped dict (contains DSL top-level keys),
             # return it unchanged; otherwise promote into a minimal DSL skeleton
             if "model" in obj and "sections" in obj:
@@ -64,6 +67,9 @@ def ingest_spec(path: str) -> Any:
                 obj = yaml.safe_load(text)
                 source_format = "yaml"
                 if isinstance(obj, dict):
+                    # Adapt sections to array format
+                    if "sections" in obj:
+                        obj["sections"] = adapt_sections(obj["sections"])
                     if "model" in obj and "sections" in obj:
                         return obj
                     return build_minimal_dsl_skeleton(obj, "yaml")
@@ -85,6 +91,9 @@ def ingest_spec(path: str) -> Any:
                     obj = _tomllib.loads(text)
                     source_format = "toml"
                     if isinstance(obj, dict):
+                        # Adapt sections to array format
+                        if "sections" in obj:
+                            obj["sections"] = adapt_sections(obj["sections"])
                         if "model" in obj and "sections" in obj:
                             return obj
                         return build_minimal_dsl_skeleton(obj, "toml")

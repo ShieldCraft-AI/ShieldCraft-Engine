@@ -892,6 +892,10 @@ class Engine:
                     pass
 
                 return finalize_checklist(self, partial_result={"type": "schema_error", "details": errors})
+            # Adapt sections if it's a dict
+            if isinstance(normalized.get("sections"), dict):
+                from shieldcraft.services.spec.normalization import adapt_sections
+                normalized["sections"] = adapt_sections(normalized["sections"])
             ast = self.ast.build(normalized)
             fingerprint = compute_spec_fingerprint(normalized)
             spec_model = SpecModel(normalized, ast, fingerprint)
