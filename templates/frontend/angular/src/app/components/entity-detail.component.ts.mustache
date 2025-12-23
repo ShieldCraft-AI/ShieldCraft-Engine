@@ -1,0 +1,73 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
+import { ApiService } from '../../services/api.service';
+import { {{name}}, ApiResponse } from '../../models';
+
+@Component({
+  selector: 'app-{{name_kebab}}-detail',
+  standalone: true,
+  imports: [CommonModule, RouterLink],
+  templateUrl: './{{name_kebab}}-detail.component.html',
+  styleUrl: './{{name_kebab}}-detail.component.scss'
+})
+export class {{name}}DetailComponent implements OnInit {
+  {{name_lower}}: {{name}} | null = null;
+  loading = false;
+  error: string | null = null;
+  deleting = false;
+
+  constructor(
+    private apiService: ApiService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+    const id = this.route.snapshot.params['id'];
+    if (id) {
+      this.load{{name}}(+id);
+    }
+  }
+
+  load{{name}}(id: number): void {
+    this.loading = true;
+    this.error = null;
+
+    this.apiService.get{{name}}(id).subscribe({
+      next: (response: ApiResponse<{{name}}>) => {
+        if (response.success && response.data) {
+          this.{{name_lower}} = response.data;
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load {{name_lower}}';
+        console.error('Error loading {{name_lower}}:', err);
+        this.loading = false;
+      }
+    });
+  }
+
+  onEdit(): void {
+    if (this.{{name_lower}}) {
+      this.router.navigate(['/{{name_lower}}s', this.{{name_lower}}.id, 'edit']);
+    }
+  }
+
+  onDelete(): void {
+    if (this.{{name_lower}} && confirm('Are you sure you want to delete this {{name_lower}}?')) {
+      this.deleting = true;
+      this.apiService.delete{{name}}(this.{{name_lower}}.id).subscribe({
+        next: () => {
+          this.router.navigate(['/{{name_lower}}s']);
+        },
+        error: (err) => {
+          console.error('Error deleting {{name_lower}}:', err);
+          this.deleting = false;
+          // Handle error (show toast, etc.)
+        }
+      });
+    }
+  }
+}

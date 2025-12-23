@@ -1,0 +1,169 @@
+{
+  "framework": "react-native",
+  "language": "typescript",
+  "version": "1.0.0",
+  "description": "React Native mobile framework template",
+
+  "variables": {
+    "app_name": {
+      "type": "string",
+      "description": "Name of the application",
+      "required": true,
+      "default": "ShieldCraftApp"
+    },
+    "app_description": {
+      "type": "string",
+      "description": "Description of the application",
+      "required": true,
+      "default": "A React Native application"
+    },
+    "bundle_id": {
+      "type": "string",
+      "description": "Bundle identifier for iOS/Android",
+      "default": "com.shieldcraft.app"
+    },
+    "enable_navigation": {
+      "type": "boolean",
+      "description": "Enable React Navigation",
+      "default": true
+    },
+    "enable_async_storage": {
+      "type": "boolean",
+      "description": "Enable AsyncStorage for local data",
+      "default": true
+    },
+    "entities": {
+      "type": "array",
+      "description": "List of entities to generate",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "type": {"type": "string"},
+                "required": {"type": "boolean", "default": true}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "files": [
+    {
+      "template": "package.json.mustache",
+      "output": "package.json",
+      "description": "React Native project dependencies and scripts"
+    },
+    {
+      "template": "App.tsx.mustache",
+      "output": "App.tsx",
+      "description": "Main React Native application component"
+    },
+    {
+      "template": "tsconfig.json.mustache",
+      "output": "tsconfig.json",
+      "description": "TypeScript configuration"
+    },
+    {
+      "template": "babel.config.js.mustache",
+      "output": "babel.config.js",
+      "description": "Babel configuration for React Native"
+    },
+    {
+      "template": "metro.config.js.mustache",
+      "output": "metro.config.js",
+      "description": "Metro bundler configuration"
+    },
+    {
+      "template": "src/models/types.ts.mustache",
+      "output": "src/models/types.ts",
+      "description": "TypeScript type definitions"
+    },
+    {
+      "template": "src/services/api.ts.mustache",
+      "output": "src/services/api.ts",
+      "description": "API service layer"
+    },
+    {
+      "template": "src/services/storage.ts.mustache",
+      "output": "src/services/storage.ts",
+      "description": "Local storage service"
+    },
+    {
+      "template": "src/navigation/AppNavigator.tsx.mustache",
+      "output": "src/navigation/AppNavigator.tsx",
+      "description": "App navigation setup"
+    },
+    {
+      "template": "src/screens/HomeScreen.tsx.mustache",
+      "output": "src/screens/HomeScreen.tsx",
+      "description": "Home screen component"
+    },
+    {
+      "template": "src/components/EntityList.tsx.mustache",
+      "output": "src/components/EntityList.tsx",
+      "description": "Reusable list component"
+    },
+    {
+      "template": "src/components/EntityForm.tsx.mustache",
+      "output": "src/components/EntityForm.tsx",
+      "description": "Reusable form component"
+    },
+    {
+      "template": "README.md.mustache",
+      "output": "README.md",
+      "description": "Project documentation"
+    },
+    {
+      "template": ".gitignore.mustache",
+      "output": ".gitignore",
+      "description": "Git ignore rules"
+    }
+  ],
+
+  "dependencies": {
+    "required": [
+      "react",
+      "react-native",
+      "@react-navigation/native",
+      "@react-navigation/stack",
+      "react-native-screens",
+      "react-native-safe-area-context",
+      "@react-native-async-storage/async-storage",
+      "axios"
+    ],
+    "devDependencies": [
+      "@types/react",
+      "@types/react-native",
+      "typescript",
+      "@babel/core",
+      "@babel/runtime",
+      "metro-react-native-babel-preset"
+    ]
+  },
+
+  "scripts": {
+    "install": "npm install",
+    "android": "npx react-native run-android",
+    "ios": "npx react-native run-ios",
+    "start": "npx react-native start",
+    "test": "npm test",
+    "lint": "npx eslint .",
+    "build:android": "cd android && ./gradlew assembleRelease",
+    "build:ios": "npx react-native run-ios --configuration=Release"
+  },
+
+  "metadata": {
+    "author": "ShieldCraft Engine",
+    "license": "MIT",
+    "repository": "https://github.com/your-org/shieldcraft-engine",
+    "documentation": "https://shieldcraft-engine.readthedocs.io/"
+  }
+}

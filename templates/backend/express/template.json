@@ -1,0 +1,148 @@
+{
+  "framework": "express",
+  "language": "javascript",
+  "version": "1.0.0",
+  "description": "Express.js backend framework template",
+
+  "variables": {
+    "app_name": {
+      "type": "string",
+      "description": "Name of the application",
+      "required": true,
+      "default": "my-express-app"
+    },
+    "app_description": {
+      "type": "string",
+      "description": "Description of the application",
+      "required": true,
+      "default": "An Express.js application"
+    },
+    "database_type": {
+      "type": "enum",
+      "values": ["mongodb", "postgresql", "mysql"],
+      "description": "Database type to use",
+      "default": "mongodb"
+    },
+    "enable_auth": {
+      "type": "boolean",
+      "description": "Enable authentication features",
+      "default": false
+    },
+    "enable_cors": {
+      "type": "boolean",
+      "description": "Enable CORS middleware",
+      "default": true
+    },
+    "entities": {
+      "type": "array",
+      "description": "List of entities to generate",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "type": {"type": "string"},
+                "required": {"type": "boolean", "default": true}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "files": [
+    {
+      "template": "app.js.mustache",
+      "output": "app.js",
+      "description": "Express application entry point"
+    },
+    {
+      "template": "package.json.mustache",
+      "output": "package.json",
+      "description": "Node.js dependencies and scripts"
+    },
+    {
+      "template": "models/index.js.mustache",
+      "output": "models/index.js",
+      "description": "Mongoose data models"
+    },
+    {
+      "template": "api/routes.js.mustache",
+      "output": "api/routes.js",
+      "description": "API route definitions"
+    },
+    {
+      "template": "config/index.js.mustache",
+      "output": "config/index.js",
+      "description": "Application configuration"
+    },
+    {
+      "template": "services/index.js.mustache",
+      "output": "services/index.js",
+      "description": "Business logic services"
+    },
+    {
+      "template": "middleware/index.js.mustache",
+      "output": "middleware/index.js",
+      "description": "Custom middleware"
+    },
+    {
+      "template": "tests/app.test.js.mustache",
+      "output": "tests/app.test.js",
+      "description": "Test suite"
+    },
+    {
+      "template": "README.md.mustache",
+      "output": "README.md",
+      "description": "Project documentation"
+    },
+    {
+      "template": ".env.example.mustache",
+      "output": ".env.example",
+      "description": "Environment variables template"
+    },
+    {
+      "template": ".gitignore.mustache",
+      "output": ".gitignore",
+      "description": "Git ignore rules"
+    }
+  ],
+
+  "dependencies": {
+    "required": ["express", "mongoose", "cors", "helmet", "morgan", "dotenv", "joi", "bcryptjs", "jsonwebtoken"],
+    "optional": {
+      "database": {
+        "mongodb": ["mongoose"],
+        "postgresql": ["pg", "sequelize"],
+        "mysql": ["mysql2", "sequelize"]
+      },
+      "auth": ["jsonwebtoken", "bcryptjs"],
+      "testing": ["jest", "supertest", "mongodb-memory-server"]
+    }
+  },
+
+  "scripts": {
+    "install": "npm install",
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
+  },
+
+  "metadata": {
+    "author": "ShieldCraft Engine",
+    "license": "MIT",
+    "repository": "https://github.com/your-org/shieldcraft-engine",
+    "documentation": "https://shieldcraft-engine.readthedocs.io/"
+  }
+}

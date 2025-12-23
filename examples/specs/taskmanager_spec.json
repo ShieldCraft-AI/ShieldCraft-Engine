@@ -1,0 +1,28 @@
+{
+  "app_name": "taskmanager-api",
+  "app_description": "A Task Management API built with FastAPI",
+  "database_type": "sqlite",
+  "enable_auth": false,
+  "enable_cors": true,
+  "entities": [
+    {
+      "name": "Task",
+      "fields": [
+        {"name": "title", "type": "string", "required": true},
+        {"name": "description", "type": "string", "required": false},
+        {"name": "completed", "type": "boolean", "required": true, "default": false},
+        {"name": "priority", "type": "string", "required": false},
+        {"name": "due_date", "type": "date", "required": false}
+      ]
+    },
+    {
+      "name": "User",
+      "fields": [
+        {"name": "username", "type": "string", "required": true},
+        {"name": "email", "type": "string", "required": true},
+        {"name": "full_name", "type": "string", "required": false},
+        {"name": "is_active", "type": "boolean", "required": true, "default": true}
+      ]
+    }
+  ]
+}

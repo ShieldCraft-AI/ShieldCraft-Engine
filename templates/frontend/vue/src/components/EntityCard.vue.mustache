@@ -1,0 +1,44 @@
+<template>
+  <div class="entity-card">
+    <div class="card-content">
+      <slot />
+    </div>
+    <div class="card-actions">
+      <slot name="actions" />
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+// Props can be added here if needed
+interface Props {
+  title?: string
+}
+
+withDefaults(defineProps<Props>(), {
+  title: ''
+})
+</script>
+
+<style scoped>
+.entity-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
+}
+
+.card-content {
+  margin-bottom: 1rem;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+</style>

@@ -1,0 +1,40 @@
+from datetime import datetime
+
+# db will be imported when needed
+db = None
+
+def init_models(database):
+    """Initialize models with the database instance"""
+    global db
+    db = database
+    
+    {{#entities}}
+    class {{name}}(db.Model):
+        __tablename__ = '{{name_lower}}s'
+
+        id = db.Column(db.Integer, primary_key=True)
+        {{#fields}}
+        {{field_name}} = db.Column({{field_type_sql}}{{#nullable}}, nullable=True{{/nullable}})
+        {{/fields}}
+        created_at = db.Column(db.DateTime, default=datetime.utcnow)
+        updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+        def __repr__(self):
+            return f'<{{name}} {self.id}>'
+
+        def to_dict(self):
+            return {
+                'id': self.id,
+                {{#fields}}
+                '{{field_name}}': self.{{field_name}},
+                {{/fields}}
+                'created_at': self.created_at.isoformat() if self.created_at else None,
+                'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            }
+
+    # Make classes available at module level
+    globals()['{{name}}'] = {{name}}
+    {{/entities}}
+
+# Export the init function
+__all__ = ['init_models']

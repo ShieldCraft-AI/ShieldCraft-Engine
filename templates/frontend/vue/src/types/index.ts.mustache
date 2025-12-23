@@ -1,0 +1,40 @@
+// Generated types for {{app_name}}
+
+export interface BaseEntity {
+  id: number;
+  created_at?: Date;
+  updated_at?: Date;
+}
+
+{{#entities}}
+export interface {{name}} extends BaseEntity {
+  {{#fields}}
+  {{name}}: {{type}}{{^required}} | null{{/required}};
+  {{/fields}}
+}
+
+export interface {{name}}Create {
+  {{#fields}}
+  {{name}}{{^required}}?{{/required}}: {{type}}{{^required}} | null{{/required}};
+  {{/fields}}
+}
+
+export interface {{name}}Update extends Partial<{{name}}Create> {}
+
+{{/entities}}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  message?: string;
+  error?: string;
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+}

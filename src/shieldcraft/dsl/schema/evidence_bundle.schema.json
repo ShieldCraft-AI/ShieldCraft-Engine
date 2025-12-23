@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Evidence Bundle Schema",
+  "description": "Schema for ShieldCraft Engine evidence bundles",
+  "properties": {
+    "manifest": {
+      "type": "object",
+      "properties": {
+        "bundle_version": {"type": "string"},
+        "created_at": {"type": "string", "format": "date-time"},
+        "run_id": {"type": "string"},
+        "spec_hash": {"type": "string"},
+        "engine_version": {"type": "string"},
+        "determinism_verified": {"type": "boolean"},
+        "artifacts_count": {"type": "integer", "minimum": 0},
+        "agents_used": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      },
+      "required": ["bundle_version", "created_at", "run_id"]
+    },
+    "graph_hash": {"type": "string"},
+    "agent_logs_canonicalized_filtered": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "agent_id": {"type": "string"},
+          "execution_time_ms": {"type": "integer"},
+          "status": {"type": "string"},
+          "output_hash": {"type": "string"}
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "properties": {
+        "algorithm": {"type": "string"},
+        "content_hash": {"type": "string"},
+        "signature": {"type": "string"},
+        "signer": {"type": "string"},
+        "timestamp": {"type": "string", "format": "date-time"}
+      },
+      "required": ["algorithm", "signature"]
+    },
+    "verification_report": {
+      "type": "object",
+      "properties": {
+        "overall_status": {"type": "string", "enum": ["PASS", "FAIL"]},
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "check": {"type": "string"},
+              "status": {"type": "string", "enum": ["PASS", "FAIL", "WARN"]},
+              "message": {"type": "string"},
+              "critical": {"type": "boolean"}
+            }
+          }
+        },
+        "critical_failures": {"type": "array"}
+      }
+    },
+    "drift_check_results": {
+      "type": "object",
+      "properties": {
+        "drift_detected": {"type": "boolean"},
+        "baseline_hash": {"type": "string"},
+        "current_hash": {"type": "string"},
+        "checks_performed": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "artifacts/": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {"type": "string"},
+          "hash": {"type": "string"},
+          "size": {"type": "integer"}
+        }
+      }
+    },
+    "logs/": {"type": "array"},
+    "provenance_chain": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "artifact_id": {"type": "string"},
+          "generated_by": {"type": "string"},
+          "inputs": {"type": "array"},
+          "timestamp": {"type": "string"}
+        }
+      }
+    },
+    "signatures/": {"type": "array"}
+  },
+  "required": ["manifest", "signature"]
+}

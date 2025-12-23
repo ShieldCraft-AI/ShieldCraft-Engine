@@ -1,0 +1,27 @@
+// Generated types from specification
+
+{{#entities}}
+export interface {{name}} {
+  id: string
+  {{#fields}}
+  {{field_name}}: {{field_type_ts}}
+  {{/fields}}
+  createdAt?: string
+  updatedAt?: string
+}
+
+{{/entities}}
+// API Response types
+export interface ApiResponse<T> {
+  success: boolean
+  message: string
+  data: T
+}
+
+export interface PaginatedResponse<T> {
+  data: T[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}

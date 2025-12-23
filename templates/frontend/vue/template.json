@@ -1,0 +1,205 @@
+{
+  "framework": "vue",
+  "language": "typescript",
+  "version": "1.0.0",
+  "description": "Vue.js frontend framework template",
+
+  "variables": {
+    "app_name": {
+      "type": "string",
+      "description": "Name of the application",
+      "required": true,
+      "default": "ShieldCraftVueApp"
+    },
+    "app_description": {
+      "type": "string",
+      "description": "Description of the application",
+      "required": true,
+      "default": "A Vue.js application"
+    },
+    "vue_version": {
+      "type": "enum",
+      "values": ["3"],
+      "description": "Vue.js version",
+      "default": "3"
+    },
+    "use_pinia": {
+      "type": "boolean",
+      "description": "Use Pinia for state management",
+      "default": true
+    },
+    "use_vue_router": {
+      "type": "boolean",
+      "description": "Use Vue Router for navigation",
+      "default": true
+    },
+    "entities": {
+      "type": "array",
+      "description": "List of entities to generate",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "type": {"type": "string"},
+                "required": {"type": "boolean", "default": true}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "files": [
+    {
+      "template": "package.json.mustache",
+      "output": "package.json",
+      "description": "Vue.js project dependencies and scripts"
+    },
+    {
+      "template": "vite.config.ts.mustache",
+      "output": "vite.config.ts",
+      "description": "Vite configuration for Vue.js"
+    },
+    {
+      "template": "tsconfig.json.mustache",
+      "output": "tsconfig.json",
+      "description": "TypeScript configuration"
+    },
+    {
+      "template": "tsconfig.app.json.mustache",
+      "output": "tsconfig.app.json",
+      "description": "TypeScript configuration for app"
+    },
+    {
+      "template": "tsconfig.node.json.mustache",
+      "output": "tsconfig.node.json",
+      "description": "TypeScript configuration for Node.js"
+    },
+    {
+      "template": "index.html.mustache",
+      "output": "index.html",
+      "description": "HTML entry point"
+    },
+    {
+      "template": "src/main.ts.mustache",
+      "output": "src/main.ts",
+      "description": "Vue.js application entry point"
+    },
+    {
+      "template": "src/assets/main.css.mustache",
+      "output": "src/assets/main.css",
+      "description": "Main CSS file with Tailwind directives"
+    },
+    {
+      "template": "src/App.vue.mustache",
+      "output": "src/App.vue",
+      "description": "Root Vue component"
+    },
+    {
+      "template": "src/types/index.ts.mustache",
+      "output": "src/types/index.ts",
+      "description": "TypeScript type definitions"
+    },
+    {
+      "template": "src/services/api.ts.mustache",
+      "output": "src/services/api.ts",
+      "description": "API service layer"
+    },
+    {
+      "template": "src/stores/entities.ts.mustache",
+      "output": "src/stores/entities.ts",
+      "description": "Pinia store for entities"
+    },
+    {
+      "template": "src/router/index.ts.mustache",
+      "output": "src/router/index.ts",
+      "description": "Vue Router configuration"
+    },
+    {
+      "template": "src/views/HomeView.vue.mustache",
+      "output": "src/views/HomeView.vue",
+      "description": "Home view component"
+    },
+    {
+      "template": "src/components/EntityList.vue.mustache",
+      "output": "src/components/EntityList.vue",
+      "description": "Reusable entity list component"
+    },
+    {
+      "template": "src/components/EntityForm.vue.mustache",
+      "output": "src/components/EntityForm.vue",
+      "description": "Reusable entity form component"
+    },
+    {
+      "template": "src/components/EntityDetail.vue.mustache",
+      "output": "src/components/EntityDetail.vue",
+      "description": "Reusable entity detail component"
+    },
+    {
+      "template": "src/views/ListView.vue.mustache",
+      "output": "src/views/ListView.vue",
+      "description": "Entity list view component"
+    },
+    {
+      "template": "src/views/DetailView.vue.mustache",
+      "output": "src/views/DetailView.vue",
+      "description": "Entity detail view component"
+    },
+    {
+      "template": "src/views/FormView.vue.mustache",
+      "output": "src/views/FormView.vue",
+      "description": "Entity form view component"
+    },
+    {
+      "template": "README.md.mustache",
+      "output": "README.md",
+      "description": "Project documentation"
+    },
+    {
+      "template": ".gitignore.mustache",
+      "output": ".gitignore",
+      "description": "Git ignore rules"
+    }
+  ],
+
+  "dependencies": {
+    "required": [
+      "vue",
+      "@vue/tsconfig",
+      "typescript",
+      "vue-tsc",
+      "pinia",
+      "vue-router",
+      "axios",
+      "@types/node"
+    ],
+    "devDependencies": [
+      "@vitejs/plugin-vue",
+      "vite",
+      "autoprefixer",
+      "postcss",
+      "tailwindcss"
+    ]
+  },
+
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+  },
+
+  "metadata": {
+    "author": "ShieldCraft Engine",
+    "license": "MIT",
+    "repository": "https://github.com/your-org/shieldcraft-engine",
+    "documentation": "https://shieldcraft-engine.readthedocs.io/"
+  }
+}

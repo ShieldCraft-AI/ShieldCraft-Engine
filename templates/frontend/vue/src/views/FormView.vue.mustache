@@ -1,0 +1,67 @@
+<template>
+  <div class="form-view">
+    <EntityForm
+      :entity-name="entityName"
+      :fields="fields"
+      :initial-data="initialData"
+      :loading="loading"
+      @submit="handleSubmit"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import EntityForm from '@/components/EntityForm.vue'
+
+interface FormField {
+  name: string
+  label: string
+  type: string
+  formType: string
+  required?: boolean
+  placeholder?: string
+}
+
+interface Props {
+  entityName: string
+  fields: FormField[]
+  initialData?: Record<string, any>
+  loading?: boolean
+  isEditing?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  initialData: () => ({}),
+  loading: false,
+  isEditing: false
+})
+
+const emit = defineEmits<{
+  loadItem: [id: string | number]
+  submit: [data: Record<string, any>]
+}>()
+
+const router = useRouter()
+const route = useRoute()
+
+function handleSubmit(data: Record<string, any>) {
+  emit('submit', data)
+}
+
+onMounted(() => {
+  if (props.isEditing) {
+    const id = route.params.id as string
+    if (id) {
+      emit('loadItem', id)
+    }
+  }
+})
+</script>
+
+<style scoped>
+.form-view {
+  padding: 2rem;
+}
+</style>

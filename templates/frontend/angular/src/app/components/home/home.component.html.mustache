@@ -1,0 +1,18 @@
+<div class="home-container">
+  <div class="hero">
+    <h1 class="text-4xl font-bold text-gray-900 mb-4">{{title}}</h1>
+    <p class="text-xl text-gray-600 mb-8">{{description}}</p>
+  </div>
+
+  <div class="entities-grid">
+    {{#entities}}
+    <div class="entity-card">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-2">{{name}}</h2>
+      <p class="text-gray-600 mb-4">Manage {{name_lower}}s in your application</p>
+      <a routerLink="/{{name_lower}}s" class="btn btn-primary">
+        View {{name}}s
+      </a>
+    </div>
+    {{/entities}}
+  </div>
+</div>

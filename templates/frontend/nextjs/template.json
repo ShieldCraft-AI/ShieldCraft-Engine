@@ -1,0 +1,68 @@
+{
+  "name": "Next.js Application Template",
+  "description": "A Next.js application template with TypeScript, Tailwind CSS, and API routes",
+  "framework": "nextjs",
+  "language": "typescript",
+  "files": [
+    {
+      "source": "package.json.mustache",
+      "destination": "package.json"
+    },
+    {
+      "source": "next.config.js.mustache",
+      "destination": "next.config.js"
+    },
+    {
+      "source": "tsconfig.json.mustache",
+      "destination": "tsconfig.json"
+    },
+    {
+      "source": "tailwind.config.js.mustache",
+      "destination": "tailwind.config.js"
+    },
+    {
+      "source": "postcss.config.js.mustache",
+      "destination": "postcss.config.js"
+    },
+    {
+      "source": "app/layout.tsx.mustache",
+      "destination": "app/layout.tsx"
+    },
+    {
+      "source": "app/page.tsx.mustache",
+      "destination": "app/page.tsx"
+    },
+    {
+      "source": "app/globals.css.mustache",
+      "destination": "app/globals.css"
+    },
+    {
+      "source": "components/EntityList.tsx.mustache",
+      "destination": "components/EntityList.tsx"
+    },
+    {
+      "source": "components/EntityForm.tsx.mustache",
+      "destination": "components/EntityForm.tsx"
+    },
+    {
+      "source": "lib/api.ts.mustache",
+      "destination": "lib/api.ts"
+    },
+    {
+      "source": "types/index.ts.mustache",
+      "destination": "types/index.ts"
+    },
+    {
+      "source": "README.md.mustache",
+      "destination": "README.md"
+    },
+    {
+      "source": ".gitignore.mustache",
+      "destination": ".gitignore"
+    },
+    {
+      "source": ".env.local.example.mustache",
+      "destination": ".env.local.example"
+    }
+  ]
+}

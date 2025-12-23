@@ -1,0 +1,106 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+class StorageService {
+  private readonly TOKEN_KEY = 'auth_token';
+  private readonly USER_KEY = 'user_data';
+
+  // Token management
+  async setToken(token: string): Promise<void> {
+    try {
+      await AsyncStorage.setItem(this.TOKEN_KEY, token);
+    } catch (error) {
+      console.error('Error saving token:', error);
+      throw error;
+    }
+  }
+
+  async getToken(): Promise<string | null> {
+    try {
+      return await AsyncStorage.getItem(this.TOKEN_KEY);
+    } catch (error) {
+      console.error('Error getting token:', error);
+      return null;
+    }
+  }
+
+  async removeToken(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(this.TOKEN_KEY);
+    } catch (error) {
+      console.error('Error removing token:', error);
+      throw error;
+    }
+  }
+
+  // User data management
+  async setUserData(userData: any): Promise<void> {
+    try {
+      const jsonValue = JSON.stringify(userData);
+      await AsyncStorage.setItem(this.USER_KEY, jsonValue);
+    } catch (error) {
+      console.error('Error saving user data:', error);
+      throw error;
+    }
+  }
+
+  async getUserData(): Promise<any | null> {
+    try {
+      const jsonValue = await AsyncStorage.getItem(this.USER_KEY);
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (error) {
+      console.error('Error getting user data:', error);
+      return null;
+    }
+  }
+
+  async removeUserData(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(this.USER_KEY);
+    } catch (error) {
+      console.error('Error removing user data:', error);
+      throw error;
+    }
+  }
+
+  // Generic storage methods
+  async setItem(key: string, value: any): Promise<void> {
+    try {
+      const jsonValue = JSON.stringify(value);
+      await AsyncStorage.setItem(key, jsonValue);
+    } catch (error) {
+      console.error(`Error saving ${key}:`, error);
+      throw error;
+    }
+  }
+
+  async getItem<T>(key: string): Promise<T | null> {
+    try {
+      const jsonValue = await AsyncStorage.getItem(key);
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (error) {
+      console.error(`Error getting ${key}:`, error);
+      return null;
+    }
+  }
+
+  async removeItem(key: string): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(key);
+    } catch (error) {
+      console.error(`Error removing ${key}:`, error);
+      throw error;
+    }
+  }
+
+  async clearAll(): Promise<void> {
+    try {
+      await AsyncStorage.clear();
+    } catch (error) {
+      console.error('Error clearing storage:', error);
+      throw error;
+    }
+  }
+}
+
+export const storageService = new StorageService();
+export default storageService;

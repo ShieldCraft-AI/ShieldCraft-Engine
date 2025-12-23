@@ -1,0 +1,241 @@
+<template>
+  <div class="entity-form">
+    <div class="header">
+      <h1 class="text-3xl font-bold text-gray-900">
+        {{ isEditing ? 'Edit' : 'Create' }} {{ entityName }}
+      </h1>
+      <RouterLink
+        to="/"
+        class="text-blue-600 hover:text-blue-800"
+      >
+        ← Back to Home
+      </RouterLink>
+    </div>
+
+    <form @submit.prevent="handleSubmit" class="form">
+      <div v-for="field in fields" :key="field.name" class="form-group">
+        <label :for="field.name" class="form-label">
+          {{ field.label }}
+          <span v-if="field.required" class="required">*</span>
+        </label>
+
+        <input
+          v-if="field.type === 'text' || field.type === 'string'"
+          :id="field.name"
+          v-model="formData[field.name]"
+          :type="field.formType"
+          :required="field.required"
+          :placeholder="field.placeholder"
+          class="form-input"
+        />
+
+        <input
+          v-else-if="field.type === 'number' || field.type === 'integer'"
+          :id="field.name"
+          v-model.number="formData[field.name]"
+          type="number"
+          :required="field.required"
+          :placeholder="field.placeholder"
+          class="form-input"
+        />
+
+        <input
+          v-else-if="field.type === 'date'"
+          :id="field.name"
+          v-model="formData[field.name]"
+          type="date"
+          :required="field.required"
+          class="form-input"
+        />
+
+        <textarea
+          v-else-if="field.type === 'array' || field.type === 'object'"
+          :id="field.name"
+          v-model="formData[field.name]"
+          :required="field.required"
+          :placeholder="field.placeholder"
+          class="form-textarea"
+          rows="4"
+        ></textarea>
+
+        <div v-else-if="field.type === 'boolean'" class="form-checkbox">
+          <input
+            :id="field.name"
+            v-model="formData[field.name]"
+            type="checkbox"
+            class="form-checkbox-input"
+          />
+          <label :for="field.name" class="form-checkbox-label">
+            {{ field.label }}
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="button"
+          @click="$router.back()"
+          class="btn btn-secondary"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          :disabled="loading"
+          class="btn btn-primary"
+        >
+          {{ loading ? 'Saving...' : (isEditing ? 'Update' : 'Create') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
+interface FormField {
+  name: string
+  label: string
+  type: string
+  formType: string
+  required?: boolean
+  placeholder?: string
+}
+
+interface Props {
+  entityName: string
+  fields: FormField[]
+  initialData?: Record<string, any>
+  loading?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  initialData: () => ({}),
+  loading: false
+})
+
+const emit = defineEmits<{
+  submit: [data: Record<string, any>]
+}>()
+
+const router = useRouter()
+const formData = ref<Record<string, any>>({ ...props.initialData })
+
+const isEditing = computed(() => Object.keys(props.initialData || {}).length > 0)
+
+function handleSubmit() {
+  emit('submit', formData.value)
+}
+</script>
+
+<style scoped>
+.entity-form {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.form {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.required {
+  color: #dc2626;
+}
+
+.form-input, .form-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.form-input:focus, .form-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-checkbox-input {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+  border: 1px solid #3b82f6;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
+</style>

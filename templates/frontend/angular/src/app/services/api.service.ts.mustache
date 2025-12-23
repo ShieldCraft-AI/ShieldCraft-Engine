@@ -1,0 +1,66 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { ApiResponse, PaginatedResponse } from '../models';
+{{#entities}}
+import { {{name}}, {{name}}Create, {{name}}Update } from '../models';
+{{/entities}}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ApiService {
+  private baseURL = 'http://localhost:8000/api'; // Change this to your backend URL
+
+  constructor(private http: HttpClient) {}
+
+  // Generic CRUD methods
+  private get<T>(endpoint: string, params?: any): Observable<ApiResponse<T>> {
+    let httpParams = new HttpParams();
+    if (params) {
+      Object.keys(params).forEach(key => {
+        if (params[key] !== null && params[key] !== undefined) {
+          httpParams = httpParams.set(key, params[key]);
+        }
+      });
+    }
+    return this.http.get<ApiResponse<T>>(`${this.baseURL}${endpoint}`, { params: httpParams });
+  }
+
+  private post<T>(endpoint: string, data: any): Observable<ApiResponse<T>> {
+    return this.http.post<ApiResponse<T>>(`${this.baseURL}${endpoint}`, data);
+  }
+
+  private put<T>(endpoint: string, data: any): Observable<ApiResponse<T>> {
+    return this.http.put<ApiResponse<T>>(`${this.baseURL}${endpoint}`, data);
+  }
+
+  private delete<T>(endpoint: string): Observable<ApiResponse<T>> {
+    return this.http.delete<ApiResponse<T>>(`${this.baseURL}${endpoint}`);
+  }
+
+  // Entity-specific methods
+  {{#entities}}
+  // {{name}} methods
+  get{{name}}s(params?: {page?: number; limit?: number; search?: string}): Observable<ApiResponse<PaginatedResponse<{{name}}>>> {
+    return this.get(`/{{name_lower}}s`, params);
+  }
+
+  get{{name}}(id: number): Observable<ApiResponse<{{name}}>> {
+    return this.get(`/{{name_lower}}s/${id}`);
+  }
+
+  create{{name}}(data: {{name}}Create): Observable<ApiResponse<{{name}}>> {
+    return this.post(`/{{name_lower}}s`, data);
+  }
+
+  update{{name}}(id: number, data: {{name}}Update): Observable<ApiResponse<{{name}}>> {
+    return this.put(`/{{name_lower}}s/${id}`, data);
+  }
+
+  delete{{name}}(id: number): Observable<ApiResponse<void>> {
+    return this.delete(`/{{name_lower}}s/${id}`);
+  }
+
+  {{/entities}}
+}

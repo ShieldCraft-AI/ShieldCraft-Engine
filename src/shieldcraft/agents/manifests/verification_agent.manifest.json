@@ -1,0 +1,18 @@
+{
+  "id": "verification_agent.v1",
+  "version": "1.0.0",
+  "description": "Runs deterministic checks against governance contracts and tests.",
+  "input_schema": "schemas/artifacts_manifest.json",
+  "output_schema": "schemas/verification_report.json",
+  "invariants": {
+    "fail_on_critical_noncompliance": true,
+    "run_snapshot_hash": true
+  },
+  "resource_limits": {
+    "cpu": 2000,
+    "memory_mb": 2048
+  },
+  "timeout_seconds": 600,
+  "deterministic": true,
+  "required_for_v1": true
+}

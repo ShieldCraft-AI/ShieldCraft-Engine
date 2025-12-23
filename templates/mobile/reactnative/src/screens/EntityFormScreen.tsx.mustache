@@ -1,0 +1,79 @@
+import React, {useState, useEffect} from 'react';
+import {View, StyleSheet} from 'react-native';
+import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParamList} from '../navigation/AppNavigator';
+import EntityForm from '../components/EntityForm';
+import apiService from '../services/api';
+import { {{name}}, {{name}}Create, {{name}}Update } from '../models/types';
+
+type {{name}}FormScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  '{{name}}Form'
+>;
+type {{name}}FormScreenRouteProp = RouteProp<RootStackParamList, '{{name}}Form'>;
+
+const {{name}}FormScreen = () => {
+  const navigation = useNavigation<{{name}}FormScreenNavigationProp>();
+  const route = useRoute<{{name}}FormScreenRouteProp>();
+  const {id} = route.params || {};
+
+  const [initialData, setInitialData] = useState<Partial<{{name}}>>({});
+
+  useEffect(() => {
+    if (id) {
+      loadItem();
+    }
+  }, [id]);
+
+  const loadItem = async () => {
+    try {
+      const response = await apiService.get{{name}}(id!);
+      if (response.data) {
+        setInitialData(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading {{name_lower}}:', error);
+    }
+  };
+
+  const handleSubmit = async (data: {{name}}Create | {{name}}Update) => {
+    if (id) {
+      await apiService.update{{name}}(id, data as {{name}}Update);
+    } else {
+      await apiService.create{{name}}(data as {{name}}Create);
+    }
+  };
+
+  const formFields = [
+    {{#fields}}
+    {
+      name: '{{name}}',
+      label: '{{name}}',
+      type: '{{formik_type}}' as const,
+      required: {{required}},
+      placeholder: 'Enter {{name}}',
+    },
+    {{/fields}}
+  ];
+
+  return (
+    <View style={styles.container}>
+      <EntityForm
+        entityName="{{name}}"
+        fields={formFields}
+        initialData={initialData}
+        onSubmit={handleSubmit}
+        submitButtonText={id ? 'Update {{name}}' : 'Create {{name}}'}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
+
+export default {{name}}FormScreen;

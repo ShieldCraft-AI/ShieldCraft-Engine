@@ -1,0 +1,35 @@
+name: Verify Determinism
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  determinism-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+
+    - name: Run determinism verification
+      run: |
+        python scripts/verify_determinism.py docs/product.yml
+
+    - name: Run snapshot verification
+      run: |
+        # Compare current outputs with golden snapshots
+        python src/shieldcraft/agents/documentation_agent.py docs/product.yml > temp_doc_output.json
+        diff ci/golden_snapshots/documentation_agent_output.json temp_doc_output.json || (echo "Snapshot mismatch!" && exit 1)
+        rm temp_doc_output.json

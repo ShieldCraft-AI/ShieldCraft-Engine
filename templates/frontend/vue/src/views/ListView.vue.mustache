@@ -1,0 +1,123 @@
+<template>
+  <div class="list-view">
+    <div class="header">
+      <h1 class="text-3xl font-bold text-gray-900">{{ entityName }} List</h1>
+      <RouterLink
+        :to="`/${entityName.toLowerCase()}s/create`"
+        class="btn btn-primary"
+      >
+        Create New {{ entityName }}
+      </RouterLink>
+    </div>
+
+    <div v-if="loading" class="loading">
+      Loading {{ entityName }}...
+    </div>
+
+    <div v-else-if="error" class="error">
+      Error loading {{ entityName }}: {{ error }}
+    </div>
+
+    <div v-else>
+      <EntityList
+        :entity-name="entityName"
+        :items="items"
+        :fields="fields"
+        @edit="handleEdit"
+        @delete="handleDelete"
+      />
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import EntityList from '@/components/EntityList.vue'
+
+interface ListField {
+  name: string
+  label: string
+  type: string
+}
+
+interface Props {
+  entityName: string
+  fields: ListField[]
+  items?: any[]
+  loading?: boolean
+  error?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  items: () => [],
+  loading: false,
+  error: ''
+})
+
+const emit = defineEmits<{
+  loadItems: []
+  edit: [id: string | number]
+  delete: [id: string | number]
+}>()
+
+const router = useRouter()
+
+function handleEdit(id: string | number) {
+  router.push(`/${props.entityName.toLowerCase()}s/${id}/edit`)
+}
+
+function handleDelete(id: string | number) {
+  emit('delete', id)
+}
+
+onMounted(() => {
+  emit('loadItems')
+})
+</script>
+
+<style scoped>
+.list-view {
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.error {
+  color: #dc2626;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+  border: 1px solid #3b82f6;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
+</style>

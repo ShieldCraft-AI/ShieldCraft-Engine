@@ -1,0 +1,56 @@
+<div class="entity-list">
+  <div class="header">
+    <h1 class="text-3xl font-bold text-gray-900">{{name}} List</h1>
+    <a routerLink="/{{name_lower}}s/create" class="btn btn-primary">
+      Create New {{name}}
+    </a>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    Loading {{name_lower}}s...
+  </div>
+
+  <div *ngIf="error" class="error">
+    Error: {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error" class="entity-grid">
+    <div *ngFor="let item of {{name_lower}}s" class="entity-card">
+      <div class="card-header">
+        <h3 class="card-title">{{ getItemTitle(item) }}</h3>
+      </div>
+
+      <div class="card-content">
+        {{#fields}}
+        <div class="field">
+          <span class="field-label">{{name_capital}}:</span>
+          <span class="field-value">
+            <span *ngIf="item.{{name}} !== null && item.{{name}} !== undefined">
+              {{ item.{{name}} }}
+            </span>
+            <span *ngIf="item.{{name}} === null || item.{{name}} === undefined" class="no-value">
+              N/A
+            </span>
+          </span>
+        </div>
+        {{/fields}}
+      </div>
+
+      <div class="card-actions">
+        <a [routerLink]="['/{{name_lower}}s', item.id]" class="btn btn-view">
+          View
+        </a>
+        <a [routerLink]="['/{{name_lower}}s', item.id, 'edit']" class="btn btn-edit">
+          Edit
+        </a>
+        <button (click)="onDelete(item.id)" class="btn btn-delete">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && {{name_lower}}s.length === 0" class="empty">
+    No {{name_lower}}s found.
+  </div>
+</div>

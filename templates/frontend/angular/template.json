@@ -1,0 +1,184 @@
+{
+  "framework": "angular",
+  "language": "typescript",
+  "version": "1.0.0",
+  "description": "Angular frontend framework template",
+
+  "variables": {
+    "app_name": {
+      "type": "string",
+      "description": "Name of the application",
+      "required": true,
+      "default": "ShieldCraftAngularApp"
+    },
+    "app_description": {
+      "type": "string",
+      "description": "Description of the application",
+      "required": true,
+      "default": "An Angular application"
+    },
+    "angular_version": {
+      "type": "enum",
+      "values": ["17"],
+      "description": "Angular version",
+      "default": "17"
+    },
+    "use_angular_router": {
+      "type": "boolean",
+      "description": "Use Angular Router for navigation",
+      "default": true
+    },
+    "use_rxjs": {
+      "type": "boolean",
+      "description": "Use RxJS for reactive programming",
+      "default": true
+    },
+    "entities": {
+      "type": "array",
+      "description": "List of entities to generate",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "type": {"type": "string"},
+                "required": {"type": "boolean", "default": true}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "files": [
+    {
+      "template": "package.json.mustache",
+      "output": "package.json",
+      "description": "Angular project dependencies and scripts"
+    },
+    {
+      "template": "angular.json.mustache",
+      "output": "angular.json",
+      "description": "Angular CLI configuration"
+    },
+    {
+      "template": "tsconfig.json.mustache",
+      "output": "tsconfig.json",
+      "description": "TypeScript configuration"
+    },
+    {
+      "template": "tsconfig.app.json.mustache",
+      "output": "tsconfig.app.json",
+      "description": "TypeScript configuration for app"
+    },
+    {
+      "template": "src/main.ts.mustache",
+      "output": "src/main.ts",
+      "description": "Angular application entry point"
+    },
+    {
+      "template": "src/index.html.mustache",
+      "output": "src/index.html",
+      "description": "HTML entry point"
+    },
+    {
+      "template": "src/styles.scss.mustache",
+      "output": "src/styles.scss",
+      "description": "Global styles"
+    },
+    {
+      "template": "src/app/app.component.ts.mustache",
+      "output": "src/app/app.component.ts",
+      "description": "Root Angular component"
+    },
+    {
+      "template": "src/app/app.component.html.mustache",
+      "output": "src/app/app.component.html",
+      "description": "Root component template"
+    },
+    {
+      "template": "src/app/app.component.scss.mustache",
+      "output": "src/app/app.component.scss",
+      "description": "Root component styles"
+    },
+    {
+      "template": "src/app/app.config.ts.mustache",
+      "output": "src/app/app.config.ts",
+      "description": "Angular application configuration"
+    },
+    {
+      "template": "src/app/app.routes.ts.mustache",
+      "output": "src/app/app.routes.ts",
+      "description": "Angular routing configuration"
+    },
+    {
+      "template": "src/app/models/index.ts.mustache",
+      "output": "src/app/models/index.ts",
+      "description": "TypeScript type definitions"
+    },
+    {
+      "template": "src/app/services/api.service.ts.mustache",
+      "output": "src/app/services/api.service.ts",
+      "description": "API service layer"
+    },
+    {
+      "template": "src/app/components/home/home.component.ts.mustache",
+      "output": "src/app/components/home/home.component.ts",
+      "description": "Home component"
+    },
+    {
+      "template": "src/app/components/home/home.component.html.mustache",
+      "output": "src/app/components/home/home.component.html",
+      "description": "Home component template"
+    },
+    {
+      "template": "src/app/components/home/home.component.scss.mustache",
+      "output": "src/app/components/home/home.component.scss",
+      "description": "Home component styles"
+    }
+  ],
+
+  "dependencies": {
+    "required": [
+      "@angular/core",
+      "@angular/common",
+      "@angular/platform-browser",
+      "@angular/platform-browser-dynamic",
+      "@angular/router",
+      "@angular/forms",
+      "rxjs",
+      "zone.js",
+      "tailwindcss"
+    ],
+    "devDependencies": [
+      "@angular/cli",
+      "@angular/compiler",
+      "@angular/compiler-cli",
+      "@types/node",
+      "typescript",
+      "autoprefixer",
+      "postcss"
+    ]
+  },
+
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+
+  "metadata": {
+    "author": "ShieldCraft Engine",
+    "license": "MIT",
+    "repository": "https://github.com/your-org/shieldcraft-engine",
+    "documentation": "https://shieldcraft-engine.readthedocs.io/"
+  }
+}

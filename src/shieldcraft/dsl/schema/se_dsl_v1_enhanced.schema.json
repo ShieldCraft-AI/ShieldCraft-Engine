@@ -1,0 +1,540 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ShieldCraft Engine DSL v1",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "product_id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "version": {"type": "string"},
+        "spec_version": {"type": "string"},
+        "spec_format": {"type": "string", "const": "canonical_json_v1"},
+        "created_at": {"type": "string"},
+        "owner": {"type": "string"},
+        "authors": {"type": "array", "items": {"type": "string"}},
+        "language": {"type": "string"},
+        "generator_version": {"type": "string"},
+        "self_host": {"type": "boolean", "default": false}
+      },
+      "required": ["product_id", "spec_version"]
+    },
+    "model": {
+      "type": "object",
+      "properties": {
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "type"],
+            "properties": {
+              "id": {"type": "string"},
+              "type": {"type": "string"},
+              "provides": {"type": "array", "items": {"type": "string"}},
+              "depends_on": {"type": "array", "items": {"type": "string"}}
+            }
+          },
+          "uniqueItems": true
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "to"],
+            "properties": {
+              "from": {"type": "string"},
+              "to": {"type": "string"}
+            }
+          }
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {"type": "string"},
+              "type": {"type": "string"},
+              "description": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "sections": {
+      "type": ["array", "object"],
+          "items": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+              "id": {"type": "string"},
+              "description": {"type": "string"},
+              "tasks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["id", "type", "ptr"],
+                  "properties": {
+                    "id": {"type": "string"},
+                    "type": {"type": "string"},
+                    "ptr": {"type": "string"},
+                "description": {"type": "string"},
+                "requires": {"type": "array", "items": {"type": "string"}}
+              }
+            }
+          },
+          "fields": {"type": "object"},
+          "invariants": {"type": "array"},
+          "requirements": {"type": "array"},
+          "mappings": {"type": "object"}
+        }
+      },
+      "uniqueItems": true
+    },
+    "invariants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "rule"],
+        "properties": {
+          "id": {"type": "string"},
+          "rule": {"type": "string"},
+          "severity": {"type": "string"}
+        }
+      }
+    },
+    "codegen_targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "template"],
+        "properties": {
+          "id": {"type": "string"},
+          "template": {"type": "string"},
+          "output_path": {"type": "string"}
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "properties": {
+        "stages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+              "id": {"type": "string"},
+              "inputs": {"type": "array", "items": {"type": "string"}},
+              "outputs": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        }
+      }
+    },
+    "pointer_map": {
+      "type": "object",
+      "additionalProperties": {"type": "string"}
+    },
+    "self_host": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enable self-hosting mode for bootstrap generation"
+    },
+    "apis": {
+      "type": "object",
+      "description": "API specifications for REST/GraphQL endpoints",
+      "properties": {
+        "endpoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "method"],
+            "properties": {
+              "path": {"type": "string"},
+              "method": {"type": "string", "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"]},
+              "description": {"type": "string"},
+              "request_schema": {"type": "object"},
+              "response_schema": {"type": "object"},
+              "authentication": {"type": "string"},
+              "authorization": {"type": "array", "items": {"type": "string"}},
+              "rate_limit": {"type": "object"},
+              "tags": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        },
+        "base_url": {"type": "string"},
+        "version": {"type": "string"},
+        "authentication_methods": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type"],
+            "properties": {
+              "name": {"type": "string"},
+              "type": {"type": "string", "enum": ["jwt", "oauth2", "api_key", "basic"]},
+              "config": {"type": "object"}
+            }
+          }
+        }
+      }
+    },
+    "database": {
+      "type": "object",
+      "description": "Database schema and migration specifications",
+      "properties": {
+        "engine": {"type": "string", "enum": ["postgresql", "mysql", "sqlite", "mongodb"]},
+        "version": {"type": "string"},
+        "schemas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {"type": "string"},
+              "tables": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name"],
+                  "properties": {
+                    "name": {"type": "string"},
+                    "columns": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": ["name", "type"],
+                        "properties": {
+                          "name": {"type": "string"},
+                          "type": {"type": "string"},
+                          "nullable": {"type": "boolean", "default": true},
+                          "primary_key": {"type": "boolean", "default": false},
+                          "foreign_key": {"type": "object"},
+                          "default": {"type": "string"},
+                          "unique": {"type": "boolean", "default": false}
+                        }
+                      }
+                    },
+                    "indexes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": ["columns"],
+                        "properties": {
+                          "columns": {"type": "array", "items": {"type": "string"}},
+                          "unique": {"type": "boolean", "default": false},
+                          "type": {"type": "string", "enum": ["btree", "hash", "gin", "gist"]}
+                        }
+                      }
+                    },
+                    "constraints": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": ["type"],
+                        "properties": {
+                          "type": {"type": "string", "enum": ["check", "unique", "foreign_key"]},
+                          "expression": {"type": "string"},
+                          "columns": {"type": "array", "items": {"type": "string"}}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "migrations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["version", "description"],
+            "properties": {
+              "version": {"type": "string"},
+              "description": {"type": "string"},
+              "up": {"type": "string"},
+              "down": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "authentication": {
+      "type": "object",
+      "description": "Authentication and authorization specifications",
+      "properties": {
+        "methods": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type"],
+            "properties": {
+              "name": {"type": "string"},
+              "type": {"type": "string", "enum": ["jwt", "oauth2", "saml", "api_key"]},
+              "config": {"type": "object"},
+              "flows": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name"],
+                  "properties": {
+                    "name": {"type": "string"},
+                    "description": {"type": "string"},
+                    "steps": {"type": "array", "items": {"type": "string"}}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["resource", "action", "roles"],
+            "properties": {
+              "resource": {"type": "string"},
+              "action": {"type": "string"},
+              "roles": {"type": "array", "items": {"type": "string"}},
+              "conditions": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {"type": "string"},
+              "description": {"type": "string"},
+              "permissions": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        }
+      }
+    },
+    "ui_components": {
+      "type": "object",
+      "description": "UI/UX component and screen specifications",
+      "properties": {
+        "screens": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "route"],
+            "properties": {
+              "name": {"type": "string"},
+              "route": {"type": "string"},
+              "description": {"type": "string"},
+              "components": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["type", "id"],
+                  "properties": {
+                    "type": {"type": "string"},
+                    "id": {"type": "string"},
+                    "properties": {"type": "object"},
+                    "children": {"type": "array", "items": {"$ref": "#"}}
+                  }
+                }
+              },
+              "navigation": {"type": "object"},
+              "offline_behavior": {"type": "string"}
+            }
+          }
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type"],
+            "properties": {
+              "name": {"type": "string"},
+              "type": {"type": "string"},
+              "properties": {"type": "object"},
+              "variants": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        },
+        "themes": {
+          "type": "object",
+          "properties": {
+            "colors": {"type": "object"},
+            "typography": {"type": "object"},
+            "spacing": {"type": "object"}
+          }
+        }
+      }
+    },
+    "testing": {
+      "type": "object",
+      "description": "Testing specifications and test cases",
+      "properties": {
+        "unit_tests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["component", "test_cases"],
+            "properties": {
+              "component": {"type": "string"},
+              "test_cases": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "input", "expected_output"],
+                  "properties": {
+                    "name": {"type": "string"},
+                    "description": {"type": "string"},
+                    "input": {"type": "object"},
+                    "expected_output": {"type": "object"},
+                    "setup": {"type": "array", "items": {"type": "string"}},
+                    "teardown": {"type": "array", "items": {"type": "string"}}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "integration_tests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "components"],
+            "properties": {
+              "name": {"type": "string"},
+              "description": {"type": "string"},
+              "components": {"type": "array", "items": {"type": "string"}},
+              "scenario": {"type": "string"},
+              "expected_behavior": {"type": "string"}
+            }
+          }
+        },
+        "performance_tests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "metric", "threshold"],
+            "properties": {
+              "name": {"type": "string"},
+              "description": {"type": "string"},
+              "metric": {"type": "string"},
+              "threshold": {"type": "object"},
+              "load_profile": {"type": "object"}
+            }
+          }
+        },
+        "coverage_requirements": {
+          "type": "object",
+          "properties": {
+            "unit_test_coverage": {"type": "number", "minimum": 0, "maximum": 100},
+            "integration_coverage": {"type": "number", "minimum": 0, "maximum": 100},
+            "mutation_testing": {"type": "boolean"}
+          }
+        }
+      }
+    },
+    "infrastructure": {
+      "type": "object",
+      "description": "Infrastructure and deployment specifications",
+      "properties": {
+        "environments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {"type": "string"},
+              "type": {"type": "string", "enum": ["development", "staging", "production"]},
+              "config": {"type": "object"}
+            }
+          }
+        },
+        "deployment": {
+          "type": "object",
+          "properties": {
+            "strategy": {"type": "string", "enum": ["blue_green", "rolling", "canary"]},
+            "platform": {"type": "string", "enum": ["kubernetes", "docker", "serverless", "vm"]},
+            "scaling": {
+              "type": "object",
+              "properties": {
+                "min_instances": {"type": "integer"},
+                "max_instances": {"type": "integer"},
+                "cpu_threshold": {"type": "number"},
+                "memory_threshold": {"type": "number"}
+              }
+            },
+            "health_checks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["path", "interval"],
+                "properties": {
+                  "path": {"type": "string"},
+                  "interval": {"type": "integer"},
+                  "timeout": {"type": "integer"},
+                  "retries": {"type": "integer"}
+                }
+              }
+            }
+          }
+        },
+        "monitoring": {
+          "type": "object",
+          "properties": {
+            "metrics": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "type"],
+                "properties": {
+                  "name": {"type": "string"},
+                  "type": {"type": "string", "enum": ["counter", "gauge", "histogram"]},
+                  "description": {"type": "string"},
+                  "labels": {"type": "array", "items": {"type": "string"}}
+                }
+              }
+            },
+            "alerts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "condition", "severity"],
+                "properties": {
+                  "name": {"type": "string"},
+                  "condition": {"type": "string"},
+                  "severity": {"type": "string", "enum": ["info", "warning", "error", "critical"]},
+                  "channels": {"type": "array", "items": {"type": "string"}}
+                }
+              }
+            },
+            "dashboards": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": {"type": "string"},
+                  "description": {"type": "string"},
+                  "panels": {"type": "array", "items": {"type": "object"}}
+                }
+              }
+            }
+          }
+        },
+        "backup_recovery": {
+          "type": "object",
+          "properties": {
+            "strategy": {"type": "string"},
+            "retention_period": {"type": "string"},
+            "recovery_time_objective": {"type": "string"},
+            "recovery_point_objective": {"type": "string"}
+          }
+        }
+      }
+    }
+  },
+  "required": ["metadata", "model", "sections"]
+}

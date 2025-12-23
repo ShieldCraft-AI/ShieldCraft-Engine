@@ -1,0 +1,17 @@
+"""Utility functions for the Flask application"""
+
+def validate_email(email):
+    """Basic email validation"""
+    import re
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
+
+def sanitize_string(value):
+    """Sanitize string input"""
+    if not isinstance(value, str):
+        return value
+    return value.strip()
+
+def paginate_query(query, page=1, per_page=10):
+    """Helper function for pagination"""
+    return query.paginate(page=page, per_page=per_page, error_out=False)

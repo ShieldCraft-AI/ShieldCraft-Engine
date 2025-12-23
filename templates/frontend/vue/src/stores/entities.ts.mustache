@@ -1,0 +1,122 @@
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+import type { {{#entities}}{{name}}, {{/entities}} } from '@/types'
+import apiService from '@/services/api'
+
+{{#entities}}
+export const use{{name}}Store = defineStore('{{name_lower}}', () => {
+  // State
+  const {{name_lower}}s = ref<{{name}}[]>([])
+  const loading = ref(false)
+  const error = ref<string | null>(null)
+
+  // Getters
+  const get{{name}}ById = computed(() => {
+    return (id: number) => {{name_lower}}s.value.find(item => item.id === id)
+  })
+
+  // Actions
+  async function fetch{{name}}s(params?: {page?: number; limit?: number; search?: string}) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await apiService.get{{name}}s(params)
+      if (response.data) {
+        {{name_lower}}s.value = response.data.items
+      }
+    } catch (err) {
+      error.value = 'Failed to fetch {{name_lower}}s'
+      console.error('Error fetching {{name_lower}}s:', err)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function fetch{{name}}(id: number) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await apiService.get{{name}}(id)
+      return response.data
+    } catch (err) {
+      error.value = 'Failed to fetch {{name_lower}}'
+      console.error('Error fetching {{name_lower}}:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function create{{name}}({{name_lower}}Data: Omit<{{name}}, 'id'>) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await apiService.create{{name}}({{name_lower}}Data)
+      if (response.data) {
+        {{name_lower}}s.value.push(response.data)
+      }
+      return response.data
+    } catch (err) {
+      error.value = 'Failed to create {{name_lower}}'
+      console.error('Error creating {{name_lower}}:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function update{{name}}(id: number, {{name_lower}}Data: Partial<{{name}}>) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await apiService.update{{name}}(id, {{name_lower}}Data)
+      if (response.data) {
+        const index = {{name_lower}}s.value.findIndex(item => item.id === id)
+        if (index !== -1) {
+          {{name_lower}}s.value[index] = response.data
+        }
+      }
+      return response.data
+    } catch (err) {
+      error.value = 'Failed to update {{name_lower}}'
+      console.error('Error updating {{name_lower}}:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function delete{{name}}(id: number) {
+    loading.value = true
+    error.value = null
+    try {
+      await apiService.delete{{name}}(id)
+      {{name_lower}}s.value = {{name_lower}}s.value.filter(item => item.id !== id)
+    } catch (err) {
+      error.value = 'Failed to delete {{name_lower}}'
+      console.error('Error deleting {{name_lower}}:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  return {
+    // State
+    {{name_lower}}s,
+    loading,
+    error,
+
+    // Getters
+    get{{name}}ById,
+
+    // Actions
+    fetch{{name}}s,
+    fetch{{name}},
+    create{{name}},
+    update{{name}},
+    delete{{name}}
+  }
+})
+
+{{/entities}}

@@ -1,0 +1,31 @@
+import { Routes } from '@angular/router';
+import { HomeComponent } from './components/home/home.component';
+
+export const routes: Routes = [
+  {
+    path: '',
+    component: HomeComponent
+  },
+  {{#entities}}
+  {
+    path: '{{name_lower}}s',
+    loadComponent: () => import('./components/{{name_kebab}}-list/{{name_kebab}}-list.component').then(m => m.{{name}}ListComponent)
+  },
+  {
+    path: '{{name_lower}}s/:id',
+    loadComponent: () => import('./components/{{name_kebab}}-detail/{{name_kebab}}-detail.component').then(m => m.{{name}}DetailComponent)
+  },
+  {
+    path: '{{name_lower}}s/create',
+    loadComponent: () => import('./components/{{name_kebab}}-form/{{name_kebab}}-form.component').then(m => m.{{name}}FormComponent)
+  },
+  {
+    path: '{{name_lower}}s/:id/edit',
+    loadComponent: () => import('./components/{{name_kebab}}-form/{{name_kebab}}-form.component').then(m => m.{{name}}FormComponent)
+  },
+  {{/entities}}
+  {
+    path: '**',
+    redirectTo: ''
+  }
+];

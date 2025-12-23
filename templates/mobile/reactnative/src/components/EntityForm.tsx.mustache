@@ -1,0 +1,187 @@
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Switch,
+} from 'react-native';
+import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParamList} from '../navigation/AppNavigator';
+
+interface FormField {
+  name: string;
+  label: string;
+  type: 'text' | 'number' | 'boolean' | 'date';
+  required?: boolean;
+  placeholder?: string;
+}
+
+interface EntityFormProps<EntityType, CreateType, UpdateType> {
+  entityName: string;
+  fields: FormField[];
+  initialData?: Partial<EntityType>;
+  onSubmit: (data: CreateType | UpdateType) => Promise<void>;
+  submitButtonText: string;
+}
+
+function EntityForm<EntityType, CreateType, UpdateType>(
+  props: EntityFormProps<EntityType, CreateType, UpdateType>
+) {
+  const {entityName, fields, initialData, onSubmit, submitButtonText} = props;
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const [formData, setFormData] = useState<Record<string, any>>(initialData || {});
+  const [loading, setLoading] = useState(false);
+
+  const handleInputChange = (fieldName: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: value,
+    }));
+  };
+
+  const handleSubmit = async () => {
+    // Basic validation
+    const missingRequired = fields
+      .filter(field => field.required)
+      .filter(field => !formData[field.name]);
+
+    if (missingRequired.length > 0) {
+      Alert.alert(
+        'Validation Error',
+        `Please fill in: ${missingRequired.map(f => f.label).join(', ')}`
+      );
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await onSubmit(formData);
+      navigation.goBack();
+    } catch (error) {
+      console.error('Form submission error:', error);
+      Alert.alert('Error', `Failed to ${submitButtonText.toLowerCase()}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderField = (field: FormField) => {
+    const value = formData[field.name] || '';
+
+    switch (field.type) {
+      case 'boolean':
+        return (
+          <View key={field.name} style={styles.fieldContainer}>
+            <Text style={styles.label}>{field.label}</Text>
+            <Switch
+              value={Boolean(value)}
+              onValueChange={(newValue) => handleInputChange(field.name, newValue)}
+            />
+          </View>
+        );
+
+      case 'number':
+        return (
+          <View key={field.name} style={styles.fieldContainer}>
+            <Text style={styles.label}>
+              {field.label}
+              {field.required && <Text style={styles.required}> *</Text>}
+            </Text>
+            <TextInput
+              style={styles.input}
+              value={value.toString()}
+              onChangeText={(text) => handleInputChange(field.name, parseFloat(text) || 0)}
+              placeholder={field.placeholder}
+              keyboardType="numeric"
+            />
+          </View>
+        );
+
+      default:
+        return (
+          <View key={field.name} style={styles.fieldContainer}>
+            <Text style={styles.label}>
+              {field.label}
+              {field.required && <Text style={styles.required}> *</Text>}
+            </Text>
+            <TextInput
+              style={styles.input}
+              value={value}
+              onChangeText={(text) => handleInputChange(field.name, text)}
+              placeholder={field.placeholder}
+            />
+          </View>
+        );
+    }
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.formContainer}>
+        {fields.map(renderField)}
+
+        <TouchableOpacity
+          style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+          onPress={handleSubmit}
+          disabled={loading}>
+          <Text style={styles.submitButtonText}>
+            {loading ? 'Saving...' : submitButtonText}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  formContainer: {
+    padding: 20,
+  },
+  fieldContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+  },
+  required: {
+    color: '#FF3B30',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    backgroundColor: '#fff',
+  },
+  submitButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 8,
+    paddingVertical: 15,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  submitButtonDisabled: {
+    backgroundColor: '#ccc',
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
+
+export default EntityForm;

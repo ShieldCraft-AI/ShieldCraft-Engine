@@ -1,0 +1,63 @@
+<template>
+  <div class="detail-view">
+    <EntityDetail
+      :entity-name="entityName"
+      :fields="fields"
+      :item="item"
+      :loading="loading"
+      :error="error"
+      @delete="handleDelete"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import EntityDetail from '@/components/EntityDetail.vue'
+
+interface DetailField {
+  name: string
+  label: string
+  type: string
+}
+
+interface Props {
+  entityName: string
+  fields: DetailField[]
+  item?: Record<string, any>
+  loading?: boolean
+  error?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  item: undefined,
+  loading: false,
+  error: ''
+})
+
+const emit = defineEmits<{
+  loadItem: [id: string | number]
+  delete: [id: string | number]
+}>()
+
+const router = useRouter()
+const route = useRoute()
+
+function handleDelete(id: string | number) {
+  emit('delete', id)
+}
+
+onMounted(() => {
+  const id = route.params.id as string
+  if (id) {
+    emit('loadItem', id)
+  }
+})
+</script>
+
+<style scoped>
+.detail-view {
+  padding: 2rem;
+}
+</style>

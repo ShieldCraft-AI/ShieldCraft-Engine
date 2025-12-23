@@ -1,0 +1,119 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { ApiService } from '../../services/api.service';
+import { {{name}}, {{name}}Create, {{name}}Update, ApiResponse } from '../../models';
+
+@Component({
+  selector: 'app-{{name_kebab}}-form',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  templateUrl: './{{name_kebab}}-form.component.html',
+  styleUrl: './{{name_kebab}}-form.component.scss'
+})
+export class {{name}}FormComponent implements OnInit {
+  {{name_lower}}Form: FormGroup;
+  isEditing = false;
+  loading = false;
+  error: string | null = null;
+  currentId: number | null = null;
+
+  constructor(
+    private fb: FormBuilder,
+    private apiService: ApiService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    this.{{name_lower}}Form = this.fb.group({
+      {{#fields}}
+      {{name}}: [{{#required}}null, Validators.required{{/required}}{{^required}}null{{/required}}],
+      {{/fields}}
+    });
+  }
+
+  ngOnInit(): void {
+    this.currentId = this.route.snapshot.params['id'];
+    this.isEditing = !!this.currentId;
+
+    if (this.isEditing && this.currentId) {
+      this.load{{name}}(this.currentId);
+    }
+  }
+
+  load{{name}}(id: number): void {
+    this.loading = true;
+    this.apiService.get{{name}}(id).subscribe({
+      next: (response: ApiResponse<{{name}}>) => {
+        if (response.success && response.data) {
+          this.{{name_lower}}Form.patchValue(response.data);
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load {{name_lower}}';
+        console.error('Error loading {{name_lower}}:', err);
+        this.loading = false;
+      }
+    });
+  }
+
+  onSubmit(): void {
+    if (this.{{name_lower}}Form.valid) {
+      this.loading = true;
+      this.error = null;
+
+      const formValue = this.{{name_lower}}Form.value;
+
+      if (this.isEditing && this.currentId) {
+        this.apiService.update{{name}}(this.currentId, formValue as {{name}}Update).subscribe({
+          next: (response: ApiResponse<{{name}}>) => {
+            if (response.success) {
+              this.router.navigate(['/{{name_lower}}s']);
+            }
+            this.loading = false;
+          },
+          error: (err) => {
+            this.error = 'Failed to update {{name_lower}}';
+            console.error('Error updating {{name_lower}}:', err);
+            this.loading = false;
+          }
+        });
+      } else {
+        this.apiService.create{{name}}(formValue as {{name}}Create).subscribe({
+          next: (response: ApiResponse<{{name}}>) => {
+            if (response.success) {
+              this.router.navigate(['/{{name_lower}}s']);
+            }
+            this.loading = false;
+          },
+          error: (err) => {
+            this.error = 'Failed to create {{name_lower}}';
+            console.error('Error creating {{name_lower}}:', err);
+            this.loading = false;
+          }
+        });
+      }
+    }
+  }
+
+  getFieldType(fieldName: string): string {
+    const fieldMap: { [key: string]: string } = {
+      {{#fields}}
+      '{{name}}': '{{form_type}}',
+      {{/fields}}
+    };
+    return fieldMap[fieldName] || 'text';
+  }
+
+  isFieldRequired(fieldName: string): boolean {
+    const requiredFields = [
+      {{#fields}}
+      {{#required}}
+      '{{name}}',
+      {{/required}}
+      {{/fields}}
+    ];
+    return requiredFields.includes(fieldName);
+  }
+}

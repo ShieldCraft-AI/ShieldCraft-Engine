@@ -1,0 +1,84 @@
+<div class="entity-form">
+  <div class="header">
+    <h1 class="text-3xl font-bold text-gray-900">
+      {{ isEditing ? 'Edit' : 'Create' }} {{name}}
+    </h1>
+    <a routerLink="/{{name_lower}}s" class="text-blue-600 hover:text-blue-800">
+      ← Back to {{name}}s
+    </a>
+  </div>
+
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <form [formGroup]="{{name_lower}}Form" (ngSubmit)="onSubmit()" class="form">
+    {{#fields}}
+    <div class="form-group">
+      <label for="{{name}}" class="form-label">
+        {{name_capital}}
+        <span *ngIf="isFieldRequired('{{name}}')" class="required">*</span>
+      </label>
+
+      <input
+        *ngIf="getFieldType('{{name}}') === 'text' || getFieldType('{{name}}') === 'number'"
+        id="{{name}}"
+        type="{{form_type}}"
+        [formControlName]="'{{name}}'"
+        class="form-input"
+        [class.error]="{{name_lower}}Form.get('{{name}}')?.invalid && {{name_lower}}Form.get('{{name}}')?.touched"
+      />
+
+      <input
+        *ngIf="getFieldType('{{name}}') === 'date'"
+        id="{{name}}"
+        type="date"
+        [formControlName]="'{{name}}'"
+        class="form-input"
+        [class.error]="{{name_lower}}Form.get('{{name}}')?.invalid && {{name_lower}}Form.get('{{name}}')?.touched"
+      />
+
+      <textarea
+        *ngIf="getFieldType('{{name}}') === 'text' && (item?.{{name}} && typeof item.{{name}} === 'object')"
+        id="{{name}}"
+        [formControlName]="'{{name}}'"
+        class="form-textarea"
+        rows="4"
+        placeholder="Enter JSON data"
+        [class.error]="{{name_lower}}Form.get('{{name}}')?.invalid && {{name_lower}}Form.get('{{name}}')?.touched"
+      ></textarea>
+
+      <div *ngIf="getFieldType('{{name}}') === 'checkbox'" class="form-checkbox">
+        <input
+          id="{{name}}"
+          type="checkbox"
+          [formControlName]="'{{name}}'"
+          class="form-checkbox-input"
+        />
+        <label for="{{name}}" class="form-checkbox-label">
+          {{name_capital}}
+        </label>
+      </div>
+
+      <div *ngIf="{{name_lower}}Form.get('{{name}}')?.invalid && {{name_lower}}Form.get('{{name}}')?.touched" class="field-error">
+        <span *ngIf="{{name_lower}}Form.get('{{name}}')?.errors?.['required']">
+          This field is required
+        </span>
+      </div>
+    </div>
+    {{/fields}}
+
+    <div class="form-actions">
+      <button type="button" routerLink="/{{name_lower}}s" class="btn btn-secondary">
+        Cancel
+      </button>
+      <button
+        type="submit"
+        [disabled]="{{name_lower}}Form.invalid || loading"
+        class="btn btn-primary"
+      >
+        {{ loading ? 'Saving...' : (isEditing ? 'Update' : 'Create') }}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,14 @@
+{
+  "agent_id": "documentation_agent.v1",
+  "spec_hash": "a0ee567c0529bf08",
+  "generated_at": "2025-12-23T00:00:00Z",
+  "product_documentation": {
+    "README.md": "# ShieldCraft Engine\n\nA deterministic AI software manufacturing platform.\n\n## Overview\n\nNot specified\n\n## Features\n\nKey differentiators:\n\n\n## Installation\n\nTODO: Add installation instructions.\n\n## Usage\n\nTODO: Add usage examples.\n\n## Architecture\n\nNot specified\n"
+  },
+  "code_documentation": {},
+  "format": "markdown",
+  "provenance": {
+    "input_spec": "docs/product.yml",
+    "artifacts_dir": null
+  }
+}

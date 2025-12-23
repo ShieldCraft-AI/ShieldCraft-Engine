@@ -1,0 +1,259 @@
+<template>
+  <div class="entity-list">
+    <div class="header">
+      <h1 class="text-3xl font-bold text-gray-900">{{ entityName }}s</h1>
+      <RouterLink
+        :to="'/{{entityNameLower}}s/create'"
+        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
+      >
+        Add New {{ entityName }}
+      </RouterLink>
+    </div>
+
+    <div v-if="loading" class="loading">
+      Loading {{ entityName }}s...
+    </div>
+
+    <div v-else-if="error" class="error">
+      Error: {{ error }}
+    </div>
+
+    <div v-else-if="items.length === 0" class="empty">
+      No {{ entityName }}s found.
+    </div>
+
+    <div v-else class="grid gap-4">
+      <div
+        v-for="item in items"
+        :key="item.id"
+        class="entity-card"
+      >
+        <div class="card-header">
+          <h3 class="card-title">{{ getItemTitle(item) }}</h3>
+        </div>
+
+        <div class="card-content">
+          <div v-for="field in fields" :key="field.name" class="field">
+            <span class="field-label">{{ field.label }}:</span>
+            <span class="field-value">
+              <span v-if="field.type === 'boolean'">
+                {{ item[field.name] ? 'Yes' : 'No' }}
+              </span>
+              <span v-else-if="field.type === 'array'">
+                {{ Array.isArray(item[field.name]) ? item[field.name].length : 0 }} items
+              </span>
+              <span v-else-if="field.type === 'object'">
+                Object
+              </span>
+              <span v-else>
+                {{ item[field.name] || 'N/A' }}
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <RouterLink
+            :to="'/{{entityNameLower}}s/' + item.id"
+            class="btn btn-view"
+          >
+            View
+          </RouterLink>
+          <RouterLink
+            :to="'/{{entityNameLower}}s/' + item.id + '/edit'"
+            class="btn btn-edit"
+          >
+            Edit
+          </RouterLink>
+          <button
+            @click="handleDelete(item.id)"
+            class="btn btn-delete"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
+
+interface ListField {
+  name: string
+  label: string
+  type: string
+}
+
+interface Props {
+  entityName: string
+  fields: ListField[]
+  items: any[]
+  loading?: boolean
+  error?: string | null
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  loading: false,
+  error: null
+})
+
+const emit = defineEmits<{
+  delete: [id: number]
+}>()
+
+const entityNameLower = computed(() => props.entityName.toLowerCase())
+
+function getItemTitle(item: any): string {
+  // Try common title fields
+  return item.title || item.name || item.username || `${props.entityName} #${item.id}`
+}
+
+function handleDelete(id: number) {
+  if (confirm(`Are you sure you want to delete this ${props.entityName.toLowerCase()}?`)) {
+    emit('delete', id)
+  }
+}
+</script>
+
+<style scoped>
+.entity-list {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.loading, .error, .empty {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.1rem;
+}
+
+.error {
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+}
+
+.empty {
+  color: #6b7280;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.entity-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+.entity-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  padding: 1rem;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.card-content {
+  padding: 1rem;
+}
+
+.field {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.field:last-child {
+  margin-bottom: 0;
+}
+
+.field-label {
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.field-value {
+  color: #111827;
+  font-weight: 600;
+}
+
+.card-actions {
+  padding: 1rem;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-view {
+  background: #3b82f6;
+  color: white;
+  border: 1px solid #3b82f6;
+}
+
+.btn-view:hover {
+  background: #2563eb;
+}
+
+.btn-edit {
+  background: #f59e0b;
+  color: white;
+  border: 1px solid #f59e0b;
+}
+
+.btn-edit:hover {
+  background: #d97706;
+}
+
+.btn-delete {
+  background: #dc2626;
+  color: white;
+  border: 1px solid #dc2626;
+}
+
+.btn-delete:hover {
+  background: #b91c1c;
+}
+</style>

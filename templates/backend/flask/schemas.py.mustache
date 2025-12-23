@@ -1,0 +1,29 @@
+from marshmallow import Schema, fields, validate, post_load
+from models import {{entity_names}}
+
+{{#entities}}
+class {{name}}Schema(Schema):
+    id = fields.Int(dump_only=True)
+    {{#fields}}
+    {{field_name}} = fields.{{field_type_marshmallow}}({{#required}}required=True{{/required}})
+    {{/fields}}
+    created_at = fields.DateTime(dump_only=True)
+    updated_at = fields.DateTime(dump_only=True)
+
+class {{name}}CreateSchema({{name}}Schema):
+    pass
+
+class {{name}}UpdateSchema({{name}}Schema):
+    {{#fields}}
+    {{field_name}} = fields.{{field_type_marshmallow}}()
+    {{/fields}}
+
+{{/entities}}
+# Schema instances
+{{#entities}}
+{{name_lower}}_schema = {{name}}Schema()
+{{name_lower}}s_schema = {{name}}Schema(many=True)
+{{name_lower}}_create_schema = {{name}}CreateSchema()
+{{name_lower}}_update_schema = {{name}}UpdateSchema()
+
+{{/entities}}

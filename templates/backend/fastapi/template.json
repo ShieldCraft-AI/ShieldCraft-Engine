@@ -1,0 +1,149 @@
+{
+  "framework": "fastapi",
+  "language": "python",
+  "version": "1.0.0",
+  "description": "FastAPI backend framework template",
+
+  "variables": {
+    "app_name": {
+      "type": "string",
+      "description": "Name of the application",
+      "required": true,
+      "default": "my-fastapi-app"
+    },
+    "app_description": {
+      "type": "string",
+      "description": "Description of the application",
+      "required": true,
+      "default": "A FastAPI application"
+    },
+    "database_type": {
+      "type": "enum",
+      "values": ["sqlite", "postgresql", "mysql"],
+      "description": "Database type to use",
+      "default": "sqlite"
+    },
+    "enable_auth": {
+      "type": "boolean",
+      "description": "Enable authentication features",
+      "default": false
+    },
+    "enable_cors": {
+      "type": "boolean",
+      "description": "Enable CORS middleware",
+      "default": true
+    },
+    "entities": {
+      "type": "array",
+      "description": "List of entities to generate",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "type": {"type": "string"},
+                "required": {"type": "boolean", "default": true}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "files": [
+    {
+      "template": "main.py.mustache",
+      "output": "main.py",
+      "description": "Main FastAPI application file"
+    },
+    {
+      "template": "requirements/requirements.txt.mustache",
+      "output": "requirements.txt",
+      "description": "Python dependencies"
+    },
+    {
+      "template": "models/models.py.mustache",
+      "output": "models/models.py",
+      "description": "Pydantic data models"
+    },
+    {
+      "template": "api/routes.py.mustache",
+      "output": "api/routes.py",
+      "description": "API route definitions"
+    },
+    {
+      "template": "config/settings.py.mustache",
+      "output": "config/settings.py",
+      "description": "Application configuration"
+    },
+    {
+      "template": "services/services.py.mustache",
+      "output": "services/services.py",
+      "description": "Business logic services"
+    },
+    {
+      "template": "tests/test_main.py.mustache",
+      "output": "tests/test_main.py",
+      "description": "Test suite"
+    },
+    {
+      "template": "README.md.mustache",
+      "output": "README.md",
+      "description": "Project documentation"
+    },
+    {
+      "template": "Dockerfile.mustache",
+      "output": "Dockerfile",
+      "description": "Docker container configuration"
+    },
+    {
+      "template": "docker-compose.yml.mustache",
+      "output": "docker-compose.yml",
+      "description": "Docker Compose setup"
+    },
+    {
+      "template": ".env.example.mustache",
+      "output": ".env.example",
+      "description": "Environment variables template"
+    },
+    {
+      "template": ".gitignore.mustache",
+      "output": ".gitignore",
+      "description": "Git ignore rules"
+    }
+  ],
+
+  "dependencies": {
+    "required": ["fastapi", "uvicorn", "pydantic"],
+    "optional": {
+      "database": {
+        "sqlite": [],
+        "postgresql": ["psycopg2-binary"],
+        "mysql": ["pymysql"]
+      },
+      "auth": ["python-jose", "passlib"],
+      "testing": ["pytest", "httpx"]
+    }
+  },
+
+  "scripts": {
+    "install": "pip install -r requirements.txt",
+    "run": "python main.py",
+    "test": "pytest",
+    "lint": "flake8 .",
+    "format": "black . && isort ."
+  },
+
+  "metadata": {
+    "author": "ShieldCraft Engine",
+    "license": "MIT",
+    "repository": "https://github.com/your-org/shieldcraft-engine",
+    "documentation": "https://shieldcraft-engine.readthedocs.io/"
+  }
+}

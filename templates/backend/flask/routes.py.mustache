@@ -1,0 +1,164 @@
+from flask import Blueprint, request, jsonify, current_app
+from sqlalchemy.exc import IntegrityError
+from marshmallow import ValidationError
+from database import db
+
+api_bp = Blueprint('api', __name__)
+
+def create_response(success=True, message='', data=None, status_code=200):
+    """Create a standardized API response"""
+    response = {
+        'success': success,
+        'message': message
+    }
+    if data is not None:
+        response['data'] = data
+    return jsonify(response), status_code
+
+{{#entities}}
+# {{name}} routes
+@api_bp.route('/{{name_lower}}s', methods=['GET'])
+def get_{{name_lower}}s():
+    """Get all {{name_lower}}s with optional pagination and search"""
+    with current_app.app_context():
+        from models import {{name}}
+        from schemas import {{name_lower}}s_schema
+        
+        try:
+            page = request.args.get('page', 1, type=int)
+            limit = request.args.get('limit', 10, type=int)
+            search = request.args.get('search')
+
+            query = {{name}}.query
+
+            # Add search functionality if search parameter is provided
+            {{#fields}}
+            {{#primary}}
+            if search:
+                query = query.filter({{name}}.{{field_name}}.ilike(f'%{search}%'))
+            {{/primary}}
+            {{/fields}}
+
+            pagination = query.paginate(page=page, per_page=limit, error_out=False)
+            items = pagination.items
+
+            result = {
+                'items': {{name_lower}}s_schema.dump(items),
+                'pagination': {
+                    'page': page,
+                    'limit': limit,
+                    'total': pagination.total,
+                    'pages': pagination.pages,
+                    'has_next': pagination.has_next,
+                    'has_prev': pagination.has_prev
+                }
+            }
+
+            return create_response(message='{{name}}s retrieved successfully', data=result)
+
+        except Exception as e:
+            current_app.logger.error(f'Error fetching {{name_lower}}s: {str(e)}')
+            return create_response(success=False, message='Failed to fetch {{name_lower}}s', status_code=500)
+
+@api_bp.route('/{{name_lower}}s/<int:{{name_lower}}_id>', methods=['GET'])
+def get_{{name_lower}}({{name_lower}}_id):
+    """Get a specific {{name_lower}} by ID"""
+    from models import {{name}}
+    from schemas import {{name_lower}}_schema
+    
+    try:
+        item = {{name}}.query.get_or_404({{name_lower}}_id)
+        return create_response(message='{{name}} retrieved successfully', data={{name_lower}}_schema.dump(item))
+
+    except Exception as e:
+        current_app.logger.error(f'Error fetching {{name_lower}}: {str(e)}')
+        return create_response(success=False, message='{{name}} not found', status_code=404)
+
+@api_bp.route('/{{name_lower}}s', methods=['POST'])
+def create_{{name_lower}}():
+    """Create a new {{name_lower}}"""
+    from models import {{name}}
+    from schemas import {{name_lower}}_create_schema, {{name_lower}}_schema
+    
+    try:
+        json_data = request.get_json()
+        if not json_data:
+            return create_response(success=False, message='No data provided', status_code=400)
+
+        # Validate input data
+        data = {{name_lower}}_create_schema.load(json_data)
+
+        # Create new item
+        new_item = {{name}}(**data)
+        db.session.add(new_item)
+        db.session.commit()
+
+        return create_response(
+            message='{{name}} created successfully',
+            data={{name_lower}}_schema.dump(new_item),
+            status_code=201
+        )
+
+    except ValidationError as e:
+        return create_response(success=False, message='Validation error', data=e.messages, status_code=400)
+    except IntegrityError as e:
+        db.session.rollback()
+        return create_response(success=False, message='Database integrity error', status_code=400)
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Error creating {{name_lower}}: {str(e)}')
+        return create_response(success=False, message='Failed to create {{name_lower}}', status_code=500)
+
+@api_bp.route('/{{name_lower}}s/<int:{{name_lower}}_id>', methods=['PUT'])
+def update_{{name_lower}}({{name_lower}}_id):
+    """Update an existing {{name_lower}}"""
+    from models import {{name}}
+    from schemas import {{name_lower}}_update_schema
+    
+    try:
+        item = {{name}}.query.get_or_404({{name_lower}}_id)
+
+        json_data = request.get_json()
+        if not json_data:
+            return create_response(success=False, message='No data provided', status_code=400)
+
+        # Validate input data
+        data = {{name_lower}}_update_schema.load(json_data)
+
+        # Update item
+        for key, value in data.items():
+            setattr(item, key, value)
+
+        db.session.commit()
+
+        return create_response(message='{{name}} updated successfully', data={{name_lower}}_schema.dump(item))
+
+    except ValidationError as e:
+        return create_response(success=False, message='Validation error', data=e.messages, status_code=400)
+    except IntegrityError as e:
+        db.session.rollback()
+        return create_response(success=False, message='Database integrity error', status_code=400)
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Error updating {{name_lower}}: {str(e)}')
+        return create_response(success=False, message='Failed to update {{name_lower}}', status_code=500)
+
+@api_bp.route('/{{name_lower}}s/<int:{{name_lower}}_id>', methods=['DELETE'])
+def delete_{{name_lower}}({{name_lower}}_id):
+    """Delete a {{name_lower}}"""
+    from models import {{name}}
+    
+    try:
+        item = {{name}}.query.get_or_404({{name_lower}}_id)
+
+        db.session.delete(item)
+        db.session.commit()
+
+        return create_response(message='{{name}} deleted successfully')
+
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Error deleting {{name_lower}}: {str(e)}')
+        return create_response(success=False, message='Failed to delete {{name_lower}}', status_code=500)
+
+{{/entities}}

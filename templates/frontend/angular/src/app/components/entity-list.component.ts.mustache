@@ -1,0 +1,73 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink, Router } from '@angular/router';
+import { ApiService } from '../../services/api.service';
+import { {{name}}, ApiResponse, PaginatedResponse } from '../../models';
+
+@Component({
+  selector: 'app-{{name_kebab}}-list',
+  standalone: true,
+  imports: [CommonModule, RouterLink],
+  templateUrl: './{{name_kebab}}-list.component.html',
+  styleUrl: './{{name_kebab}}-list.component.scss'
+})
+export class {{name}}ListComponent implements OnInit {
+  {{name_lower}}s: {{name}}[] = [];
+  loading = false;
+  error: string | null = null;
+
+  constructor(
+    private apiService: ApiService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.load{{name}}s();
+  }
+
+  load{{name}}s(): void {
+    this.loading = true;
+    this.error = null;
+
+    this.apiService.get{{name}}s().subscribe({
+      next: (response: ApiResponse<PaginatedResponse<{{name}}>>) => {
+        if (response.success && response.data) {
+          this.{{name_lower}}s = response.data.items;
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load {{name_lower}}s';
+        console.error('Error loading {{name_lower}}s:', err);
+        this.loading = false;
+      }
+    });
+  }
+
+  onEdit(id: number): void {
+    this.router.navigate(['/{{name_lower}}s', id, 'edit']);
+  }
+
+  onDelete(id: number): void {
+    if (confirm('Are you sure you want to delete this {{name_lower}}?')) {
+      this.apiService.delete{{name}}(id).subscribe({
+        next: () => {
+          this.{{name_lower}}s = this.{{name_lower}}s.filter(item => item.id !== id);
+        },
+        error: (err) => {
+          console.error('Error deleting {{name_lower}}:', err);
+          // Handle error (show toast, etc.)
+        }
+      });
+    }
+  }
+
+  getItemTitle(item: {{name}}): string {
+    {{#fields}}
+    {{#required}}
+    if (item.{{name}}) return String(item.{{name}});
+    {{/required}}
+    {{/fields}}
+    return '{{name}} #' + item.id;
+  }
+}

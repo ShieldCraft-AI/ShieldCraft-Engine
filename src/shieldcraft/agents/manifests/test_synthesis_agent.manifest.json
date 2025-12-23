@@ -1,0 +1,18 @@
+{
+  "id": "test_synthesis_agent.v1",
+  "version": "1.0.0",
+  "description": "Synthesizes unit, integration, and snapshot tests for generated code.",
+  "input_schema": "schemas/code_manifest.json",
+  "output_schema": "schemas/test_suite_manifest.json",
+  "invariants": {
+    "tests_must_run_in_CI": true,
+    "snapshot_coverage_pct": 100
+  },
+  "resource_limits": {
+    "cpu": 2000,
+    "memory_mb": 2048
+  },
+  "timeout_seconds": 900,
+  "deterministic": true,
+  "required_for_v1": true
+}

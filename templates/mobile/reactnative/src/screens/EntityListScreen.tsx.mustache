@@ -1,0 +1,56 @@
+import React from 'react';
+import {View, Text, StyleSheet} from 'react-native';
+import EntityList from '../components/EntityList';
+import apiService from '../services/api';
+import {RootStackParamList} from '../navigation/AppNavigator';
+import { {{name}} } from '../models/types';
+
+const {{name}}ListScreen = () => {
+  const handleDelete = async (id: number) => {
+    await apiService.delete{{name}}(id);
+  };
+
+  const renderItem = (item: {{name}}) => (
+    <View>
+      <Text style={styles.title}>{item.title || item.name || `{{name}} #${item.id}`}</Text>
+      {{#fields}}
+      <Text style={styles.subtitle}>{item.{{name}}}</Text>
+      {{/fields}}
+      {item.created_at && (
+        <Text style={styles.date}>
+          Created: {new Date(item.created_at).toLocaleDateString()}
+        </Text>
+      )}
+    </View>
+  );
+
+  return (
+    <EntityList
+      entityName="{{name}}"
+      navigationKey="{{name}}Form"
+      renderItem={renderItem}
+      getItems={() => apiService.get{{name}}s()}
+      onDelete={handleDelete}
+    />
+  );
+};
+
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 2,
+  },
+  date: {
+    fontSize: 12,
+    color: '#999',
+  },
+});
+
+export default {{name}}ListScreen;

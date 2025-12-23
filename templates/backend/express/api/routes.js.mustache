@@ -1,0 +1,170 @@
+const express = require('express');
+const router = express.Router();
+const { body, param, query, validationResult } = require('express-validator');
+
+// Import models and services
+// const { Task, User } = require('../models');
+// const taskService = require('../services/taskService');
+// const userService = require('../services/userService');
+
+// Validation middleware
+const handleValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation failed',
+      errors: errors.array()
+    });
+  }
+  next();
+};
+
+// API response helper
+const sendResponse = (res, statusCode = 200, success = true, message = '', data = null) => {
+  const response = { success, message };
+  if (data !== null) response.data = data;
+  return res.status(statusCode).json(response);
+};
+
+// Entity routes - generated from spec
+{{ entity_routes }}
+
+// Example routes template (to be replaced by generated routes)
+/*
+// Task routes
+router.get('/tasks',
+  [
+    query('page').optional().isInt({ min: 1 }).toInt(),
+    query('limit').optional().isInt({ min: 1, max: 100 }).toInt(),
+    query('search').optional().isString().trim()
+  ],
+  handleValidationErrors,
+  async (req, res) => {
+    try {
+      const { page = 1, limit = 10, search } = req.query;
+      const result = await taskService.getTasks({ page, limit, search });
+      sendResponse(res, 200, true, 'Tasks retrieved successfully', result);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+      sendResponse(res, 500, false, 'Failed to fetch tasks');
+    }
+  }
+);
+
+router.post('/tasks',
+  [
+    body('title').notEmpty().trim().isLength({ max: 200 }),
+    body('description').optional().trim().isLength({ max: 1000 }),
+    body('completed').optional().isBoolean(),
+    body('priority').optional().isIn(['low', 'medium', 'high']),
+    body('dueDate').optional().isISO8601()
+  ],
+  handleValidationErrors,
+  async (req, res) => {
+    try {
+      const taskData = req.body;
+      const task = await taskService.createTask(taskData);
+      sendResponse(res, 201, true, 'Task created successfully', task);
+    } catch (error) {
+      console.error('Error creating task:', error);
+      sendResponse(res, 500, false, 'Failed to create task');
+    }
+  }
+);
+
+router.get('/tasks/:id',
+  [param('id').isMongoId()],
+  handleValidationErrors,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const task = await taskService.getTaskById(id);
+      if (!task) {
+        return sendResponse(res, 404, false, 'Task not found');
+      }
+      sendResponse(res, 200, true, 'Task retrieved successfully', task);
+    } catch (error) {
+      console.error('Error fetching task:', error);
+      sendResponse(res, 500, false, 'Failed to fetch task');
+    }
+  }
+);
+
+router.put('/tasks/:id',
+  [
+    param('id').isMongoId(),
+    body('title').optional().trim().isLength({ max: 200 }),
+    body('description').optional().trim().isLength({ max: 1000 }),
+    body('completed').optional().isBoolean(),
+    body('priority').optional().isIn(['low', 'medium', 'high']),
+    body('dueDate').optional().isISO8601()
+  ],
+  handleValidationErrors,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      const task = await taskService.updateTask(id, updateData);
+      if (!task) {
+        return sendResponse(res, 404, false, 'Task not found');
+      }
+      sendResponse(res, 200, true, 'Task updated successfully', task);
+    } catch (error) {
+      console.error('Error updating task:', error);
+      sendResponse(res, 500, false, 'Failed to update task');
+    }
+  }
+);
+
+router.delete('/tasks/:id',
+  [param('id').isMongoId()],
+  handleValidationErrors,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await taskService.deleteTask(id);
+      if (!deleted) {
+        return sendResponse(res, 404, false, 'Task not found');
+      }
+      sendResponse(res, 200, true, 'Task deleted successfully');
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      sendResponse(res, 500, false, 'Failed to delete task');
+    }
+  }
+);
+
+// User routes
+router.get('/users', async (req, res) => {
+  try {
+    const users = await userService.getUsers();
+    sendResponse(res, 200, true, 'Users retrieved successfully', users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    sendResponse(res, 500, false, 'Failed to fetch users');
+  }
+});
+
+router.post('/users',
+  [
+    body('username').notEmpty().trim().isLength({ min: 3, max: 50 }),
+    body('email').isEmail().normalizeEmail(),
+    body('fullName').optional().trim().isLength({ max: 100 }),
+    body('password').isLength({ min: 6 })
+  ],
+  handleValidationErrors,
+  async (req, res) => {
+    try {
+      const userData = req.body;
+      const user = await userService.createUser(userData);
+      sendResponse(res, 201, true, 'User created successfully', user);
+    } catch (error) {
+      console.error('Error creating user:', error);
+      sendResponse(res, 500, false, 'Failed to create user');
+    }
+  }
+);
+*/
+
+module.exports = router;

@@ -1,0 +1,246 @@
+<template>
+  <div class="entity-detail">
+    <div class="header">
+      <h1 class="text-3xl font-bold text-gray-900">{{ entityName }} Details</h1>
+      <div class="actions">
+        <RouterLink
+          :to="`/entities/${entityName.toLowerCase()}/edit/${item.id}`"
+          class="btn btn-secondary"
+        >
+          Edit
+        </RouterLink>
+        <RouterLink
+          to="/"
+          class="text-blue-600 hover:text-blue-800"
+        >
+          ← Back to Home
+        </RouterLink>
+      </div>
+    </div>
+
+    <div v-if="loading" class="loading">
+      Loading {{ entityName }} details...
+    </div>
+
+    <div v-else-if="error" class="error">
+      Error loading {{ entityName }}: {{ error }}
+    </div>
+
+    <div v-else-if="item" class="detail-content">
+      <div class="detail-card">
+        <div v-for="field in fields" :key="field.name" class="detail-field">
+          <div class="field-label">{{ field.label }}</div>
+          <div class="field-value">
+            <span v-if="field.type === 'boolean'">
+              {{ item[field.name] ? 'Yes' : 'No' }}
+            </span>
+            <span v-else-if="field.type === 'array'">
+              <ul v-if="Array.isArray(item[field.name])" class="array-list">
+                <li v-for="(value, index) in item[field.name]" :key="index">
+                  {{ value }}
+                </li>
+              </ul>
+              <pre v-else class="json-value">{{ JSON.stringify(item[field.name], null, 2) }}</pre>
+            </span>
+            <span v-else-if="field.type === 'object'">
+              <pre class="json-value">{{ JSON.stringify(item[field.name], null, 2) }}</pre>
+            </span>
+            <span v-else>
+              {{ item[field.name] || 'N/A' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <button
+          @click="handleDelete"
+          :disabled="deleting"
+          class="btn btn-danger"
+        >
+          {{ deleting ? 'Deleting...' : 'Delete' }}
+        </button>
+      </div>
+    </div>
+
+    <div v-else class="not-found">
+      {{ entityName }} not found.
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
+interface DetailField {
+  name: string
+  label: string
+  type: string
+}
+
+interface Props {
+  entityName: string
+  fields: DetailField[]
+  item?: Record<string, any>
+  loading?: boolean
+  error?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  item: undefined,
+  loading: false,
+  error: ''
+})
+
+const emit = defineEmits<{
+  delete: [id: string | number]
+}>()
+
+const router = useRouter()
+const route = useRoute()
+const deleting = ref(false)
+
+function handleDelete() {
+  if (confirm(`Are you sure you want to delete this ${props.entityName}?`)) {
+    deleting.value = true
+    emit('delete', route.params.id as string)
+  }
+}
+</script>
+
+<style scoped>
+.entity-detail {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.detail-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.detail-card {
+  padding: 2rem;
+}
+
+.detail-field {
+  display: flex;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.detail-field:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.field-label {
+  font-weight: 600;
+  color: #374151;
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+.field-value {
+  color: #6b7280;
+  flex: 1;
+}
+
+.array-list {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+
+.array-list li {
+  margin-bottom: 0.25rem;
+}
+
+.json-value {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.875rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.detail-actions {
+  padding: 1.5rem 2rem;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.loading, .error, .not-found {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.error {
+  color: #dc2626;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.not-found {
+  color: #6b7280;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+  border: 1px solid #dc2626;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+</style>

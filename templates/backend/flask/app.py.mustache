@@ -1,0 +1,56 @@
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+from flask_migrate import Migrate
+from config import Config
+from database import init_db
+import os
+
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+
+    # Initialize extensions
+    db = init_db(app)
+    migrate = Migrate(app, db)
+    CORS(app)
+
+    # Make db available to other modules
+    app.db = db
+
+    # Initialize models
+    from models import init_models
+    init_models(db)
+
+    # Import routes after db and models are initialized
+    from routes import api_bp
+
+    # Register blueprints
+    app.register_blueprint(api_bp, url_prefix='/api')
+
+    # Create database tables on app startup
+    with app.app_context():
+        db.create_all()
+
+    # Health check endpoint
+    @app.route('/health')
+    def health():
+        return jsonify({'status': 'healthy', 'service': '{{app_name}}'})
+
+    # Error handlers
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({'error': 'Not found', 'message': 'The requested resource was not found'}), 404
+
+    @app.errorhandler(500)
+    def internal_error(error):
+        return jsonify({'error': 'Internal server error', 'message': 'An unexpected error occurred'}), 500
+
+    return app
+
+if __name__ == '__main__':
+    app = create_app()
+    app.run(
+        host=os.getenv('HOST', '0.0.0.0'),
+        port=int(os.getenv('PORT', 5000)),
+        debug=os.getenv('DEBUG', 'False').lower() == 'true'
+    )

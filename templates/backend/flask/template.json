@@ -1,0 +1,52 @@
+{
+  "name": "Flask Application Template",
+  "description": "A Flask application template with SQLAlchemy, Marshmallow, and REST API",
+  "framework": "flask",
+  "language": "python",
+  "files": [
+    {
+      "source": "requirements.txt.mustache",
+      "destination": "requirements.txt"
+    },
+    {
+      "source": "app.py.mustache",
+      "destination": "app.py"
+    },
+    {
+      "source": "config.py.mustache",
+      "destination": "config.py"
+    },
+    {
+      "source": "models.py.mustache",
+      "destination": "models.py"
+    },
+    {
+      "source": "schemas.py.mustache",
+      "destination": "schemas.py"
+    },
+    {
+      "source": "routes.py.mustache",
+      "destination": "routes.py"
+    },
+    {
+      "source": "database.py.mustache",
+      "destination": "database.py"
+    },
+    {
+      "source": "utils.py.mustache",
+      "destination": "utils.py"
+    },
+    {
+      "source": "README.md.mustache",
+      "destination": "README.md"
+    },
+    {
+      "source": ".env.example.mustache",
+      "destination": ".env.example"
+    },
+    {
+      "source": ".gitignore.mustache",
+      "destination": ".gitignore"
+    }
+  ]
+}

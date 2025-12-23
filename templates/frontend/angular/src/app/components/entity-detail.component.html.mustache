@@ -1,0 +1,53 @@
+<div class="entity-detail">
+  <div class="header">
+    <h1 class="text-3xl font-bold text-gray-900">{{name}} Details</h1>
+    <div class="actions">
+      <button (click)="onEdit()" class="btn btn-secondary">
+        Edit
+      </button>
+      <a routerLink="/{{name_lower}}s" class="text-blue-600 hover:text-blue-800">
+        ← Back to {{name}}s
+      </a>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    Loading {{name_lower}} details...
+  </div>
+
+  <div *ngIf="error" class="error">
+    Error loading {{name_lower}}: {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error && {{name_lower}}" class="detail-content">
+    <div class="detail-card">
+      {{#fields}}
+      <div class="detail-field">
+        <div class="field-label">{{name_capital}}</div>
+        <div class="field-value">
+          <span *ngIf="{{name_lower}}!.{{name}} !== null && {{name_lower}}!.{{name}} !== undefined">
+            {{ {{name_lower}}!.{{name}} }}
+          </span>
+          <span *ngIf="{{name_lower}}!.{{name}} === null || {{name_lower}}!.{{name}} === undefined" class="no-value">
+            N/A
+          </span>
+        </div>
+      </div>
+      {{/fields}}
+    </div>
+
+    <div class="detail-actions">
+      <button
+        (click)="onDelete()"
+        [disabled]="deleting"
+        class="btn btn-danger"
+      >
+        {{ deleting ? 'Deleting...' : 'Delete' }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && !{{name_lower}}" class="not-found">
+    {{name}} not found.
+  </div>
+</div>

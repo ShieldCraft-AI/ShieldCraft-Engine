@@ -1,0 +1,252 @@
+# {{ app_name }}
+
+{{ app_description }}
+
+A REST API built with Express.js and Node.js, featuring MongoDB integration, JWT authentication, and comprehensive testing.
+
+## Features
+
+- 🚀 Express.js framework for high-performance APIs
+- 🍃 MongoDB integration with Mongoose ODM
+- 🔐 JWT-based authentication and authorization
+- ✅ Input validation with Joi
+- 📊 Request logging and monitoring
+- 🛡️ Security headers with Helmet
+- 📝 API documentation with Swagger
+- 🧪 Comprehensive test suite with Jest
+- 🐳 Docker containerization
+- 📊 Health monitoring endpoints
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 16+
+- MongoDB (local or cloud instance)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd {{ app_name }}
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+4. Start MongoDB (if running locally):
+```bash
+mongod
+```
+
+### Running the Application
+
+#### Development
+```bash
+npm run dev
+```
+
+#### Production
+```bash
+npm start
+```
+
+The API will be available at `http://localhost:3000`
+
+### API Documentation
+
+- Swagger UI: `http://localhost:3000/api-docs` (if implemented)
+- Health Check: `http://localhost:3000/health`
+
+## Project Structure
+
+```
+{{ app_name }}/
+├── app.js                 # Express application entry point
+├── package.json           # Node.js dependencies and scripts
+├── config/
+│   └── index.js           # Application configuration
+├── models/
+│   └── index.js           # Mongoose data models
+├── api/
+│   └── routes.js          # API route definitions
+├── services/              # Business logic services
+├── middleware/            # Custom middleware
+├── tests/                 # Test suite
+│   └── app.test.js        # Application tests
+├── public/                # Static files
+├── Dockerfile             # Docker container configuration
+├── docker-compose.yml     # Docker Compose setup
+└── README.md              # This file
+```
+
+## API Endpoints
+
+### Health Check
+- `GET /health` - Basic health check
+- `GET /health/detailed` - Detailed health check with service status
+
+### Entities
+{{ api_endpoints }}
+
+## Configuration
+
+The application uses the following environment variables:
+
+- `NODE_ENV`: Environment (development/production)
+- `PORT`: Server port (default: 3000)
+- `MONGODB_URI`: MongoDB connection string
+- `JWT_SECRET`: JWT signing secret
+- `JWT_EXPIRES_IN`: JWT expiration time
+- `CORS_ORIGIN`: Allowed CORS origins
+- `RATE_LIMIT_MAX`: Rate limiting max requests
+
+## Authentication
+
+The API uses JWT (JSON Web Tokens) for authentication:
+
+1. Register a new user: `POST /api/auth/register`
+2. Login: `POST /api/auth/login`
+3. Use the returned token in the Authorization header: `Bearer <token>`
+
+## Testing
+
+Run the test suite:
+
+```bash
+npm test
+```
+
+Run tests with coverage:
+
+```bash
+npm run test:coverage
+```
+
+Run tests in watch mode:
+
+```bash
+npm run test:watch
+```
+
+## Code Quality
+
+### Linting
+
+```bash
+npm run lint
+```
+
+### Formatting
+
+```bash
+npm run format
+```
+
+## Docker
+
+Build and run with Docker:
+
+```bash
+docker build -t {{ app_name }} .
+docker run -p 3000:3000 {{ app_name }}
+```
+
+Or use Docker Compose:
+
+```bash
+docker-compose up
+```
+
+## Database
+
+The application uses MongoDB with Mongoose ODM. The database schema is defined in the `models/` directory.
+
+### Migrations
+
+Database migrations are handled automatically by Mongoose schemas.
+
+## Security
+
+- Helmet.js for security headers
+- CORS configuration
+- Rate limiting
+- Input validation and sanitization
+- JWT token-based authentication
+- Password hashing with bcrypt
+
+## Monitoring
+
+- Request logging with Morgan
+- Health check endpoints
+- Error tracking and reporting
+
+## Development
+
+### Adding New Features
+
+1. Define the data model in `models/`
+2. Create the service logic in `services/`
+3. Add API routes in `api/routes.js`
+4. Write tests in `tests/`
+5. Update documentation
+
+### Environment Setup
+
+For development, create a `.env` file with:
+
+```env
+NODE_ENV=development
+PORT=3000
+MONGODB_URI=mongodb://localhost:27017/{{ app_name }}
+JWT_SECRET=your-development-secret
+```
+
+## Deployment
+
+The application is configured for deployment on:
+
+- Heroku
+- AWS Elastic Beanstalk
+- Google Cloud Run
+- Docker containers
+- Kubernetes
+
+### Production Checklist
+
+- [ ] Set strong JWT secret
+- [ ] Configure production MongoDB URI
+- [ ] Set NODE_ENV=production
+- [ ] Enable HTTPS
+- [ ] Configure proper CORS origins
+- [ ] Set up monitoring and logging
+- [ ] Configure rate limiting
+- [ ] Set up backup strategy
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Run linting and formatting
+6. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Generated by ShieldCraft Engine
+
+This application was generated using ShieldCraft Engine v1.0.
+For more information, visit [ShieldCraft Engine](https://github.com/your-org/shieldcraft-engine).

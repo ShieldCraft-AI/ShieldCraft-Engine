@@ -1,0 +1,109 @@
+import axios, {AxiosInstance, AxiosResponse} from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ApiResponse, PaginatedResponse} from './types';
+
+class ApiService {
+  private api: AxiosInstance;
+  private baseURL = 'http://localhost:8000/api'; // Change this to your backend URL
+
+  constructor() {
+    this.api = axios.create({
+      baseURL: this.baseURL,
+      timeout: 10000,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    this.setupInterceptors();
+  }
+
+  private setupInterceptors() {
+    // Request interceptor
+    this.api.interceptors.request.use(
+      async (config) => {
+        // Add auth token if available
+        const token = await AsyncStorage.getItem('auth_token');
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
+
+    // Response interceptor
+    this.api.interceptors.response.use(
+      (response: AxiosResponse) => response,
+      (error) => {
+        console.error('API Error:', error);
+        return Promise.reject(error);
+      }
+    );
+  }
+
+  // Generic CRUD methods
+  async get<T>(endpoint: string, params?: any): Promise<ApiResponse<T>> {
+    try {
+      const response = await this.api.get(endpoint, {params});
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async post<T>(endpoint: string, data: any): Promise<ApiResponse<T>> {
+    try {
+      const response = await this.api.post(endpoint, data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async put<T>(endpoint: string, data: any): Promise<ApiResponse<T>> {
+    try {
+      const response = await this.api.put(endpoint, data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
+    try {
+      const response = await this.api.delete(endpoint);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Entity-specific methods
+  {{#entities}}
+  // {{name}} methods
+  async get{{name}}s(params?: {page?: number; limit?: number; search?: string}): Promise<ApiResponse<PaginatedResponse<{{name}}>>> {
+    return this.get(`/{{name_lower}}s`, params);
+  }
+
+  async get{{name}}(id: number): Promise<ApiResponse<{{name}}>> {
+    return this.get(`/{{name_lower}}s/${id}`);
+  }
+
+  async create{{name}}(data: {{name}}Create): Promise<ApiResponse<{{name}}>> {
+    return this.post(`/{{name_lower}}s`, data);
+  }
+
+  async update{{name}}(id: number, data: {{name}}Update): Promise<ApiResponse<{{name}}>> {
+    return this.put(`/{{name_lower}}s/${id}`, data);
+  }
+
+  async delete{{name}}(id: number): Promise<ApiResponse<void>> {
+    return this.delete(`/{{name_lower}}s/${id}`);
+  }
+
+  {{/entities}}
+}
+
+export const apiService = new ApiService();
+export default apiService;
